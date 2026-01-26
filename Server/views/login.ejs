@@ -1,7 +1,7 @@
 <h2>Login</h2>
 <p>login using your email</p>
 
-<form action="post">
+<form action="/login" method="POST">
   <div>
     <label for="email">email</label>
     <input type="email" name="email" id="email" required />
@@ -11,7 +11,7 @@
     <label for="password">password</label>
     <input type="password" name="password" required />
   </div>
+  <button type="submit">Login</button>
 </form>
-<button>
-  <a href="/register">Register</a>
-</button>
+
+Have no accounts<a href="/register">SignUp</a>
