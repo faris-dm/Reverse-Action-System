@@ -1,7 +1,7 @@
 <h2>Register Page</h2>
 
 <p>Pleases Register Now</p>
-<form action="post">
+<form action="/register" method="POST">
   <div>
     <label for="name">Username</label>
     <input type="text" name="name" class="name" required />
@@ -14,7 +14,8 @@
 
   <label for="password">password</label>
   <input type="password" name="password" id="password" required />
+
+  <div>
+    <button type="submit">Login</button>
+  </div>
 </form>
-<button>
-  <a href="/login">Login</a>
-</button>
