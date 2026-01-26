@@ -32,6 +32,29 @@ app.post("/register", async (req, res) => {
     }
   }
 });
+
+app.post("/login", async (req, res) => {
+  const { email, password, name } = req.body;
+  let oldUser = userStore.get(email);
+  if (!oldUser) {
+    console.log(" there is no match with this email");
+    return res.status(404).send(" there is no user with data");
+  } else {
+    try {
+      let comparehased = bcrypt.compare(password, oldUser.password);
+      if (!comparehased) {
+        console.log("wrong password");
+        res.status(404).send(" inccorect password");
+      } else {
+        console.log("correct password");
+        res.redirect("/home");
+      }
+    } catch (error) {
+      console.log("error messsage", error);
+      return res.status(500).send("error Occuiped");
+    }
+  }
+});
 app.get("/home", (req, res) => {
   res.status(200).render("index.ejs", { message: "solo" });
   console.log("gone succefully");
