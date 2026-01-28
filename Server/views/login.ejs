@@ -1,6 +1,8 @@
 <h2>Login</h2>
 <p>login using your email</p>
 
+<% if (locals.message) { %> <%= message %> <% } %>
+
 <form action="/login" method="POST">
   <div>
     <label for="email">email</label>
