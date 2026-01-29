@@ -44,3 +44,33 @@ but if one varable is not correvt then it is the whole is undefined
 means
 const email=req.body.email
 const profile=req.body.profile
+
+lets say let email=:solo@gmail
+
+let user={name:"faris",age:"rool"}
+then if we used const userStore=new map()
+
+userStore.set(email.user)
+then i stored emai and an object called suer in then localstorges
+
+#### const signup=(email,userInfo)=> {
+
+}
+means it check a user with that email are existed or not
+also this are emails and userInfo
+are parameters that the user expexts from suer or some one when the function is called
+
+#### Map()
+
+    is a fast and simple way of storeing data in the local memorey
+    propertes of Map
+    1 new Map()=create new map
+    2:Map.set(key,vallue)=add or   update  an item
+    3: .get(key)=find some vallue
+    .has(key)=check if it existed
+    .delete()=delete evetything
+    .size()=count elements
+
+### WHY WE USE EMAIL AS A KEY
+
+     we use email as a key blc it is unique and,can be used  to  retive the needed info based on  that
