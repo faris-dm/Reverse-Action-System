@@ -1,12 +1,35 @@
+// const { name } = require("ejs");
 const express = require("express");
 const flash = require("express-flash");
 const session = require("express-session");
 const passport = require("passport");
 let app = express();
+let userStore = [];
 let LocalStrategy = require("passport-local").Strategy;
+const bcrypt = require("bcrypt");
+
+async function authIcateUser(email, password, done) {
+  const emailUser = userStore.find((email) => email.email === email);
+  if (emailUser == null) {
+    return done(null, false, { message: "No User found with this email" });
+  }
+  try {
+    if (await bcrypt.compare(password, emailUser.password)) {
+      return done(null, emailUser);
+    } else {
+      return done(null, false, { message: "incorrect Password" });
+    }
+  } catch (error) {
+    return done(error);
+  }
+}
+
+passport.use(new LocalStrategy({ usernameField: "email" }, authIcateUser));
+// middle  wares
 
 app.set("view engine", "ejs");
 app.use(express.json());
+
 app.use(express.urlencoded({ extended: true }));
 app.use(flash());
 app.use(
@@ -20,57 +43,11 @@ app.use(
 app.use(passport.initialize());
 app.use(passport.session());
 
-app.get("/", (req, res) => {
-  res.render("index.ejs");
-});
+app.get("/register", (req, res) => res.render("register.ejs"));
 
-app.get("/register", (req, res) => {
-  res.render("register.ejs");
-});
+app.get("/login", (req, res) => res.render("login.ejs"));
 
-app.get("/login", (req, res) => {
-  res.render("login.ejs");
-});
-app.get("/", (req, res) => {
-  res.render("index.ejs");
-});
-
-let userData = [];
-
-async function authticateUser(email, password, done) {
-  let user = userData.find((item) => item.email === email);
-  if (!user) {
-    return done(null, false, {
-      message: " there is noe user  with this email",
-    });
-  } else {
-    try {
-      if (await bcrypt.compare(password.userData.password)) {
-        return done(null, user);
-      } else {
-        return done(null, false, { message: "Incorect Password" });
-      }
-    } catch (error) {
-      return done(error);
-    }
-  }
-}
-
-// new LocalStrategy( { options }, function )
-passport.use(new LocalStrategy({ usernameField: email }, authticateUser));
-
-//   after that  we give an ID  to checkk
-
-passport.serializeUser((user, done) => done(null, user.id));
-
-passport.deserializeUser((id, done) => {
-  return done(
-    null,
-    user.find((item) => item.id === id)
-  );
-});
-
-app.set();
+app.get("/", (req, res) => res.render("index.ejs"));
 
 let port = 3000;
 
