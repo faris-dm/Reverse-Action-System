@@ -78,3 +78,60 @@ is to map the names in the form and get the needed info
 })
 
 ### Wristband bage card
+
+passport.serializeUser((user, done) => done(null, user.id));
+passport.deserializeUser((id, done) => {
+  return done(
+    null,
+    users.find((item) => item.id === id)
+  );
+});
+
+when user get in get the check it login done then grap the user,id
+deseria==check it get the userid and ,done thenuser.find(item)=>item.id==id
+
+#### Memorey management Baje
+
+when user login sucefull it is called
+
+we get user.id and make it Bajee
+when user is login
+
+###
+
+app.use(
+session({
+secret: "W$q4=25\*8%v-}UV", // Your secret key
+resave: false,
+saveUninitialized: false,
+})
+);
+
+## secret: "W$q4=25\*8%v-}UV",
+
+    the sestion save the data in thid form
+
+## 2. resave: false
+
+     do not save the sesstion if there is nothing changed
+          it save  profile performace
+
+### saveUninitialized: false
+
+if people does not logined in do not save there cookise
+
+like sesstion :set up a storge
+passportIntilize:set up auth passport
+
+## app.use(passport.initialize());
+
+it start or make ready the pasport to accepts requests
+
+## app.use(passport.session())
+
+work to compine the cookies and the passport
+
+#### is authticated
+
+it check whather this user has a sessopn or ot then it check
+we authticTE THE USER then we decide to go to next lrvrl or not
