@@ -9,7 +9,7 @@ let LocalStrategy = require("passport-local").Strategy;
 const bcrypt = require("bcrypt");
 
 async function authIcateUser(email, password, done) {
-  const emailUser = userStore.find((email) => email.email === email);
+  const emailUser = userStore.find((item) => item.email === email);
   if (emailUser == null) {
     return done(null, false, { message: "No User found with this email" });
   }
@@ -26,6 +26,14 @@ async function authIcateUser(email, password, done) {
 
 passport.use(new LocalStrategy({ usernameField: "email" }, authIcateUser));
 // middle  wares
+
+passport.serializeUser((emailUser, done) => done(null, emailUser.id));
+passport.deserializeUser((id, done) => {
+  return done(
+    null,
+    userStore.find((item) => item.id == id)
+  );
+});
 
 app.set("view engine", "ejs");
 app.use(express.json());
@@ -46,14 +54,27 @@ app.use(passport.session());
 app.get("/register", (req, res) => res.render("register.ejs"));
 
 app.get("/login", (req, res) => res.render("login.ejs"));
-
-app.get("/", (req, res) => res.render("index.ejs"));
+app.get("/", (req, res) => {
+  if (req.isAuthenticated()) {
+    // Accessing req.user is only safe inside this block
+    res.render("index.ejs", { message: req.user.name });
+  } else {
+    // If not logged in, send them away before the crash happens
+    res.redirect("/login");
+  }
+});
 
 app.post("/register", async (req, res) => {
   try {
+    const userExist = userStore.find((user) => user.email === req.body.email);
+
+    if (userExist) {
+      return res.redirect("/register", { message: " email aready  found" });
+    }
+
     let HashPassword = await bcrypt.hash(req.body.password, 10);
     userStore.push({
-      id: Date().now.toString(),
+      id: Date.now().toString(),
       name: req.body.name,
       email: req.body.email,
       password: HashPassword,
@@ -74,7 +95,7 @@ app.post(
   })
 );
 
-let port = 3000;
+let port = 4000;
 
 app.listen(port, () => {
   console.log(`Server Running on https://localhost:${port}`);
