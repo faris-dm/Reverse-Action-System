@@ -121,6 +121,16 @@ function toBack(req, res, next) {
   return next();
 }
 
+app.post("/logout", (req, res, next) => {
+  req.logOut((err) => {
+    if (err) return next(err);
+
+    console.log("lougouted the data", userStore);
+
+    res.redirect("/login");
+  });
+});
+
 let port = 4000;
 
 app.listen(port, () => {
