@@ -111,6 +111,16 @@ function toFront(req, res, next) {
   res.redirect("/login");
 }
 
+// to aback is used to make not to go back after you logied in with out the logout
+
+function toBack(req, res, next) {
+  if (req.isAuthenticated()) {
+    return res.redirect("/");
+  }
+
+  return next();
+}
+
 let port = 4000;
 
 app.listen(port, () => {
