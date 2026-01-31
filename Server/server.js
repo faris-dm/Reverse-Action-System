@@ -51,15 +51,15 @@ app.use(
 app.use(passport.initialize());
 app.use(passport.session());
 
-app.get("/register", (req, res) =>
+app.get("/register", toBack, (req, res) =>
   res.render("register.ejs", { message: req.flash("error") })
 );
 
-app.get("/login", (req, res) => {
+app.get("/login", toBack, (req, res) => {
   res.render("login.ejs", { message: req.flash("error") });
 });
 
-app.get("/", (req, res) => {
+app.get("/", toFront, (req, res) => {
   if (req.isAuthenticated()) {
     // Accessing req.user is only safe inside this block
     res.render("index.ejs", { message: req.user.name });
@@ -69,7 +69,7 @@ app.get("/", (req, res) => {
   }
 });
 
-app.post("/register", async (req, res) => {
+app.post("/register", toBack, async (req, res) => {
   try {
     const userExist = userStore.find((user) => user.email === req.body.email);
 
@@ -94,12 +94,22 @@ app.post("/register", async (req, res) => {
 
 app.post(
   "/login",
+  toBack,
   passport.authenticate("local", {
     successRedirect: "/",
     failureRedirect: "/login",
     failureFlash: true,
   })
 );
+//  front func is used to check if the user is loged in  before if go to k=/ pages
+
+function toFront(req, res, next) {
+  if (req.isAuthenticated()) {
+    return next();
+  }
+
+  res.redirect("/login");
+}
 
 let port = 4000;
 
