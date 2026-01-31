@@ -51,9 +51,14 @@ app.use(
 app.use(passport.initialize());
 app.use(passport.session());
 
-app.get("/register", (req, res) => res.render("register.ejs"));
+app.get("/register", (req, res) =>
+  res.render("register.ejs", { message: req.flash("error") })
+);
 
-app.get("/login", (req, res) => res.render("login.ejs"));
+app.get("/login", (req, res) => {
+  res.render("login.ejs", { message: req.flash("error") });
+});
+
 app.get("/", (req, res) => {
   if (req.isAuthenticated()) {
     // Accessing req.user is only safe inside this block
@@ -69,7 +74,8 @@ app.post("/register", async (req, res) => {
     const userExist = userStore.find((user) => user.email === req.body.email);
 
     if (userExist) {
-      return res.redirect("/register", { message: " email aready  found" });
+      req.flash("error", "email aready Taken");
+      return res.redirect("/register");
     }
 
     let HashPassword = await bcrypt.hash(req.body.password, 10);
