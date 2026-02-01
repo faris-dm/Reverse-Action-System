@@ -54,9 +54,10 @@ passport.serializeUser((emailUser, done) => done(null, emailUser.id));
 //   );
 // });
 
-passport.deserializeUser((email, done) => {
-  const id = userMapStore.get(email);
-  return done(null, id);
+passport.deserializeUser((id, done) => {
+  let arr = Array.from(userMapStore.values());
+  let user = arr.find((items) => items.id === id);
+  return done(null, user);
 });
 
 app.set("view engine", "ejs");
