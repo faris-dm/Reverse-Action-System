@@ -10,31 +10,53 @@ const bcrypt = require("bcrypt");
 const { name } = require("ejs");
 let userMapStore = new Map();
 
-async function authIcateUser(email, password, done) {
-  const emailUser = userStore.find((item) => item.email === email);
-  if (emailUser == null) {
+// async function authIcateUser(email, password, done) {
+//   const emailUser = userStore.find((item) => item.email === email);
+//   if (emailUser == null) {
+//     return done(null, false, { message: "No User found with this email" });
+//   }
+//   try {
+//     if (await bcrypt.compare(password, emailUser.password)) {
+//       return done(null, emailUser);
+//     } else {
+//       return done(null, false, { message: "incorrect Password" });
+//     }
+//   } catch (error) {
+//     return done(error);
+//   }
+// }
+
+async function authenticateUser(email, password, done) {
+  let cleanEmail = email.trim().toLowerCase();
+  const emailUser = userMapStore.get(cleanEmail);
+  if (!emailUser) {
     return done(null, false, { message: "No User found with this email" });
   }
   try {
     if (await bcrypt.compare(password, emailUser.password)) {
       return done(null, emailUser);
     } else {
-      return done(null, false, { message: "incorrect Password" });
+      return done(null, false, { message: "Incorrect password" });
     }
   } catch (error) {
     return done(error);
   }
 }
 
-passport.use(new LocalStrategy({ usernameField: "email" }, authIcateUser));
+passport.use(new LocalStrategy({ usernameField: "email" }, authenticateUser));
 // middle  wares
 
 passport.serializeUser((emailUser, done) => done(null, emailUser.id));
-passport.deserializeUser((id, done) => {
-  return done(
-    null,
-    userStore.find((item) => item.id == id)
-  );
+// passport.deserializeUser((id, done) => {
+//   return done(
+//     null,
+//     userStore.find((item) => item.id == id)
+//   );
+// });
+
+passport.deserializeUser((email, done) => {
+  const id = userMapStore.get(email);
+  return done(null, id);
 });
 
 app.set("view engine", "ejs");
@@ -58,7 +80,7 @@ app.get("/register", toBack, (req, res) =>
 );
 
 app.get("/login", toBack, (req, res) => {
-  res.render("login.ejs", { message: req.flash("error") });
+  return res.render("login.ejs", { message: req.flash("error") });
 });
 
 app.get("/", toFront, (req, res) => {
@@ -94,16 +116,17 @@ app.get("/", toFront, (req, res) => {
 //   }
 // });
 
-app.post("/register", async (req, res) => {
+app.post("/register", toBack, async (req, res) => {
   try {
     let { email, password } = req.body;
 
     if (userMapStore.has(email)) {
       req.flash("error", "User aready have  this email");
+      return res.redirect("/register");
     }
 
     let hashedPassword = await bcrypt.hash(password, 10);
-    userStore.set({
+    userMapStore.set(email, {
       id: Date.now(),
       name: req.body.name,
       email: email,
