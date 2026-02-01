@@ -7,6 +7,8 @@ let app = express();
 let userStore = [];
 let LocalStrategy = require("passport-local").Strategy;
 const bcrypt = require("bcrypt");
+const { name } = require("ejs");
+let userMapStore = new Map();
 
 async function authIcateUser(email, password, done) {
   const emailUser = userStore.find((item) => item.email === email);
@@ -69,23 +71,46 @@ app.get("/", toFront, (req, res) => {
   }
 });
 
-app.post("/register", toBack, async (req, res) => {
-  try {
-    const userExist = userStore.find((user) => user.email === req.body.email);
+// app.post("/register", toBack, async (req, res) => {
+//   try {
+//     const userExist = userStore.find((user) => user.email === req.body.email);
 
-    if (userExist) {
-      req.flash("error", "email aready Taken");
-      return res.redirect("/register");
+//     if (userExist) {
+//       req.flash("error", "email aready Taken");
+//       return res.redirect("/register");
+//     }
+
+//     let HashPassword = await bcrypt.hash(req.body.password, 10);
+//     userStore.push({
+//       id: Date.now().toString(),
+//       name: req.body.name,
+//       email: req.body.email,
+//       password: HashPassword,
+//     });
+//     console.log(userStore);
+//     res.redirect("/login");
+//   } catch {
+//     res.redirect("/register");
+//   }
+// });
+
+app.post("/register", async (req, res) => {
+  try {
+    let { email, password } = req.body;
+
+    if (userMapStore.has(email)) {
+      req.flash("error", "User aready have  this email");
     }
 
-    let HashPassword = await bcrypt.hash(req.body.password, 10);
-    userStore.push({
-      id: Date.now().toString(),
+    let hashedPassword = await bcrypt.hash(password, 10);
+    userStore.set({
+      id: Date.now(),
       name: req.body.name,
-      email: req.body.email,
-      password: HashPassword,
+      email: email,
+      password: hashedPassword,
     });
-    console.log(userStore);
+
+    console.log("succefully added", userMapStore.get(email));
     res.redirect("/login");
   } catch {
     res.redirect("/register");
