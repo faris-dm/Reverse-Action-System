@@ -3,8 +3,8 @@
   "version": "1.0.0",
   "main": "index.js",
   "scripts": {
-    "dev": "nodemon server.js",
-    "watch:css": "npx @tailwindcss/cli -i ./public/css/main.css -o ./public/css/output.css --watch"
+    "dev": "nodemon jwt.js",
+    "watch:css": "npx @tailwindcss/cli -i ./public/css/main.css -o ./public/css/output.css --content './views/**/*.ejs' --watch"
   },
   "author": "solo",
   "license": "MIT",

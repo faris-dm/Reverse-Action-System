@@ -74,3 +74,17 @@ are parameters that the user expexts from suer or some one when the function is 
 ### WHY WE USE EMAIL AS A KEY
 
      we use email as a key blc it is unique and,can be used  to  retive the needed info based on  that
+
+
+
+#### app.post("/login"/,pasport.authticate("local"),{})
+
+after the useer click submit in the login form the passport  grap the email and passport and use authticateUser to auth the email and  the passport 
+ then redirect based on the outcome
+
+### app.post(
+  "/login",
+  passport.authenticate("local", {
+
+i wrote  passport.use(new Localstartgy ({userfiled})) so when i use local   it use it
+

@@ -3,7 +3,14 @@
 let LocalStrategy = require("passport-local").Strategy;
 let bcrypt = require("bcrypt");
 
-function authticationIntilazation(passport, getUserEmail, getUserId) {
+function authticationIntilazation(passport, getUserEmail, getUserId)
+// https://youtube.com/shorts/zYS1JY-IylY?si=MK4Pe3XpZKzGmGZV
+
+
+{
+
+
+
   async function authicateUser(email, password, done) {
     let user = getUserEmail(email);
     if (user == null) {
