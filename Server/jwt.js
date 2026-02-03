@@ -23,6 +23,23 @@ const token = jwt.sign(payload, secret, {
   //   sign marget the two to create a  token
 });
 
+function authTokens(req, res, next) {
+  let tokenHeader = req.headers["authorization"];
+
+  let tokens = tokenHeader && tokenHeader.split("")[1];
+  if (!tokens) {
+    return res.this.status("404").json({ message: "Token missing" });
+  }
+  jwt.verify(tokens, secret, (err, info) => {
+    if (err) {
+      return res.status(403).json({ message: "Invaled tokens" });
+    } else {
+      req.user = info;
+      next();
+    }
+  });
+}
+
 console.log("accses Token is ", token);
 
 // app.post("/login", (req, res) => {
