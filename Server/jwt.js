@@ -1,46 +1,48 @@
 const express = require("express");
 const jwt = require("jsonwebtoken");
 const app = express();
+let flash = require("express-flash");
+let userMapStore = new Map();
+const bcrypt = require("bcrypt");
 let port = 7800;
+
 app.use(express.json());
 app.set("view engine", "ejs");
+app.use(express.static("public"));
 
 app.get("/login", (req, res) => {
-  const data = {
-    name: "solo Naser",
-    age: "32",
-    job: "software dev  who  not scrifiess anythings",
-    hobbies: "Connecting with people",
-  };
-  res.send(data);
+  res.render("login.ejs");
 });
 
-const payload = { sub: "12345", role: "user" };
-// payload:data/sub:subhect
-let secret = "W$q4=25*8%v-}UV";
-const token = jwt.sign(payload, secret, {
-  expiresIn: "14m",
-  //   sign marget the two to create a  token
+app.post("/login", (req, res) => {
+  res.render("login.ejs");
 });
-
-function authTokens(req, res, next) {
-  let tokenHeader = req.headers["authorization"];
-
-  let tokens = tokenHeader && tokenHeader.split("")[1];
-  if (!tokens) {
-    return res.this.status("404").json({ message: "Token missing" });
-  }
-  jwt.verify(tokens, secret, (err, info) => {
-    if (err) {
-      return res.status(403).json({ message: "Invaled tokens" });
-    } else {
-      req.user = info;
-      next();
+app.get("/", (req, res) => {
+  res.render("register.ejs");
+});
+app.post("/register", async (req, res) => {
+  try {
+    let { email, password } = req.body;
+    let cleanEmail = email.trim().toLowerCase();
+    if (userMapStore.has(cleanEmail)) {
+      req.flash("error", "user aready have this email");
+      res.redirect("/login");
     }
-  });
-}
+    let hashPassword = await bcrypt.hash(password, 10);
+    userMapStore.set({
+      id: Date.now(),
+      name: req.body.name,
+      email: email,
+      password: hashPassword,
+    });
 
-console.log("accses Token is ", token);
+    console.log("succefully added", userMapStore.get(email));
+    res.redirect("/login");
+  } catch (error) {
+    console.log(error);
+    res.redirect("/");
+  }
+});
 
 // app.post("/login", (req, res) => {
 //   let username = req.body.name;
