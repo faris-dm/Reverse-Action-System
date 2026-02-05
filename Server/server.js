@@ -75,7 +75,7 @@ app.get("/", toFront, (req, res) => {
 
 app.post("/register", toBack, async (req, res) => {
   try {
-    let emai = req.body.email;
+    let { email, password } = req.body;
 
     if (userMapStore.has(email)) {
       req.flash("error", "User aready have  this email");
