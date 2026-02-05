@@ -1,56 +1,80 @@
 const express = require("express");
 const jwt = require("jsonwebtoken");
 const app = express();
+
 let flash = require("express-flash");
 let userMapStore = new Map();
 const bcrypt = require("bcrypt");
+const { name } = require("ejs");
+app.use(express.urlencoded({ extended: true }));
+// app.use(flash());
 let port = 7800;
 
 app.use(express.json());
 app.set("view engine", "ejs");
 app.use(express.static("public"));
 
+app.get("/register", (req, res) => {
+  res.render("register.ejs");
+});
+
 app.get("/login", (req, res) => {
   res.render("login.ejs");
 });
-
-app.post("/login", (req, res) => {
-  res.render("login.ejs");
+app.post("/login", async (req, res) => {
+  const { email, password, name } = req.body;
+  if (!email || !password) return res.redirect("/login");
+  let cleanEmail = email.trim().toLowerCase();
+  try {
+    let FoundEsmail = userMapStore.get(cleanEmail);
+    if (!FoundEsmail) {
+      console.log("user  does not found");
+      return res.redirect("/login");
+    } else {
+      let comaprePassword = await bcrypt.compare(
+        password,
+        FoundEsmail.password
+      );
+      if (!comaprePassword) {
+        console.log("Wrong password");
+        return res.redirect("/login");
+      } else {
+        console.log("found the legit user");
+        return res.redirect("/");
+      }
+    }
+  } catch (error) {
+    console.log("error happend", error);
+    return res.redirect("/login");
+  }
 });
+
 app.get("/", (req, res) => {
-  res.render("register.ejs");
+  res.render("index.ejs", { message: name });
 });
 app.post("/register", async (req, res) => {
   try {
     let { email, password } = req.body;
     let cleanEmail = email.trim().toLowerCase();
     if (userMapStore.has(cleanEmail)) {
-      req.flash("error", "user aready have this email");
-      res.redirect("/login");
+      alert("email aready exist");
+
+      return res.redirect("/register");
     }
-    let hashPassword = await bcrypt.hash(password, 10);
-    userMapStore.set({
+
+    let hashedPassword = await bcrypt.hash(password, 10);
+    userMapStore.set(email, {
       id: Date.now(),
       name: req.body.name,
       email: email,
-      password: hashPassword,
+      password: hashedPassword,
     });
-
-    console.log("succefully added", userMapStore.get(email));
+    console.log("stored succesfully", userMapStore.get(email));
     res.redirect("/login");
   } catch (error) {
-    console.log(error);
-    res.redirect("/");
+    res.redirect("/register");
   }
 });
-
-// app.post("/login", (req, res) => {
-//   let username = req.body.name;
-//   const user = { name: username };
-//   const userToken = jwt.sign(user, secret);
-//   res.json({ userToken: userToken });
-// });
-
 app.listen(port, () => {
   console.log(`Server Running on https://localhost:${port}`);
 });
