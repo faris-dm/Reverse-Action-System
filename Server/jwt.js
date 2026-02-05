@@ -10,6 +10,11 @@ app.use(express.urlencoded({ extended: true }));
 // app.use(flash());
 let port = 7800;
 
+//  creating the tokena
+let payloadInfo = { sub: "12345", role: "user" };
+let secret = "W$q4=25*8%v-}UV";
+jwt.sign(payloadInfo, secret, { expiresIn: "15m" });
+
 app.use(express.json());
 app.set("view engine", "ejs");
 app.use(express.static("public"));
@@ -40,6 +45,12 @@ app.post("/login", async (req, res) => {
         return res.redirect("/login");
       } else {
         console.log("found the legit user");
+
+        let payloadInfo = { sub: "12345", role: "user" };
+        let secret = "W$q4=25*8%v-}UV";
+        let Tokens = jwt.sign(payloadInfo, secret, { expiresIn: "15m" });
+        console.log("access Tokens:", Tokens);
+
         return res.redirect("/");
       }
     }
@@ -75,6 +86,7 @@ app.post("/register", async (req, res) => {
     res.redirect("/register");
   }
 });
+
 app.listen(port, () => {
   console.log(`Server Running on https://localhost:${port}`);
 });
