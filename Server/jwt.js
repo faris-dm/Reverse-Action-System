@@ -21,7 +21,7 @@ app.use(express.static("public"));
 
 function authTokens(req, res, next) {
   let authHeader = req.headers["authorization"];
-  let token = authHeader && authHeader.split("")[1];
+  let token = authHeader && authHeader.split(" ")[1];
   if (!token) {
     return res.status(401).json({ message: "Token missing" });
   }
