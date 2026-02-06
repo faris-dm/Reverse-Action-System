@@ -19,6 +19,22 @@ app.use(express.json());
 app.set("view engine", "ejs");
 app.use(express.static("public"));
 
+function authTokens(req, res, next) {
+  let authHeader = req.headers["authorization"];
+  let token = authHeader && authHeader.split("")[1];
+  if (!token) {
+    return res.status(401).json({ message: "Token missing" });
+  }
+  jwt.verify(token, secret, (err, decoded) => {
+    if (err) {
+      return res.status(403).json({ message: "Token missing" });
+    }
+
+    req.user = decoded;
+    next();
+  });
+}
+
 app.get("/register", (req, res) => {
   res.render("register.ejs");
 });
@@ -26,6 +42,7 @@ app.get("/register", (req, res) => {
 app.get("/login", (req, res) => {
   res.render("login.ejs");
 });
+
 app.post("/login", async (req, res) => {
   const { email, password, name } = req.body;
   if (!email || !password) return res.redirect("/login");
@@ -46,10 +63,13 @@ app.post("/login", async (req, res) => {
       } else {
         console.log("found the legit user");
 
-        let payloadInfo = { sub: "12345", role: "user" };
-        let secret = "W$q4=25*8%v-}UV";
-        let Tokens = jwt.sign(payloadInfo, secret, { expiresIn: "15m" });
-        console.log("access Tokens:", Tokens);
+        let payload = {
+          id: FoundEsmail.id,
+          name: FoundEsmail.name,
+        };
+        let accesTokens = jwt.sign(payload, secret);
+        // res.json({ accesTokens: accesTokens });
+        console.log("accesstokens:", accesTokens);
 
         return res.redirect("/");
       }
