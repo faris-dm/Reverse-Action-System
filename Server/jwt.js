@@ -1,7 +1,8 @@
 const express = require("express");
 const jwt = require("jsonwebtoken");
 const app = express();
-
+let cookiesparser = require("cookie-parser");
+app.use(cookiesparser());
 let flash = require("express-flash");
 let userMapStore = new Map();
 const bcrypt = require("bcrypt");
@@ -18,22 +19,42 @@ jwt.sign(payloadInfo, secret, { expiresIn: "15m" });
 app.use(express.json());
 app.set("view engine", "ejs");
 app.use(express.static("public"));
+// let post = [
+//   {
+//     username: "solo",
+//     email: "solonaser9@gmail.com",
+//     password: "12345",
+//   },
+//   {
+//     username: "amir",
+//     email: "aolonaser9@gmail.com",
+//     password: "012345",
+//   },
+// ];
 
 function authTokens(req, res, next) {
-  let authHeader = req.headers["authorization"];
-  let token = authHeader && authHeader.split(" ")[1];
+  // let authHeader = req.headers["authorization"];
+  // if we have authheader  then split it else undefined
+  let token = req.cookies.token;
+
   if (!token) {
-    return res.status(401).json({ message: "Token missing" });
+    return res.redirect("/login");
   }
-  jwt.verify(token, secret, (err, decoded) => {
+  jwt.verify(token, secret, (err, user) => {
     if (err) {
-      return res.status(403).json({ message: "Token missing" });
+      res.cleanCookie("token");
+      return res.redirect("/login");
     }
 
-    req.user = decoded;
+    req.user = user;
     next();
   });
 }
+
+// app.get("/post", authTokens, (req, res) => {
+//   console.log("Logged in user from token", req.user);
+//   res.json([post.filter((post) => post.username === req.user.username)]);
+// });
 
 app.get("/register", (req, res) => {
   res.render("register.ejs");
@@ -63,19 +84,22 @@ app.post("/login", async (req, res) => {
       } else {
         console.log("found the legit user");
 
-        let payload = {
-          id: FoundEsmail.id,
-          name: FoundEsmail.name,
-        };
-        let accesTokens = jwt.sign(payload, secret);
+        // let payload = {
+        //   id: FoundEsmail.id,
+        //   name: FoundEsmail.name,
+        // };
+        let user = { name: FoundEsmail.name, email: FoundEsmail.email };
+
+        let accesTokens = jwt.sign(user, secret);
         // res.json({ accesTokens: accesTokens });
         console.log("accesstokens:", accesTokens);
-
+        res.cookie("tokens", accesTokens, { httpOnly: true });
         return res.redirect("/");
       }
     }
   } catch (error) {
     console.log("error happend", error);
+
     return res.redirect("/login");
   }
 });
