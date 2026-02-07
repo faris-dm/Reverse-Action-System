@@ -33,7 +33,7 @@ app.use(express.static("public"));
 // ];
 
 function authTokens(req, res, next) {
-  // let authHeader = req.headers["authorization"];
+  let authHeader = req.headers["authorization"];
   // if we have authheader  then split it else undefined
   let token = req.cookies.token;
 
@@ -42,7 +42,7 @@ function authTokens(req, res, next) {
   }
   jwt.verify(token, secret, (err, user) => {
     if (err) {
-      res.cleanCookie("token");
+      res.clearCookie("token");
       return res.redirect("/login");
     }
 
@@ -91,9 +91,10 @@ app.post("/login", async (req, res) => {
         let user = { name: FoundEsmail.name, email: FoundEsmail.email };
 
         let accesTokens = jwt.sign(user, secret);
-        // res.json({ accesTokens: accesTokens });
-        console.log("accesstokens:", accesTokens);
-        res.cookie("tokens", accesTokens, { httpOnly: true });
+        // res.json({ accesTokens: accesTokens });,acc
+        res.cookie("token", accesTokens, { httpOnly: true });
+        console.log(" token sent via cookies \n  accesstokens:", accesTokens);
+
         return res.redirect("/");
       }
     }
@@ -104,15 +105,15 @@ app.post("/login", async (req, res) => {
   }
 });
 
-app.get("/", (req, res) => {
-  res.render("index.ejs", { message: name });
+app.get("/", authTokens, (req, res) => {
+  res.render("index.ejs", { message: req.user.name });
 });
 app.post("/register", async (req, res) => {
   try {
     let { email, password } = req.body;
     let cleanEmail = email.trim().toLowerCase();
     if (userMapStore.has(cleanEmail)) {
-      alert("email aready exist");
+      // alert("email aready exist");
 
       return res.redirect("/register");
     }
