@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "main": "index.js",
   "scripts": {
-    "dev": "nodemon jwt.js",
+    "dev": "nodemon simpleJwt.js",
     "watch:css": "npx @tailwindcss/cli -i ./public/css/main.css -o ./public/css/output.css --content './views/**/*.ejs' --watch"
   },
   "author": "solo",
