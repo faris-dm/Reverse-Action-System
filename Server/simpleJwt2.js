@@ -67,16 +67,16 @@ let posts = [
   },
 ];
 
-app.get("/post", (req, res) => {
-  // Use console.log to debug what is inside the token!
-  console.log("Logged in user from token:", req.user);
-  let allEmements = Array.from(posts.values());
-  const filteredPosts = allEmements.filter((item) => {
-    return item.username === req.user.username;
-  });
+// app.get("/post", (req, res) => {
+//   // Use console.log to debug what is inside the token!
+//   console.log("Logged in user from token:", req.user);
+//   let allEmements = Array.from(posts.values());
+//   const filteredPosts = allEmements.filter((item) => {
+//     return item.username === req.user.username;
+//   });
 
-  res.json(filteredPosts);
-});
+// res.json(filteredPosts);
+// });
 let frist = Array.from(posts.values());
 
 app.post("/login", (req, res) => {
