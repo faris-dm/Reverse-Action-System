@@ -67,7 +67,7 @@ let posts = [
   },
 ];
 
-app.get("/post", tokenAuth, (req, res) => {
+app.get("/post", (req, res) => {
   // Use console.log to debug what is inside the token!
   console.log("Logged in user from token:", req.user);
   let allEmements = Array.from(posts.values());
@@ -85,7 +85,7 @@ app.post("/login", (req, res) => {
   let accessTokens = generateAccess(user);
   let RefreshTokens = jwt.sign(user, RefreshTokenSecret);
   console.log("accessTokens:", accessTokens);
-  res.json(accessTokens);
+  res.json({ accessTokens: accessTokens, RefreshTokens: RefreshTokens });
 });
 
 // function tokenAuth(req, res, next) {
