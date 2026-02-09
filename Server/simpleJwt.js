@@ -78,14 +78,14 @@ app.get("/post", tokenAuth, (req, res) => {
 });
 let frist = Array.from(posts.values());
 
-app.post("/login", (req, res) => {
-  let username = req.body.username;
-  let user = { username: username };
-  let accessTokens = jwt.sign(user, secret);
+// app.post("/login", (req, res) => {
+//   let username = req.body.username;
+//   let user = { username: username };
+//   let accessTokens = jwt.sign(user, secret);
 
-  console.log("accessTokens:", accessTokens);
-  res.json(accessTokens);
-});
+//   console.log("accessTokens:", accessTokens);
+//   res.json(accessTokens);
+// });
 
 function tokenAuth(req, res, next) {
   let authHeader = req.headers["authorization"];
@@ -105,5 +105,5 @@ function tokenAuth(req, res, next) {
 
 let port = 9600;
 app.listen(port, () => {
-  console.log(`Server Running on https://localhost:${port}`);
+  console.log(`Server Running old on https://localhost:${port}`);
 });
