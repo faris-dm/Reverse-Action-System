@@ -65,14 +65,43 @@ let posts = [
     age: "22",
   },
 ];
+
+app.get("/post", tokenAuth, (req, res) => {
+  // Use console.log to debug what is inside the token!
+  console.log("Logged in user from token:", req.user);
+  let allEmements = Array.from(posts.values());
+  const filteredPosts = allEmements.filter((item) => {
+    return item.username === req.user.username;
+  });
+
+  res.json(filteredPosts);
+});
 let frist = Array.from(posts.values());
+
 app.post("/login", (req, res) => {
   let username = req.body.username;
-  let user = { name: username };
+  let user = { username: username };
   let accessTokens = jwt.sign(user, secret);
 
   console.log("accessTokens:", accessTokens);
+  res.json(accessTokens);
 });
+
+function tokenAuth(req, res, next) {
+  let authHeader = req.headers["authorization"];
+  let tokens = authHeader && authHeader.split(" ")[1];
+  if (!tokens) {
+    return res.send("Token does not found");
+  }
+  jwt.verify(tokens, secret, (err, user) => {
+    if (err) {
+      res.clearCookie("tokens");
+      return res.redirect("/login");
+    }
+    req.user = user;
+    next();
+  });
+}
 
 let port = 9600;
 app.listen(port, () => {
