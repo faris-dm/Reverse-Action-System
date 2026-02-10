@@ -66,6 +66,23 @@ let posts = [
     age: "22",
   },
 ];
+let refreshStore = [];
+app.post("/token", (req, res) => {
+  let RefreshTokens = req.body.token;
+  if (!RefreshTokens) {
+    return res.send("refresh token is missing");
+  }
+  if (!refreshStore.includes(RefreshTokens)) {
+    return res.status(403).send("invalid Tokens");
+  }
+  jwt.verify(RefreshTokens, RefreshTokenSecret, (err, user) => {
+    if (err) return res.status(403).send("error found");
+    // let accessTokens=generateAccess({username:user.username})
+    let payload = { username: user.username };
+    let accessTokens = generateAccess(payload);
+    res.json({ accessTokens: accessTokens });
+  });
+});
 
 // app.get("/post", (req, res) => {
 //   // Use console.log to debug what is inside the token!
@@ -83,7 +100,8 @@ app.post("/login", (req, res) => {
   let username = req.body.username;
   let user = { username: username };
   let accessTokens = generateAccess(user);
-  let RefreshTokens = jwt.sign(user, RefreshTokenSecret);
+  let RefreshTokens = jwt.sign(user, RefreshTokenSecret, { expiresIn: "7d" });
+  refreshStore.push(RefreshTokens);
   console.log("accessTokens:", accessTokens);
   res.json({ accessTokens: accessTokens, RefreshTokens: RefreshTokens });
 });
