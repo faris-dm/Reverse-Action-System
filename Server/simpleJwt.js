@@ -76,7 +76,7 @@ app.get("/post", tokenAuth, (req, res) => {
 
   res.json(filteredPosts);
 });
-let frist = Array.from(posts.values());
+// let frist = Array.from(posts.values());
 
 // app.post("/login", (req, res) => {
 //   let username = req.body.username;
