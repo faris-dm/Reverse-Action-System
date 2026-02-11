@@ -10,50 +10,6 @@ const { name } = require("ejs");
 const { populate } = require("dotenv");
 app.use(express.urlencoded({ extended: true }));
 
-// app.get("/", (req, res) => {
-//   res.render("index.ejs", { message: name });
-// });
-// app.get("/register", (req, res) => {
-//   res.render("register.ejs");
-// });
-
-// app.get("/login", (req, res) => {
-//   res.render("login.ejs");
-// });
-
-app.use(express.json());
-app.set("view engine", "ejs");
-app.use(express.static("public"));
-let secret = "W$q4=25*8%v-}UV";
-
-// app.post("/register", async (req, res) => {
-//   try {
-//     let { email, password } = req.body;
-//     let cleanEmail = email.trim().toLowerCase();
-//     if (userMapStore.has(cleanEmail)) {
-//       alert("email aready exist");
-
-//       return res.redirect("/register");
-//     }
-
-//     let hashedPassword = await bcrypt.hash(password, 10);
-//     userMapStore.set(email, {
-//       id: Date.now(),
-//       name: req.body.name,
-//       email: email,
-//       password: hashedPassword,
-//     });
-//     console.log("stored succesfully", userMapStore.get(email));
-//     res.redirect("/login");
-//   } catch (error) {
-//     res.redirect("/register");
-//   }
-// });
-
-// app.get("/register", (req, res) =>
-//   res.render("register.ejs", { message: req.flash("error") })
-// );
-
 app.get("/", (req, res) => {
   res.send("welcome to jwt Route");
 });
