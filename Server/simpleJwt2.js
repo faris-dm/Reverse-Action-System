@@ -129,7 +129,7 @@ app.delete("/logout", (req, res) => {
 });
 
 function generateAccess(user) {
-  return jwt.sign(user, secret, { expiresIn: "15s" });
+  return jwt.sign(user, secret, { expiresIn: "15m" });
 }
 
 let port = 9700;
