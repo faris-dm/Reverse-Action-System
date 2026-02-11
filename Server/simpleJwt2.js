@@ -8,6 +8,7 @@ let userMapStore = new Map();
 const bcrypt = require("bcrypt");
 const { name } = require("ejs");
 const { populate } = require("dotenv");
+const { token } = require("morgan");
 app.use(express.urlencoded({ extended: true }));
 
 // app.get("/", (req, res) => {
@@ -122,8 +123,13 @@ app.post("/login", (req, res) => {
 //   });
 // }
 
+app.delete("/logout", (req, res) => {
+  refreshStore = refreshStore.filter((token) => token !== req.body.token);
+  res.status(204).send("deluted  the token succefully");
+});
+
 function generateAccess(user) {
-  return jwt.sign(user, secret, { expiresIn: "15m" });
+  return jwt.sign(user, secret, { expiresIn: "15s" });
 }
 
 let port = 9700;
