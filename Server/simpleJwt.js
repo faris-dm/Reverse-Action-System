@@ -64,6 +64,14 @@ let posts = [
     username: "amir",
     age: "22",
   },
+  {
+    username: "mame",
+    age: "42",
+  },
+  {
+    username: "fuu",
+    age: "55",
+  },
 ];
 
 app.get("/post", tokenAuth, (req, res) => {
