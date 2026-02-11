@@ -104,7 +104,7 @@ function tokenAuth(req, res, next) {
   jwt.verify(tokens, secret, (err, user) => {
     if (err) {
       res.clearCookie("tokens");
-      return res.redirect("/login");
+      return res.status(403).json({ message: "Token expired or invalid" });
     }
     req.user = user;
     next();
