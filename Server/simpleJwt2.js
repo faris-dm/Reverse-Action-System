@@ -36,6 +36,9 @@ let posts = [
 app.get("/register", (req, res) => {
   res.render("register.ejs");
 });
+app.get("/login", (req, res) => {
+  res.render("login.ejs");
+});
 
 app.post("/register", async (req, res) => {
   const { email, password, name } = req.body;
@@ -45,7 +48,7 @@ app.post("/register", async (req, res) => {
     if (userMapStore.has(email)) {
       res.send("email aready  found  with this emil");
     }
-    userMapStore.get(email, {
+    userMapStore.set(email, {
       id: Date.now().toString(),
       name: name,
       email: email,
@@ -56,6 +59,24 @@ app.post("/register", async (req, res) => {
   } catch (error) {
     console.log("error happened", error);
     res.redirect("register");
+  }
+});
+app.post("/login", async (req, res) => {
+  let { email, password } = req.body;
+  let cleanEmail = email.trim().toLowerCase()();
+  if (!userMapStore.get(cleanEmail)) {
+    res.send("No email found  with this email");
+  }
+
+  try {
+    if (await bcrypt.compare(password, userMapStore.get(password))) {
+      let user = { email: userMapStore.email, password: userMapStore.password };
+
+      res.redirect("/");
+    } else console.log("incorrect password");
+    res.send("incorrect password thik again");
+  } catch (error) {
+    console.log(error);
   }
 });
 
