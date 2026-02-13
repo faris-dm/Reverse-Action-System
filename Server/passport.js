@@ -1,39 +1,76 @@
-// const { use } = require("passport");
+("cookie-parser");
+app.use(cookiesparser());
+let flash = require("express-flash");
+let userMapStore = new Map();
+const bcrypt = require("bcrypt");
+const { name } = require("ejs");
+const { populate } = require("dotenv");
+const { token } = require("morgan");
+app.use(express.urlencoded({ extended: true }));
 
-let LocalStrategy = require("passport-local").Strategy;
-let bcrypt = require("bcrypt");
+app.get("/login", (req, res) => {
+  res.render("login.ejs");
+});
 
-function authticationIntilazation(passport, getUserEmail, getUserId)
-// https://youtube.com/shorts/zYS1JY-IylY?si=MK4Pe3XpZKzGmGZV
+app.use(express.json());
+app.set("view engine", "ejs");
+app.use(express.static("public"));
+let secret = "W$q4=25*8%v-}UV";
+let RefreshTokenSecret = "W%&7=-^#-v}XL";
 
+app.get("/", (req, res) => {
+  res.send("welcome to jwt Route in the second server ");
+});
 
-{
+app.get("/register", (req, res) => {
+  res.render("register.ejs");
+});
+app.get("/login", (req, res) => {
+  res.render("login.ejs");
+});
 
+app.post("/register", async (req, res) => {
+  const { email, password, name } = req.body;
+  try {
+    let hashPassword = await bcrypt.hash(password, 10);
 
-
-  async function authicateUser(email, password, done) {
-    let user = getUserEmail(email);
-    if (user == null) {
-      return done(null, false, { message: "No user Foundwith this email" });
-    } else {
-      try {
-        if (await bcrypt.compare(password, user.password)) {
-          return done(null, user);
-        } else {
-          return done(null, false, { message: "Incorrect Password" });
-        }
-      } catch (error) {
-        return done(error);
-      }
+    if (userMapStore.has(email)) {
+      res.send("email aready  found  with this emil");
     }
+    userMapStore.set(email, {
+      id: Date.now().toString(),
+      name: name,
+      email: email,
+      password: hashPassword,
+    });
+    console.log("user added succefully", userMapStore.get(email));
+    res.redirect("/login");
+  } catch (error) {
+    console.log("error happened", error);
+    res.redirect("register");
+  }
+});
+
+app.post("/login", async (req, res) => {
+  let { email, password } = req.body;
+  let cleanEmail = email.trim().toLowerCase()();
+  if (!userMapStore.get(cleanEmail)) {
+    res.send("No email found  with this email");
   }
 
-  passport.use(new LocalStrategy({ usernameField: "email" }, authicateUser));
+  try {
+    if (await bcrypt.compare(password, userMapStore.get(password))) {
+      let user = { email: userMapStore.email, password: userMapStore.password };
 
-  passport.serializeUser((user, done) => done(null, user.id));
-  passport.deserializeUser((id, done) => {
-    return done(null, getUserId(id));
-  });
-}
+      res.redirect("/");
+    } else console.log("incorrect password");
+    res.send("incorrect password thik again");
+  } catch (error) {
+    console.log(error);
+  }
+});
 
-module.exports = authticationIntilazation;
+let port = 2000;
+app.listen(port, () => {
+  console.log(`Server Running on new  https://localhost:${port}`);
+});
