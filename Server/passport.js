@@ -12,6 +12,7 @@ const { populate } = require("dotenv");
 const { token } = require("morgan");
 const { use } = require("passport");
 app.use(express.urlencoded({ extended: true }));
+const { z, email } = require("zod");
 
 app.get("/login", (req, res) => {
   res.render("login.ejs");
@@ -27,6 +28,12 @@ app.get("/", (req, res) => {
   res.send("welcome to jwt Route in the second server ");
 });
 
+let signUp = z.object({
+  name: z.string().min(3, "Username Must Be at least four characters "),
+  email: z.string().email("Please Inser Valid @ email"),
+  password: z.string().min(5, "password must be five or more"),
+});
+
 app.get("/register", (req, res) => {
   res.render("register.ejs");
 });
@@ -35,12 +42,12 @@ app.get("/login", (req, res) => {
 });
 
 app.post("/register", async (req, res) => {
-  const { email, password, name } = req.body;
+  const { email, password, name } = resultZod.data;
   try {
     let hashPassword = await bcrypt.hash(password, 10);
 
     if (userMapStore.has(email)) {
-      res.send("email aready  found  with this emil");
+      return res.send("email aready  found  with this emil");
     }
     userMapStore.set(email, {
       id: Date.now().toString(),
