@@ -61,24 +61,6 @@ app.post("/register", async (req, res) => {
     res.redirect("register");
   }
 });
-app.post("/login", async (req, res) => {
-  let { email, password } = req.body;
-  let cleanEmail = email.trim().toLowerCase()();
-  if (!userMapStore.get(cleanEmail)) {
-    res.send("No email found  with this email");
-  }
-
-  try {
-    if (await bcrypt.compare(password, userMapStore.get(password))) {
-      let user = { email: userMapStore.email, password: userMapStore.password };
-
-      res.redirect("/");
-    } else console.log("incorrect password");
-    res.send("incorrect password thik again");
-  } catch (error) {
-    console.log(error);
-  }
-});
 
 let refreshStore = [];
 
@@ -111,7 +93,7 @@ app.post("/login", (req, res) => {
 
 app.delete("/logout", (req, res) => {
   refreshStore = refreshStore.filter((token) => token !== req.body.token);
-  res.status(204).send("deluted  the token succefully");
+  res.status(204).send("deleted  the token succefully");
 });
 
 function generateAccess(user) {

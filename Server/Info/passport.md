@@ -10,7 +10,7 @@ this are modules that tell the passport how to authticate the use using the star
 
 ### passport
 
-    passport  is  a middleware  that allow user to use passport strtagies to authticate the login and password and help us to integrate google and facebook signup features
+    passport  is a middleware  that allow user to use passport strtagies to authticate the login and password and help us to integrate google and facebook signup features
 
 ##### passport uniquicity
 
@@ -136,19 +136,13 @@ work to compine the cookies and the passport
 it check whather this user has a sessopn or ot then it check
 we authticTE THE USER then we decide to go to next lrvrl or not
 
-
-
-
     const userExist = userStore.find((user) => user.email === req.body.email);
 
     if (userExist) {
       return res.redirect("/register", { message: " email aready  found" });
     }
 
-
-
-
-####  the full email  and password auth
+#### the full email and password auth
 
 // const { name } = require("ejs");
 const express = require("express");
@@ -163,42 +157,35 @@ const { name } = require("ejs");
 let userMapStore = new Map();
 
 async function authIcateUser(email, password, done) {
-  const emailUser = userStore.find((item) => item.email === email);
-  if (emailUser == null) {
-    return done(null, false, { message: "No User found with this email" });
-  }
-  try {
-    if (await bcrypt.compare(password, emailUser.password)) {
-      return done(null, emailUser);
-    } else {
-      return done(null, false, { message: "incorrect Password" });
-    }
-  } catch (error) {
-    return done(error);
-  }
+const emailUser = userStore.find((item) => item.email === email);
+if (emailUser == null) {
+return done(null, false, { message: "No User found with this email" });
+}
+try {
+if (await bcrypt.compare(password, emailUser.password)) {
+return done(null, emailUser);
+} else {
+return done(null, false, { message: "incorrect Password" });
+}
+} catch (error) {
+return done(error);
+}
 }
 
-
-
 // function authenticateUser(email,password,done) {
-//   const emailUser=userMapStore.has(email)
-//   if()
+// const emailUser=userMapStore.has(email)
+// if()
 // }
 
-
-
-
-
-
 passport.use(new LocalStrategy({ usernameField: "email" }, authIcateUser));
-// middle  wares
+// middle wares
 
 passport.serializeUser((emailUser, done) => done(null, emailUser.id));
 passport.deserializeUser((id, done) => {
-  return done(
-    null,
-    userStore.find((item) => item.id == id)
-  );
+return done(
+null,
+userStore.find((item) => item.id == id)
+);
 });
 
 app.set("view engine", "ejs");
@@ -207,37 +194,37 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(flash());
 app.use(
-  session({
-    secret: "W$q4=25*8%v-}UV",
-    resave: false,
-    saveUninitialized: false,
-  })
+session({
+secret: "W$q4=25\*8%v-}UV",
+resave: false,
+saveUninitialized: false,
+})
 );
 
 app.use(passport.initialize());
 app.use(passport.session());
 
 app.get("/register", toBack, (req, res) =>
-  res.render("register.ejs", { message: req.flash("error") })
+res.render("register.ejs", { message: req.flash("error") })
 );
 
 app.get("/login", toBack, (req, res) => {
-  return res.render("login.ejs", { message: req.flash("error") });
+return res.render("login.ejs", { message: req.flash("error") });
 });
 
 app.get("/", toFront, (req, res) => {
-  if (req.isAuthenticated()) {
-    // Accessing req.user is only safe inside this block
-    res.render("index.ejs", { message: req.user.name });
-  } else {
-    // If not logged in, send them away before the crash happens
-    res.redirect("/login");
-  }
+if (req.isAuthenticated()) {
+// Accessing req.user is only safe inside this block
+res.render("index.ejs", { message: req.user.name });
+} else {
+// If not logged in, send them away before the crash happens
+res.redirect("/login");
+}
 });
 
 app.post("/register", toBack, async (req, res) => {
-  try {
-    const userExist = userStore.find((user) => user.email === req.body.email);
+try {
+const userExist = userStore.find((user) => user.email === req.body.email);
 
     if (userExist) {
       req.flash("error", "email aready Taken");
@@ -253,31 +240,17 @@ app.post("/register", toBack, async (req, res) => {
     });
     console.log(userStore);
     res.redirect("/login");
-  } catch {
-    res.redirect("/register");
-  }
+
+} catch {
+res.redirect("/register");
+}
 });
-
-
 
 #####
 
-
-
-
-
-
-
-
-
-
-
-
-
-
 app.post("/register",toBack, async (req, res) => {
-  try {
-    let { email, password } = req.body;
+try {
+let { email, password } = req.body;
 
     if (userMapStore.has(email)) {
       req.flash("error", "User aready have  this email");
@@ -294,61 +267,54 @@ app.post("/register",toBack, async (req, res) => {
 
     console.log("succefully added", userMapStore.get(email));
     res.redirect("/login");
-  } catch {
-    res.redirect("/register");
-  }
+
+} catch {
+res.redirect("/register");
+}
 });
 
 app.post(
-  "/login",
-  toBack,
-  passport.authenticate("local", {
-    successRedirect: "/",
-    failureRedirect: "/login",
-    failureFlash: true,
-  })
+"/login",
+toBack,
+passport.authenticate("local", {
+successRedirect: "/",
+failureRedirect: "/login",
+failureFlash: true,
+})
 );
-//  front func is used to check if the user is loged in  before if go to k=/ pages
+// front func is used to check if the user is loged in before if go to k=/ pages
 
 function toFront(req, res, next) {
-  if (req.isAuthenticated()) {
-    return next();
-  }
+if (req.isAuthenticated()) {
+return next();
+}
 
-  res.redirect("/login");
+res.redirect("/login");
 }
 
 // to aback is used to make not to go back after you logied in with out the logout
 
 function toBack(req, res, next) {
-  if (req.isAuthenticated()) {
-    return res.redirect("/");
-  }
+if (req.isAuthenticated()) {
+return res.redirect("/");
+}
 
-  return next();
+return next();
 }
 
 app.post("/logout", (req, res, next) => {
-  req.logOut((err) => {
-    if (err) return next(err);
+req.logOut((err) => {
+if (err) return next(err);
 
     console.log("lougouted the data", userStore);
 
     res.redirect("/login");
-  });
+
+});
 });
 
 let port = 4000;
 
 app.listen(port, () => {
-  console.log(`Server Running on https://localhost:${port}`);
+console.log(`Server Running on https://localhost:${port}`);
 });
-
-
-
-
-
-
-
-
-
