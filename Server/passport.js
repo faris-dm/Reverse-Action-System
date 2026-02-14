@@ -70,7 +70,9 @@ app.post("/login", async (req, res) => {
 
       let accessTokens = generateAccess(user);
 
-      let RefreshTokens = jwt.sign(user, secret, { expiresIn: "7d" });
+      let RefreshTokens = jwt.sign(user, RefreshTokenSecret, {
+        expiresIn: "7d",
+      });
 
       refreshStore.push(RefreshTokens);
       console.log("login success");
@@ -95,7 +97,7 @@ app.post("/login", async (req, res) => {
 });
 
 function generateAccess(user) {
-  return jwt.sign(user, RefreshTokenSecret, { expiresIn: "15s" });
+  return jwt.sign(user, secret, { expiresIn: "15m" });
 }
 
 app.post("/token", (req, res) => {
@@ -108,8 +110,8 @@ app.post("/token", (req, res) => {
   jwt.verify(authHeaderToken, RefreshTokenSecret, (err, user) => {
     if (err) return res.status(403).send("Error happend Pleases check again");
     let playload = {
-      email: cleanEmail,
-      name: cleanEmail.name,
+      email: user.email,
+      name: user.name,
     };
     let accessTokens = generateAccess(playload);
     res.json({ accessTokens: accessTokens });
