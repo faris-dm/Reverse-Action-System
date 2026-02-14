@@ -90,6 +90,10 @@ app.post("/login", async (req, res) => {
   }
 });
 
+function generateAccess(user) {
+  return jwt.sign(user, RefreshTokenSecret, { expiresIn: "15m" });
+}
+
 let port = 2000;
 app.listen(port, () => {
   console.log(`Server Running on new  https://localhost:${port}`);
