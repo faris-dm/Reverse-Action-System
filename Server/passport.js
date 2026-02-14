@@ -1,11 +1,16 @@
-("cookie-parser");
+const express = require("express");
+const jwt = require("jsonwebtoken");
+const app = express();
+let cookiesparser = require("cookie-parser");
 app.use(cookiesparser());
 let flash = require("express-flash");
 let userMapStore = new Map();
+let refreshStore = [];
 const bcrypt = require("bcrypt");
 const { name } = require("ejs");
 const { populate } = require("dotenv");
 const { token } = require("morgan");
+const { use } = require("passport");
 app.use(express.urlencoded({ extended: true }));
 
 app.get("/login", (req, res) => {
@@ -53,18 +58,33 @@ app.post("/register", async (req, res) => {
 
 app.post("/login", async (req, res) => {
   let { email, password } = req.body;
-  let cleanEmail = email.trim().toLowerCase()();
-  if (!userMapStore.get(cleanEmail)) {
+  let cleanEmail = email.toLowerCase();
+  let foundUser = userMapStore.get(cleanEmail);
+  if (!foundUser) {
     res.send("No email found  with this email");
   }
 
   try {
-    if (await bcrypt.compare(password, userMapStore.get(password))) {
-      let user = { email: userMapStore.email, password: userMapStore.password };
+    if (await bcrypt.compare(password, foundUser.password)) {
+      let user = { email: email, name: foundUser.name };
 
-      res.redirect("/");
+      let accessTokens = generateAccess(user);
+
+      let RefreshTokens = jwt.sign(user, secret, { expiresIn: "7d" });
+
+      refreshStore.push(RefreshTokens);
+      console.log("login success");
+      console.log(
+        "accessTokens:\n",
+        accessTokens,
+        "RefreshTokens:\n",
+        RefreshTokens
+      );
+      res.cookie("token", accessTokens, { httpOnly: true });
+
+      return res.redirect("/");
     } else console.log("incorrect password");
-    res.send("incorrect password thik again");
+    return res.redirect("/login");
   } catch (error) {
     console.log(error);
   }
