@@ -77,22 +77,44 @@ app.post("/login", async (req, res) => {
       console.log(
         "accessTokens:\n",
         accessTokens,
-        "RefreshTokens:\n",
+        "\n RefreshTokens:\n",
         RefreshTokens
       );
       res.cookie("token", accessTokens, { httpOnly: true });
 
-      return res.redirect("/");
+      // return res.redirect("/");
+      return res.json({
+        accessTokens: accessTokens,
+        RefreshTokens: RefreshTokens,
+      });
     } else console.log("incorrect password");
-    return res.redirect("/login");
+    return res.json("incorrect Password");
   } catch (error) {
     console.log(error);
   }
 });
 
 function generateAccess(user) {
-  return jwt.sign(user, RefreshTokenSecret, { expiresIn: "15m" });
+  return jwt.sign(user, RefreshTokenSecret, { expiresIn: "15s" });
 }
+
+app.post("/token", (req, res) => {
+  let authHeaderToken = req.body.token;
+  if (!authHeaderToken) {
+    res.status(401).send("No refresh Token found");
+  } else if (!refreshStore.includes(authHeaderToken)) {
+    res.status(401).send("Token does not much");
+  }
+  jwt.verify(authHeaderToken, RefreshTokenSecret, (err, user) => {
+    if (err) return res.status(403).send("Error happend Pleases check again");
+    let playload = {
+      email: cleanEmail,
+      name: cleanEmail.name,
+    };
+    let accessTokens = generateAccess(playload);
+    res.json({ accessTokens: accessTokens });
+  });
+});
 
 let port = 2000;
 app.listen(port, () => {
