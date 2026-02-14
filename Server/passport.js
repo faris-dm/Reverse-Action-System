@@ -42,6 +42,16 @@ app.get("/login", (req, res) => {
 });
 
 app.post("/register", async (req, res) => {
+  let resultZod = signUp.safeParse(req.body);
+  if (!resultZod.success) {
+    return res.status(400).json({
+      err: resultZod.error.errors.map((errors) => ({
+        field: errors.path[0],
+        message: errors.message,
+      })),
+    });
+  }
+
   const { email, password, name } = resultZod.data;
   try {
     let hashPassword = await bcrypt.hash(password, 10);
