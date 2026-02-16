@@ -13,6 +13,8 @@ const { token } = require("morgan");
 const { use } = require("passport");
 app.use(express.urlencoded({ extended: true }));
 const { z, email } = require("zod");
+const supplierRoutes = require("./routes/supplier");
+app.use(supplierRoutes);
 
 app.get("/login", (req, res) => {
   res.render("login.ejs");
