@@ -1,27 +1,60 @@
-<!-- <script src="https://cdn.tailwindcss.com"></script>
-<link rel="stylesheet" href="/css/output.css" /> -->
+<!-- 
+  If you're using Tailwind CSS, uncomment the CDN below.
+  Otherwise, make sure your output.css contains the equivalent styles.
+-->
+<script src="https://cdn.tailwindcss.com"></script>
 <link rel="stylesheet" href="/css/output.css" />
 
-<div class="flex flex-col items-center justify-center min-h-screen bg-gray-100">
-  <h2 class="text-2xl font-semibold mb-8 text-gray-800">Choose your role</h2>
+<div
+  class="flex flex-col items-center justify-center min-h-screen bg-gray-50 px-4"
+>
+  <h2 class="text-3xl font-bold text-gray-800 mb-2">
+    Join as a client or freelancer
+  </h2>
+  <p class="text-gray-600 mb-8 text-center max-w-md">
+    Choose how you'd like to use our platform. You can always switch later or
+    create separate accounts.
+  </p>
 
-  <div class="">
-    <button>
-      <a
-        href="/supplier"
-        class="hover:bg-slate-800 text-dark font-medium py-3 px-8 rounded-lg transition duration-200"
-      >
-        Supplier
-      </a>
-    </button>
+  <div class="flex flex-col md:flex-row gap-6 w-full max-w-3xl">
+    <!-- Supplier Card -->
+    <a
+      href="/supplier"
+      class="flex-1 group bg-white border-2 border-gray-200 hover:border-green-500 rounded-xl p-6 transition-all duration-200 hover:shadow-lg hover:-translate-y-1"
+    >
+      <div class="flex flex-col items-center text-center">
+        <div class="text-5xl mb-3">🛠️</div>
+        <h3 class="text-xl font-semibold text-gray-800 mb-2">I'm a Supplier</h3>
+        <p class="text-gray-600 text-sm">
+          Offer your services, showcase your work, and connect with clients.
+        </p>
+        <span class="mt-4 text-green-600 font-medium group-hover:underline"
+          >Sign up as Supplier →</span
+        >
+      </div>
+    </a>
 
-    <button>
-      <a
-        href="/buyer"
-        class="bg-slate-700 hover:bg-slate-800 font-medium py-3 px-8 rounded-lg transition duration-200"
-      >
-        Buyer
-      </a>
-    </button>
+    <!-- Buyer Card -->
+    <a
+      href="/buyer"
+      class="flex-1 group bg-white border-2 border-gray-200 hover:border-blue-500 rounded-xl p-6 transition-all duration-200 hover:shadow-lg hover:-translate-y-1"
+    >
+      <div class="flex flex-col items-center text-center">
+        <div class="text-5xl mb-3">🔍</div>
+        <h3 class="text-xl font-semibold text-gray-800 mb-2">I'm a Buyer</h3>
+        <p class="text-gray-600 text-sm">
+          Find the right professional, post projects, and get work done.
+        </p>
+        <span class="mt-4 text-blue-600 font-medium group-hover:underline"
+          >Sign up as Buyer →</span
+        >
+      </div>
+    </a>
   </div>
+
+  <!-- Optional: Link to login if they already have an account -->
+  <p class="mt-8 text-gray-500">
+    Already have an account?
+    <a href="/login" class="text-green-600 hover:underline">Log in</a>
+  </p>
 </div>
