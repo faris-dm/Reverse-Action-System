@@ -96,19 +96,140 @@ return jwt.sign(user, secret, { expiresIn: "15m" });
 
 ### the entry point
 
+post=> send data
 app.post("/token", (req, res) => {
+
 let RefreshTokens = req.body.token;
+
+### get the token sent by the user
+
 if (!RefreshTokens) {
 return res.send("refresh token is missing");
 }
 if (!refreshStore.includes(RefreshTokens)) {
 return res.status(403).send("invalid Tokens");
 }
-jwt.verify(RefreshTokens, RefreshTokenSecret, (err, user) => {
+jwt.verify(RefreshTokens, RefreshTokenSecret,
+
+### it verify the refreshtiken useing the secret key and says auth or not auth
+
+(err, user) => {
 if (err) return res.status(403).send("error found");
 // let accessTokens=generateAccess({username:user.username})
+
+### it get the user.name from refrshtoken and store it in the payload obj in the name of username
+
 let payload = { username: user.username };
 let accessTokens = generateAccess(payload);
+
+### then it create new generate accesstoen from the username
+
 res.json({ accessTokens: accessTokens });
 });
+});
+
+#### logout user
+
+app.delete("/logout", (req, res) => {
+refreshStore = refreshStore.filter((token) => token !== req.body.token);
+res.status(204).send("deluted the token succefully");
+});
+
+### the filte array make it simplil to filter the array and crete new array in the new elements
+
+### array oparet three things
+
+one loop throughr array
+two filter and ask true or false question  
+ three create new arrat with the new elements with the true ones
+
+### const numbers = [5, 12, 8, 130, 44];
+
+### const bigNumbers = numbers.filter((num) => num > 10);
+
+### console.log(bigNumbers);
+
+### the second route
+
+#### when leening to code put a goal to achive
+
+thi allow you to think
+so my goal is to be a good dev which specilased in logic and strcture which is backend
+
+### road map to your goal
+
+    and have quises,assisment,projects
+
+### just take your internet off and try to write something
+
+evalute your self
+
+#### why the broser work in redirecting but not the postman
+
+frist broswer is for the humans so it show the ui and the postman is created for devs and it show the exactly the outcome,''
+
+### we use ejs in server side rendering and react client side rendering
+
+eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6IjFhQGdtYWlsLmNvbSIsImlhdCI6MTc3MTA3NDU1NSwiZXhwIjoxNzcxMDc0NTcwfQ.8mnNAQG0oIedOGrrck1E76yF7Bcm8kAy986DFNIC0iI
+
+### Zod is a library that check the uer input and validatete and check if it is what the code is expexting
+
+u put some rules and if this rules are not abeyod it will fail means if the user enter number in the email or password is not more than eight and so on
+
+### mostily used for input protection
+
+check the data and give correction
+
+### used words
+
+### scheme=rules that govern the data
+
+### parsing= accept the user info,req.body and check the it based on scheme rules
+
+## inferance: guideance for better writing
+
+// POST /supplier – handle form submission
+router.post("/supplier", async (req, res) => {
+// save logic...
+let RegistorSuppleZod = signUpsupplier.safeParse(req.body);
+if (!RegistorSuppleZod) {
+return res.status(400).json({
+err: RegistorSuppleZod.error.errors.map((errors) => ({
+field: errors.path[0],
+message: errors.message,
+})),
+});
+}
+
+const { email, password, name, businessName, confirmPassword } = req.body;
+try {
+let hashPassword = await bcrypt.hash(password, 10);
+let cleanEmail = email.toLowerCase();
+if (!userMapStore.has(cleanEmail)) {
+return res.status(403).send("email aready Found");
+}
+
+    if(!await bcrypt.compare(password,confirmPassword)) {
+        console.log("incorrect password");
+        return res.json("incorrect Password");
+    }
+
+
+
+    userMapStore.set({
+      name: name,
+      email: email,
+      password: hashPassword,
+      confirmPassword:hashPassword,
+      businessName: businessName,
+    });
+    console.log("user supplier added succefully", userMapStore.get(email));
+    return res.redirect("/");
+
+} catch (error) {
+console.log("error happened", error);
+res.redirect("/role");
+}
+
+res.redirect("/profile/complete?role=supplier");
 });
