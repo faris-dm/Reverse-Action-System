@@ -33,10 +33,17 @@ router.post("/supplier", async (req, res) => {
     if (!userMapStore.has(cleanEmail)) {
       return res.status(403).send("email aready Found");
     }
+
+    if (!(await bcrypt.compare(password, confirmPassword))) {
+      console.log("incorrect password");
+      return res.json("incorrect Password");
+    }
+
     userMapStore.set({
       name: name,
       email: email,
       password: hashPassword,
+      confirmPassword: hashPassword,
       businessName: businessName,
     });
     console.log("user supplier added succefully", userMapStore.get(email));
