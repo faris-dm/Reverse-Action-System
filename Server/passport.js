@@ -18,6 +18,10 @@ app.get("/login", (req, res) => {
   res.render("login.ejs");
 });
 
+app.get("/role", (req, res) => {
+  res.render("userRole.ejs");
+});
+
 app.use(express.json());
 app.set("view engine", "ejs");
 app.use(express.static("public"));
@@ -25,7 +29,7 @@ let secret = "W$q4=25*8%v-}UV";
 let RefreshTokenSecret = "W%&7=-^#-v}XL";
 
 app.get("/", (req, res) => {
-  res.send("welcome to jwt Route in the second server ");
+  res.render("index.ejs");
 });
 
 let signUp = z.object({
