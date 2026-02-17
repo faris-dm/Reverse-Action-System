@@ -19,10 +19,8 @@ const supplierRoutes = require("./routes/supplier");
 app.use(supplierRoutes);
 const buyerRoute = require("./routes/buyer");
 app.use(buyerRoute);
-
-app.get("/login", (req, res) => {
-  res.render("login.ejs");
-});
+const loginRoutes = require("./routes/login");
+app.use(loginRoutes);
 
 app.get("/role", (req, res) => {
   res.render("userRole.ejs");
@@ -47,9 +45,9 @@ let signUp = z.object({
 app.get("/register", (req, res) => {
   res.render("register.ejs");
 });
-app.get("/login", (req, res) => {
-  res.render("login.ejs");
-});
+// app.get("/login", (req, res) => {
+//   res.render("login.ejs");
+// });
 
 app.post("/register", async (req, res) => {
   let resultZod = signUp.safeParse(req.body);
@@ -83,67 +81,27 @@ app.post("/register", async (req, res) => {
   }
 });
 
-app.post("/login", async (req, res) => {
-  let { email, password } = req.body;
-  let cleanEmail = email.toLowerCase();
-  let foundUser = userMapStore.get(cleanEmail);
-  if (!foundUser) {
-    res.send("No email found  with this email");
-  }
+// function generateAccess(user) {
+//   return jwt.sign(user, secret, { expiresIn: "15m" });
+// }
 
-  try {
-    if (await bcrypt.compare(password, foundUser.password)) {
-      let user = { email: email, name: foundUser.name };
-
-      let accessTokens = generateAccess(user);
-
-      let RefreshTokens = jwt.sign(user, RefreshTokenSecret, {
-        expiresIn: "7d",
-      });
-
-      refreshStore.push(RefreshTokens);
-      console.log("login success");
-      console.log(
-        "accessTokens:\n",
-        accessTokens,
-        "\n RefreshTokens:\n",
-        RefreshTokens
-      );
-      res.cookie("token", accessTokens, { httpOnly: true });
-
-      // return res.redirect("/");
-      return res.json({
-        accessTokens: accessTokens,
-        RefreshTokens: RefreshTokens,
-      });
-    } else console.log("incorrect password");
-    return res.json("incorrect Password");
-  } catch (error) {
-    console.log(error);
-  }
-});
-
-function generateAccess(user) {
-  return jwt.sign(user, secret, { expiresIn: "15m" });
-}
-
-app.post("/token", (req, res) => {
-  let authHeaderToken = req.body.token;
-  if (!authHeaderToken) {
-    res.status(401).send("No refresh Token found");
-  } else if (!refreshStore.includes(authHeaderToken)) {
-    res.status(401).send("Token does not much");
-  }
-  jwt.verify(authHeaderToken, RefreshTokenSecret, (err, user) => {
-    if (err) return res.status(403).send("Error happend Pleases check again");
-    let playload = {
-      email: user.email,
-      name: user.name,
-    };
-    let accessTokens = generateAccess(playload);
-    res.json({ accessTokens: accessTokens });
-  });
-});
+// app.post("/token", (req, res) => {
+//   let authHeaderToken = req.body.token;
+//   if (!authHeaderToken) {
+//     res.status(401).send("No refresh Token found");
+//   } else if (!refreshStore.includes(authHeaderToken)) {
+//     res.status(401).send("Token does not much");
+//   }
+//   jwt.verify(authHeaderToken, RefreshTokenSecret, (err, user) => {
+//     if (err) return res.status(403).send("Error happend Pleases check again");
+//     let playload = {
+//       email: user.email,
+//       name: user.name,
+//     };
+//     let accessTokens = generateAccess(playload);
+//     res.json({ accessTokens: accessTokens });
+//   });
+// });
 
 let port = 2000;
 app.listen(port, () => {
