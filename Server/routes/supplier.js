@@ -1,7 +1,7 @@
 const express = require("express");
 const router = express.Router();
 const { z, email, date } = require("zod");
-let userMapStore = new Map();
+const userMapStore = require("../models/storeage");
 const bcrypt = require("bcrypt");
 
 router.get("/supplier", (req, res) => {

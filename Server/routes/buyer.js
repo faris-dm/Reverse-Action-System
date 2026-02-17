@@ -1,7 +1,7 @@
 const express = require("express");
 const router = express.Router();
 const { z, email } = require("zod");
-let userMapStore = new Map();
+const userMapStore = require("../models/storeage");
 let bcrypt = require("bcrypt");
 
 // GET /buyer – show buyer registration form
