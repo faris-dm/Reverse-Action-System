@@ -4,7 +4,7 @@ const app = express();
 let cookiesparser = require("cookie-parser");
 app.use(cookiesparser());
 let flash = require("express-flash");
-let userMapStore = new Map();
+// let userMapStore = new Map();
 let refreshStore = [];
 const bcrypt = require("bcrypt");
 const { name } = require("ejs");
@@ -12,6 +12,8 @@ const { populate } = require("dotenv");
 const { token } = require("morgan");
 const { use } = require("passport");
 app.use(express.urlencoded({ extended: true }));
+const userMapStore = require("./models/storeage");
+
 const { z, email } = require("zod");
 const supplierRoutes = require("./routes/supplier");
 app.use(supplierRoutes);
@@ -37,7 +39,7 @@ app.get("/", (req, res) => {
 });
 
 let signUp = z.object({
-  name: z.string().min(3, "Username Must Be at least four characters "),
+  name: z.string().min(3, "userName Must Be at least three characters "),
   email: z.string().email("Please Inser Valid @ email"),
   password: z.string().min(5, "password must be five or more"),
 });
