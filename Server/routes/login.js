@@ -47,11 +47,11 @@ router.post("/login", async (req, res) => {
       );
       res.cookie("token", accessTokens, { httpOnly: true });
 
-      // return res.redirect("/");
-      return res.json({
-        accessTokens: accessTokens,
-        RefreshTokens: RefreshTokens,
-      });
+      return res.redirect("/Dashboard");
+      // return res.json({
+      //   accessTokens: accessTokens,
+      //   RefreshTokens: RefreshTokens,
+      // });
     } else console.log("incorrect password");
     return res.json("incorrect Password");
   } catch (error) {

@@ -26,3 +26,5 @@ router.post("/token", (req, res) => {
 function generateAccess(user) {
   return jwt.sign(user, secret, { expiresIn: "15m" });
 }
+
+module.exports = router;
