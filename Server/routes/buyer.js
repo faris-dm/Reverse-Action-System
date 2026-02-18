@@ -3,6 +3,11 @@ const router = express.Router();
 const { z, email } = require("zod");
 const userMapStore = require("../models/storeage");
 let bcrypt = require("bcrypt");
+let jwt = require("jsonwebtoken");
+let secret = "W$q4=25*8%v-}UV";
+let RefreshTokenSecret = "W%&7=-^#-v}XL";
+let cookiesparser = require("cookie-parser");
+router.use(cookiesparser());
 
 // GET /buyer – show buyer registration form
 router.get("/buyer", (req, res) => {
@@ -28,7 +33,8 @@ router.post("/buyer", async (req, res) => {
     });
   }
   // TODO: Save buyer data to database
-  let { name, email, password, confirmPassword, shippingAddress } = req.body;
+  let { name, email, password, role, confirmPassword, shippingAddress } =
+    req.body;
 
   try {
     //  check the  password confiramation
@@ -49,16 +55,30 @@ router.post("/buyer", async (req, res) => {
       password: hashPassword,
       shippingAddress: shippingAddress,
     });
-    console.log("user supplier added succefully", userMapStore.get(cleanEmail));
+
+    let user = { email: cleanEmail, name: name, role: role };
+
+    let accessTokens = generateAccesToken(user);
+    let RefreshTokens = jwt.sign(user, RefreshTokenSecret, {
+      expiresIn: "7d",
+    });
+
+    res.cookie("accessTokens", accessTokens, { httpOnly: true });
+    res.cookie("refreshTokens", RefreshTokens, { httpOnly: true });
+
+    console.log("user buyer added succefully", userMapStore.get(cleanEmail));
     // succusess redirec to login
     return res.redirect("/login");
   } catch (error) {
     console.log("error happened", error);
-    console.log("error Happens");
   }
 
   // After successful registration, redirect to profile completion
   //   res.redirect("/profile/complete?role=buyer");
 });
+
+function generateAccesToken(user) {
+  return jwt.sign(user, secret, { expiresIn: "10m" });
+}
 
 module.exports = router;
