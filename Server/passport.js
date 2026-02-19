@@ -24,7 +24,7 @@ app.use(loginRoutes);
 const TokenRoute = require("./routes/token");
 app.use(TokenRoute);
 const Dashboard = require("./routes/Dashboard");
-app.use(Dashboard);
+app.use("/logout", Dashboard);
 
 app.get("/role", (req, res) => {
   res.render("userRole.ejs");
