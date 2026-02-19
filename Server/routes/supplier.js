@@ -6,6 +6,7 @@ const bcrypt = require("bcrypt");
 // const userMap = require("../models/storeage");
 let secret = "W$q4=25*8%v-}UV";
 let jwt = require("jsonwebtoken");
+const { Result } = require("postcss");
 let RefreshTokenSecret = "W%&7=-^#-v}XL";
 // let cookiesparser = require("cookie-parser");
 // router.use(cookiesparser());
@@ -24,15 +25,15 @@ let signUpsupplier = z.object({
 router.post("/supplier", async (req, res) => {
   // save logic...
 
-  let RegistorSuppleZod = signUpsupplier.safeParse(req.body);
-  if (!RegistorSuppleZod.success) {
-    return res.status(400).json({
-      err: RegistorSuppleZod.error.errors.map((errors) => ({
-        field: errors.path[0],
-        message: errors.message,
-      })),
-    });
-  }
+  // let RegistorSuppleZod = signUpsupplier.safeParse(req.body);
+  // if (!RegistorSuppleZod.success) {
+  //   return res.status(400).json({
+  //     err: RegistorSuppleZod.error.errors.map((errors) => ({
+  //       field: errors.path[0],
+  //       message: errors.message,
+  //     })),
+  //   });
+  // }
 
   let { email, password, name, businessName, confirmPassword } = req.body;
   let role = "supplier";
@@ -65,8 +66,8 @@ router.post("/supplier", async (req, res) => {
     let token = generateAccesToken(user);
 
     let RefreshToken = jwt.sign(user, RefreshTokenSecret, { expiresIn: "7d" });
-    res.cookie("accessTokens", token, { httpOnly: true });
-    res.cookie("RefreshTokens", RefreshToken, { httpOnly: true });
+    res.cookie("token", token, { httpOnly: true });
+    res.cookie("refreshToken", RefreshToken, { httpOnly: true });
 
     console.log("token created succefully");
 

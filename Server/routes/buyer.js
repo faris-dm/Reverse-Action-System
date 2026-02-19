@@ -64,8 +64,8 @@ router.post("/buyer", async (req, res) => {
       expiresIn: "7d",
     });
 
-    res.cookie("accessToken", token, { httpOnly: true });
-    res.cookie("RefreshToken", RefreshToken, { httpOnly: true });
+    res.cookie("token", token, { httpOnly: true });
+    res.cookie("refreshToken", RefreshToken, { httpOnly: true });
 
     console.log("user buyer added succefully", userMapStore.get(cleanEmail));
     // succusess redirec to login
