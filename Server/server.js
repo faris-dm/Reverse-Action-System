@@ -10,6 +10,10 @@ const bcrypt = require("bcrypt");
 const { name } = require("ejs");
 let userMapStore = new Map();
 app.use(express.static("public"));
+let LogoutRoutes = require("./routes/logout");
+app.use("/logout", LogoutRoutes);
+let Dashboard = require("./routes/Dashboard");
+app.use(Dashboard);
 
 async function authenticateUser(email, password, done) {
   let cleanEmail = email.trim().toLowerCase();
@@ -125,16 +129,6 @@ function toBack(req, res, next) {
 
   return next();
 }
-
-app.post("/logout", (req, res, next) => {
-  req.logOut((err) => {
-    if (err) return next(err);
-
-    console.log("lougouted the data", userStore);
-
-    res.redirect("/login");
-  });
-});
 
 let port = 4000;
 
