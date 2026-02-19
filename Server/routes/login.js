@@ -28,7 +28,7 @@ router.post("/login", async (req, res) => {
       })),
     });
   }
-  let { email, password } = req.body;
+  let { email, password } = result.data;
   let cleanEmail = email.toLowerCase();
   let foundUser = userMapStore.get(cleanEmail);
   if (!foundUser) {
@@ -56,7 +56,7 @@ router.post("/login", async (req, res) => {
       console.log("login success");
       console.log("accessToken:\n", token, "\n RefreshToken:\n", RefreshToken);
       res.cookie("token", token, { httpOnly: true });
-      res.cookie("RefreshToken", RefreshToken, { httpOnly: true });
+      res.cookie("refreshToken", RefreshToken, { httpOnly: true });
 
       return res.redirect("/Dashboard");
       // return res.json({
