@@ -7,8 +7,7 @@ let refreshStore = [];
 let secret = "W$q4=25*8%v-}UV";
 let RefreshTokenSecret = "W%&7=-^#-v}XL";
 let jwt = require("jsonwebtoken");
-let cookiesparser = require("cookie-parser");
-router.use(cookiesparser());
+// let cookiesparser = require("cookie-parser");
 
 router.get("/login", (req, res) => {
   res.render("login", { message: null });
@@ -20,32 +19,44 @@ let login = z.object({
 });
 
 router.post("/login", async (req, res) => {
+  const result = login.safeParse(req.body);
+  if (!result.success) {
+    return res.status(400).json({
+      err: result.error.errors.map((errors) => ({
+        field: errors.path[0],
+        message: errors.message,
+      })),
+    });
+  }
   let { email, password } = req.body;
   let cleanEmail = email.toLowerCase();
   let foundUser = userMapStore.get(cleanEmail);
   if (!foundUser) {
-    res.send("No email found  with this email");
+    return res.send("No email found  with this email");
   }
 
   try {
     if (await bcrypt.compare(password, foundUser.password)) {
       let user = { email: email, name: foundUser.name };
 
-      let accessTokens = generateAccess(user);
+      let token = generateAccess(user);
 
-      let RefreshTokens = jwt.sign(user, RefreshTokenSecret, {
+      let RefreshToken = jwt.sign(user, RefreshTokenSecret, {
         expiresIn: "7d",
       });
 
-      refreshStore.push(RefreshTokens);
-      console.log("login success");
+      foundUser.refreshToken = RefreshToken;
+      userMapStore.set(cleanEmail, foundUser);
       console.log(
-        "accessTokens:\n",
-        accessTokens,
-        "\n RefreshTokens:\n",
-        RefreshTokens
+        "Token added succefully:",
+        userMapStore.get(cleanEmail).refreshToken
       );
-      res.cookie("token", accessTokens, { httpOnly: true });
+
+      refreshStore.push(RefreshToken);
+      console.log("login success");
+      console.log("accessToken:\n", token, "\n RefreshToken:\n", RefreshToken);
+      res.cookie("token", token, { httpOnly: true });
+      res.cookie("RefreshToken", RefreshToken, { httpOnly: true });
 
       return res.redirect("/Dashboard");
       // return res.json({
@@ -56,6 +67,7 @@ router.post("/login", async (req, res) => {
     return res.json("incorrect Password");
   } catch (error) {
     console.log(error);
+    return res.status(500).send("error happend ,check again");
   }
 });
 
