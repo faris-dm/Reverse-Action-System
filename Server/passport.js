@@ -9,22 +9,25 @@ let refreshStore = [];
 const bcrypt = require("bcrypt");
 const { name } = require("ejs");
 const { populate } = require("dotenv");
-const { token } = require("morgan");
+// const { token } = require("morgan");
 const { use } = require("passport");
 app.use(express.urlencoded({ extended: true }));
 const userMapStore = require("./models/storeage");
-
-const { z, email } = require("zod");
+let middlewareAuthToken = require("./middleware/auth");
+const { z } = require("zod");
 const supplierRoutes = require("./routes/supplier");
 app.use(supplierRoutes);
 const buyerRoute = require("./routes/buyer");
 app.use(buyerRoute);
 const loginRoutes = require("./routes/login");
 app.use(loginRoutes);
-const TokenRoute = require("./routes/token");
-app.use(TokenRoute);
+// const TokenRoute = require("./routes/token");
+// app.use(TokenRoute);
+
 const Dashboard = require("./routes/Dashboard");
-app.use("/logout", Dashboard);
+app.use(Dashboard);
+const Logout = require("./routes/logout");
+app.use(Logout);
 
 app.get("/role", (req, res) => {
   res.render("userRole.ejs");
