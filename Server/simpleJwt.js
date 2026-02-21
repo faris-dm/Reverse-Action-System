@@ -40,16 +40,6 @@ app.get("/post", tokenAuth, (req, res) => {
 
   res.json(filteredPosts);
 });
-// let frist = Array.from(posts.values());
-
-// app.post("/login", (req, res) => {
-//   let username = req.body.username;
-//   let user = { username: username };
-//   let accessTokens = jwt.sign(user, secret);
-
-//   console.log("accessTokens:", accessTokens);
-//   res.json(accessTokens);
-// });
 
 function tokenAuth(req, res, next) {
   let authHeader = req.headers["authorization"];

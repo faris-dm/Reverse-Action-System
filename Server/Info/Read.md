@@ -103,3 +103,8 @@ const PORT = 2000;
 app.listen(PORT, () =>
 console.log(`Server running on http://localhost:${PORT}`)
 );
+
+#### Rules that are seem when some one logic in backend
+
+single response :server only send one res.redirect
+id:there is no idticicATION NUMBER and it is needed to retrive it later

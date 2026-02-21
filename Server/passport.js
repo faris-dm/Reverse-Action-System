@@ -8,8 +8,7 @@ let flash = require("express-flash");
 let refreshStore = [];
 const bcrypt = require("bcrypt");
 const { name } = require("ejs");
-const { populate } = require("dotenv");
-// const { token } = require("morgan");
+
 const { use } = require("passport");
 app.use(express.urlencoded({ extended: true }));
 const userMapStore = require("./models/storeage");
