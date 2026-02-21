@@ -1,71 +1,201 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
   <head>
     <meta charset="UTF-8" />
-    <title>Simple Dashboard</title>
-    <style>
-      body {
-        font-family: sans-serif;
-        background: #f4f4f4;
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        height: 100vh;
-        margin: 0;
-      }
-      .card {
-        background: white;
-        padding: 2rem;
-        border-radius: 12px;
-        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-        text-align: center;
-        max-width: 400px;
-      }
-      h1 {
-        color: #333;
-        margin-bottom: 0.5rem;
-      }
-      p {
-        color: #666;
-        font-size: 1.2rem;
-      }
-      .role {
-        background: #e0f2fe;
-        color: #0369a1;
-        padding: 0.3rem 1rem;
-        border-radius: 20px;
-        display: inline-block;
-        margin-top: 1rem;
-      }
-    </style>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <title>Editable Profile Dashboard</title>
   </head>
-  <body>
-    <div class="card">
-      <!-- If user object exists, show name; otherwise just "Welcome!" -->
-      <h1>User !</h1>
+  <body class="bg-gray-100 min-h-screen flex items-center justify-center p-4">
+    <!-- Main card container -->
+    <div class="bg-white rounded-lg shadow-md w-full max-w-md p-6">
+      <!-- Header with user name from server -->
+      <div class="flex items-center gap-2 mb-2">
+        <i data-lucide="user-circle" class="w-8 h-8 text-blue-600"></i>
+        <h1 class="text-2xl font-bold text-gray-800">
+          <%= user ? user.name : 'User' %> !
+        </h1>
+      </div>
 
-      <p>You are signed up as:</p>
-      <div class="role"><strong> Usual</strong></div>
+      <!-- Role badge (from simple dashboard) -->
+      <div class="mb-4">
+        <p class="text-gray-600">You are signed up as:</p>
+        <div
+          class="bg-blue-100 text-blue-800 px-4 py-1 rounded-full inline-block mt-1"
+        >
+          <strong><%= user ? user.role : 'Usual' %></strong>
+        </div>
+      </div>
 
-      <p style="margin-top: 2rem; font-size: 0.9rem; color: #aaa">
-        Simple test page
-      </p>
-      <form action="/logout" method="POST" style="margin-top: 2rem">
+      <!-- Profile information display (view mode) -->
+      <div id="viewMode" class="space-y-4">
+        <!-- Name -->
+        <div>
+          <label class="block text-sm font-medium text-gray-600"
+            >Full Name</label
+          >
+          <p
+            id="displayName"
+            class="mt-1 text-gray-900 bg-gray-50 p-2 rounded border"
+          >
+            <%= user ? user.name : 'John Doe' %>
+          </p>
+        </div>
+        <!-- Email -->
+        <div>
+          <label class="block text-sm font-medium text-gray-600">Email</label>
+          <p
+            id="displayEmail"
+            class="mt-1 text-gray-900 bg-gray-50 p-2 rounded border"
+          >
+            <%= user ? user.email : 'john.doe@example.com' %>
+          </p>
+        </div>
+        <!-- Password (masked) -->
+        <div>
+          <label class="block text-sm font-medium text-gray-600"
+            >Password</label
+          >
+          <p
+            id="displayPassword"
+            class="mt-1 text-gray-900 bg-gray-50 p-2 rounded border"
+          >
+            ••••••••
+          </p>
+        </div>
+        <!-- Edit button -->
+        <button
+          id="editBtn"
+          class="w-full bg-blue-600 hover:bg-blue-700 text-white font-medium py-2 px-4 rounded transition flex items-center justify-center gap-2"
+        >
+          <i data-lucide="edit" class="w-5 h-5"></i> Edit Profile
+        </button>
+      </div>
+
+      <!-- Profile edit form (edit mode, hidden initially) -->
+      <div id="editMode" class="space-y-4 hidden">
+        <!-- Name input (pre-filled with current user name) -->
+        <div>
+          <label class="block text-sm font-medium text-gray-600"
+            >Full Name</label
+          >
+          <input
+            type="text"
+            id="inputName"
+            value="<%= user ? user.name : 'John Doe' %>"
+            class="mt-1 w-full border border-gray-300 rounded p-2 focus:border-blue-500 focus:outline-none"
+          />
+        </div>
+        <!-- Email input -->
+        <div>
+          <label class="block text-sm font-medium text-gray-600">Email</label>
+          <input
+            type="email"
+            id="inputEmail"
+            value="<%= user ? user.email : 'john.doe@example.com' %>"
+            class="mt-1 w-full border border-gray-300 rounded p-2 focus:border-blue-500 focus:outline-none"
+          />
+        </div>
+        <!-- Password input (optional) -->
+        <div>
+          <label class="block text-sm font-medium text-gray-600"
+            >New Password</label
+          >
+          <input
+            type="password"
+            id="inputPassword"
+            placeholder="Leave blank to keep current"
+            class="mt-1 w-full border border-gray-300 rounded p-2 focus:border-blue-500 focus:outline-none"
+          />
+        </div>
+        <!-- Action buttons -->
+        <div class="flex gap-2">
+          <button
+            id="saveBtn"
+            class="flex-1 bg-green-600 hover:bg-green-700 text-white font-medium py-2 px-4 rounded transition flex items-center justify-center gap-2"
+          >
+            <i data-lucide="save" class="w-5 h-5"></i> Save
+          </button>
+          <button
+            id="cancelBtn"
+            class="flex-1 bg-gray-500 hover:bg-gray-600 text-white font-medium py-2 px-4 rounded transition flex items-center justify-center gap-2"
+          >
+            <i data-lucide="x" class="w-5 h-5"></i> Cancel
+          </button>
+        </div>
+      </div>
+
+      <!-- Logout form (from simple dashboard) -->
+      <form
+        action="/logout"
+        method="POST"
+        class="mt-6 pt-4 border-t border-gray-200"
+      >
         <button
           type="submit"
-          style="
-            background: #ef4444;
-            color: white;
-            border: none;
-            padding: 0.5rem 1.5rem;
-            border-radius: 6px;
-            cursor: pointer;
-            font-size: 1rem;
-          "
+          class="w-full bg-red-500 hover:bg-red-600 text-white font-medium py-2 px-4 rounded transition flex items-center justify-center gap-2"
         >
-          Logout
+          <i data-lucide="log-out" class="w-5 h-5"></i> Logout
         </button>
       </form>
+
+      <!-- Small footer note (from simple dashboard) -->
+      <p class="text-center text-gray-400 text-xs mt-4">Simple test page</p>
     </div>
+
+    <script>
+      // Initialize Lucide icons
+      lucide.createIcons();
+
+      // Get DOM elements
+      const viewMode = document.getElementById("viewMode");
+      const editMode = document.getElementById("editMode");
+      const editBtn = document.getElementById("editBtn");
+      const saveBtn = document.getElementById("saveBtn");
+      const cancelBtn = document.getElementById("cancelBtn");
+
+      // Display fields
+      const displayName = document.getElementById("displayName");
+      const displayEmail = document.getElementById("displayEmail");
+      const displayPassword = document.getElementById("displayPassword");
+
+      // Input fields
+      const inputName = document.getElementById("inputName");
+      const inputEmail = document.getElementById("inputEmail");
+      const inputPassword = document.getElementById("inputPassword");
+
+      // Edit button click: show edit mode, hide view mode
+      editBtn.addEventListener("click", () => {
+        viewMode.classList.add("hidden");
+        editMode.classList.remove("hidden");
+      });
+
+      // Save button click: update display fields and switch back to view mode
+      saveBtn.addEventListener("click", () => {
+        if (inputName.value.trim() !== "") {
+          displayName.textContent = inputName.value.trim();
+        }
+        if (inputEmail.value.trim() !== "") {
+          displayEmail.textContent = inputEmail.value.trim();
+        }
+        if (inputPassword.value.trim() !== "") {
+          displayPassword.textContent = "••••••••"; // In a real app you'd send new password to server
+        }
+        editMode.classList.add("hidden");
+        viewMode.classList.remove("hidden");
+        inputPassword.value = ""; // clear password field for security
+      });
+
+      // Cancel button click: revert changes and go back to view mode
+      cancelBtn.addEventListener("click", () => {
+        // Reset inputs to current displayed values
+        inputName.value = displayName.textContent;
+        inputEmail.value = displayEmail.textContent;
+        inputPassword.value = "";
+        editMode.classList.add("hidden");
+        viewMode.classList.remove("hidden");
+      });
+    </script>
   </body>
 </html>
