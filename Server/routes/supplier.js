@@ -1,5 +1,6 @@
 const express = require("express");
 const router = express.Router();
+let authOut = require("../middleware/notGoout");
 const { z, email, date } = require("zod");
 const userMapStore = require("../models/storeage");
 const bcrypt = require("bcrypt");
@@ -8,8 +9,8 @@ let secret = "W$q4=25*8%v-}UV";
 let jwt = require("jsonwebtoken");
 const { Result } = require("postcss");
 let RefreshTokenSecret = "W%&7=-^#-v}XL";
-// let cookiesparser = require("cookie-parser");
-// router.use(cookiesparser());
+let cookiesparser = require("cookie-parser");
+router.use(cookiesparser());
 
 router.get("/supplier", (req, res) => {
   res.render("supplierRegistor", { message: null });

@@ -4,12 +4,13 @@ const { z, email } = require("zod");
 let refreshStore = [];
 const userMapStore = require("../models/storeage");
 let RefreshTokenSecret = "W%&7=-^#-v}XL";
+const secret = "W$q4=25*8%v-}UV"; //
 
-router.post("/token", (req, res) => {
+const refreshTokenHandler = (req, res) => {
   let authHeaderToken = req.body.token;
   if (!authHeaderToken) {
     res.status(401).send("No refresh Token found");
-  } else if (!refreshStore.includes(authHeaderToken)) {
+  } else if (!userMapStore.get(authHeaderToken)) {
     res.status(401).send("Token does not much");
   }
   jwt.verify(authHeaderToken, RefreshTokenSecret, (err, user) => {
@@ -21,10 +22,10 @@ router.post("/token", (req, res) => {
     let accessTokens = generateAccess(playload);
     res.json({ accessTokens: accessTokens });
   });
-});
+};
 
 function generateAccess(user) {
   return jwt.sign(user, secret, { expiresIn: "15m" });
 }
 
-module.exports = router;
+module.exports = refreshTokenHandler;
