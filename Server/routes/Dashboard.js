@@ -5,6 +5,7 @@ let cookiesparser = require("cookie-parser");
 router.use(cookiesparser());
 const userMapStore = require("../models/storeage");
 let middleWareAuth = require("../middleware/auth");
+let authToken = require("../routes/token");
 
 router.get("/Dashboard", middleWareAuth, (req, res) => {
   res.render("Dashboard", { message: null });

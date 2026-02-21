@@ -1,5 +1,6 @@
 const express = require("express");
 const router = express.Router();
+let authOut = require("../middleware/notGoout");
 const { z, email } = require("zod");
 const userMapStore = require("../models/storeage");
 let bcrypt = require("bcrypt");
@@ -7,7 +8,7 @@ let jwt = require("jsonwebtoken");
 let secret = "W$q4=25*8%v-}UV";
 let RefreshTokenSecret = "W%&7=-^#-v}XL";
 let cookiesparser = require("cookie-parser");
-// router.use(cookiesparser());
+router.use(cookiesparser());
 
 // GET /buyer – show buyer registration form
 router.get("/buyer", (req, res) => {
