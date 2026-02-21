@@ -2,12 +2,14 @@ const express = require("express");
 const router = express.Router();
 const { z } = require("zod");
 const userMapStore = require("../models/storeage");
+let authOut = require("../middleware/notGoout");
 let bcrypt = require("bcrypt");
 let refreshStore = [];
 let secret = "W$q4=25*8%v-}UV";
 let RefreshTokenSecret = "W%&7=-^#-v}XL";
 let jwt = require("jsonwebtoken");
-// let cookiesparser = require("cookie-parser");
+let cookiesparser = require("cookie-parser");
+router.use(cookiesparser);
 
 router.get("/login", (req, res) => {
   res.render("login", { message: null });
@@ -52,9 +54,9 @@ router.post("/login", async (req, res) => {
         userMapStore.get(cleanEmail).refreshToken
       );
 
-      refreshStore.push(RefreshToken);
-      console.log("login success");
-      console.log("accessToken:\n", token, "\n RefreshToken:\n", RefreshToken);
+      // refreshStore.push(RefreshToken);
+      // console.log("login success");
+      // console.log("accessToken:\n", token, "\n RefreshToken:\n", RefreshToken);
       res.cookie("token", token, { httpOnly: true });
       res.cookie("refreshToken", RefreshToken, { httpOnly: true });
 
