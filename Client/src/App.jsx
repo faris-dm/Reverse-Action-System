@@ -8,7 +8,7 @@ function App() {
 
   return (
     <>
-      <p> solo naser </p>
+      <p> solo & fadil naser and hussen </p>
     </>
   );
 }
