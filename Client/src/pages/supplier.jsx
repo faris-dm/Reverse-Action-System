@@ -241,7 +241,9 @@ function Supplier() {
             <div className="w-10 h-10 bg-blue-600 rounded-2xl flex items-center justify-center font-black text-white shadow-lg shadow-blue-100">
               <TrendingUp size={20} />
             </div>
-            <span className="font-black text-xl tracking-tight">BuildBid</span>
+            <span className="font-black text-xl tracking-tight">
+              Supplier Dahs
+            </span>
           </div>
           <button
             className="lg:hidden p-2 text-slate-400 hover:bg-slate-50 rounded-xl"
