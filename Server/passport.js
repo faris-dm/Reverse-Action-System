@@ -8,6 +8,9 @@ let flash = require("express-flash");
 let refreshStore = [];
 const bcrypt = require("bcrypt");
 const { name } = require("ejs");
+const cors = require("cors");
+app.use(cors());
+const mysql = require("mysql2");
 
 const { use } = require("passport");
 app.use(express.urlencoded({ extended: true }));
@@ -48,9 +51,9 @@ let signUp = z.object({
   password: z.string().min(5, "password must be five or more"),
 });
 
-app.get("/register", (req, res) => {
-  res.render("register.ejs");
-});
+// app.get("/register", (req, res) => {
+//   res.render("register.ejs");
+// });
 // app.get("/login", (req, res) => {
 //   res.render("login.ejs");
 // });
@@ -109,7 +112,7 @@ app.post("/register", async (req, res) => {
 //   });
 // });
 
-let port = 2000;
+let port = 11000;
 app.listen(port, () => {
-  console.log(`Server Running on new  https://localhost:${port}`);
+  console.log(`Server Running on new  http://localhost:${port}`);
 });
