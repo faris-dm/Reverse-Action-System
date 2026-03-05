@@ -11,20 +11,22 @@ const { name } = require("ejs");
 const cors = require("cors");
 app.use(cors());
 const mysql = require("mysql2");
+app.use(express.json());
 
 const { use } = require("passport");
 app.use(express.urlencoded({ extended: true }));
 const userMapStore = require("./models/storeage");
 let middlewareAuthToken = require("./middleware/auth");
 const { z } = require("zod");
+
 const supplierRoutes = require("./routes/supplier");
 app.use(supplierRoutes);
 const buyerRoute = require("./routes/buyer");
 app.use(buyerRoute);
 const loginRoutes = require("./routes/login");
 app.use(loginRoutes);
-// const TokenRoute = require("./routes/token");
-// app.use(TokenRoute);
+const tokenRoute = require("./routes/token");
+app.use(tokenRoute);
 
 const Dashboard = require("./routes/Dashboard");
 app.use(Dashboard);
@@ -35,13 +37,15 @@ app.get("/role", (req, res) => {
   res.render("userRole.ejs");
 });
 
-app.use(express.json());
 app.set("view engine", "ejs");
 app.use(express.static("public"));
 let secret = "W$q4=25*8%v-}UV";
 let RefreshTokenSecret = "W%&7=-^#-v}XL";
 
 app.get("/", (req, res) => {
+  console.log("✅ Root route was accessed!");
+  console.log("📁 Trying to render index.ejs");
+  console.log("👤 User data:", req.user || "No user");
   res.render("index.ejs");
 });
 
@@ -111,8 +115,12 @@ app.post("/register", async (req, res) => {
 //     res.json({ accessTokens: accessTokens });
 //   });
 // });
+app.get("/test", (req, res) => {
+  console.log("🔵 TEST ROUTE WAS ACCESSED!");
+  res.send("If you see this, the server is working!");
+});
 
-let port = 11000;
+let port = 21000;
 app.listen(port, () => {
   console.log(`Server Running on new  http://localhost:${port}`);
 });
