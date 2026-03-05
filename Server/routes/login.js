@@ -2,15 +2,19 @@ const express = require("express");
 const router = express.Router();
 const { z } = require("zod");
 const userMapStore = require("../models/storeage");
-let authOut = require("../middleware/notGoout");
+// let authOut = require("../middleware/notGoout");
 let bcrypt = require("bcrypt");
 let refreshStore = [];
 let secret = "W$q4=25*8%v-}UV";
 let RefreshTokenSecret = "W%&7=-^#-v}XL";
 let jwt = require("jsonwebtoken");
 let cookiesparser = require("cookie-parser");
-router.use(cookiesparser);
-
+router.use(cookiesparser());
+let token = require("./token");
+router.use(token);
+function generateAccess(user) {
+  return jwt.sign(user, secret, { expiresIn: "15m" });
+}
 router.get("/login", (req, res) => {
   res.render("login", { message: null });
 });
@@ -72,9 +76,5 @@ router.post("/login", async (req, res) => {
     return res.status(500).send("error happend ,check again");
   }
 });
-
-function generateAccess(user) {
-  return jwt.sign(user, secret, { expiresIn: "15m" });
-}
 
 module.exports = router;
