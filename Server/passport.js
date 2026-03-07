@@ -27,6 +27,7 @@ const loginRoutes = require("./routes/login");
 app.use(loginRoutes);
 const tokenRoute = require("./routes/token");
 app.use(tokenRoute);
+const daConnect = require("./config/database");
 
 const Dashboard = require("./routes/Dashboard");
 app.use(Dashboard);
@@ -35,6 +36,11 @@ app.use(Logout);
 
 app.get("/role", (req, res) => {
   res.render("userRole.ejs");
+});
+
+app.use((req, res, next) => {
+  req.db = daConnect;
+  next();
 });
 
 app.set("view engine", "ejs");
