@@ -28,6 +28,7 @@ app.use(loginRoutes);
 const tokenRoute = require("./routes/token");
 app.use(tokenRoute);
 const daConnect = require("./config/database");
+const { funcTable } = require("./config/userTable");
 
 const Dashboard = require("./routes/Dashboard");
 app.use(Dashboard);
@@ -54,6 +55,16 @@ app.get("/", (req, res) => {
   console.log("👤 User data:", req.user || "No user");
   res.render("index.ejs");
 });
+
+async function startDatabase() {
+  try {
+    console.log("creating the database");
+    await funcTable();
+  } catch (error) {
+    console.log("table creationn failed", error);
+  }
+}
+startDatabase();
 
 let signUp = z.object({
   name: z.string().min(3, "userName Must Be at least three characters "),
