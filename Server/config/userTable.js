@@ -15,7 +15,6 @@ password_hash VARCHAR(255)  NOT NULL,
     refresh_token TEXT,
     email_verified BOOLEAN DEFAULT false
 
-
  )`;
 
 async function funcTable() {
