@@ -8,16 +8,18 @@ import Hero from "./pages/Hero";
 import NewHero from "./pages/newHero";
 import Database from "./pages/database";
 import SupplierFactor from "./components/supplier/supplier";
+import Role from "./pages/Role";
 
 function App() {
   return (
     <div>
       {/* <Supplier /> */}
-      <SupplierFactor />
+      {/* <SupplierFactor /> */}
       {/* <Buyer /> */}
       {/* <Admin /> */}
       {/* <NewBuyer /> */}
-      {/* <NewHero /> */}
+      <NewHero />
+      {/* <Role /> */}
       {/* <Database /> */}
       {/* <Hero /> */}
     </div>
