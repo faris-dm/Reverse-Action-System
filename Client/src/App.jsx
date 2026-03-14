@@ -7,15 +7,17 @@ import NewBuyer from "./pages/newBuyer";
 import Hero from "./pages/Hero";
 import NewHero from "./pages/newHero";
 import Database from "./pages/database";
+import SupplierFactor from "./components/supplier/supplier";
 
 function App() {
   return (
     <div>
       {/* <Supplier /> */}
+      <SupplierFactor />
       {/* <Buyer /> */}
       {/* <Admin /> */}
       {/* <NewBuyer /> */}
-      <NewHero />
+      {/* <NewHero /> */}
       {/* <Database /> */}
       {/* <Hero /> */}
     </div>
