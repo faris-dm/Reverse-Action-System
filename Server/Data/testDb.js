@@ -2,26 +2,22 @@ const { PrismaClient } = require("@prisma/client");
 const prisma = new PrismaClient();
 
 async function main() {
-  try {
-    // Test connection - create a test user
-    const testUser = await prisma.user.create({
-      data: {
-        email: "test@example.com",
-        password: "hashedpassword123",
-        role: "supplier",
-        businessName: "Test Company",
-      },
-    });
-    console.log("✅ User created:", testUser);
+  // Try to create a test user
+  const user = await prisma.user.create({
+    data: {
+      email: "test@example.com",
+      password: "securepassword", // Remember to hash this in production!
+      role: "BUYER",
+      businessName: "Solo Tech",
+    },
+  });
+  console.log("Created user:", user);
 
-    // Read all users
-    const allUsers = await prisma.user.findMany();
-    console.log("✅ All users:", allUsers);
-  } catch (error) {
-    console.error("❌ Error:", error);
-  } finally {
-    await prisma.$disconnect();
-  }
+  // Fetch all users to verify
+  const allUsers = await prisma.user.findMany();
+  console.log("All users in DB:", allUsers);
 }
 
-main();
+main()
+  .catch((e) => console.error(e))
+  .finally(async () => await prisma.$disconnect());
