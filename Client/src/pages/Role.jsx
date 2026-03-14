@@ -1,186 +1,241 @@
 // RoleSelection.jsx
-import React from "react";
+import React, { useState } from "react";
 import {
+  Search,
   Briefcase,
-  ShoppingBag,
-  ArrowLeft,
-  Sparkles,
+  Users,
+  ChevronRight,
+  Star,
   Shield,
   Clock,
-  TrendingUp,
-  Users,
+  Globe,
+  ArrowLeft,
 } from "lucide-react";
 
 const Role = () => {
+  const [hoveredRole, setHoveredRole] = useState(null);
+
   return (
-    <div className="min-h-screen bg-gradient-to-b from-gray-50 to-white">
-      {/* Back Button */}
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 sm:py-6">
-        <button
-          onClick={() => window.history.back()}
-          className="inline-flex items-center text-gray-600 hover:text-gray-900 transition-colors group"
-        >
-          <ArrowLeft className="w-5 h-5 mr-2 group-hover:-translate-x-1 transition-transform" />
-          <span className="text-sm sm:text-base font-medium">Back</span>
-        </button>
-      </div>
+    <div className="min-h-screen bg-white">
+      {/* Header - Upwork style */}
+      <header className="border-b border-gray-200 sticky top-0 bg-white z-10">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="flex items-center justify-between h-16 sm:h-20">
+            {/* Logo and Back */}
+            <div className="flex items-center gap-4">
+              <button
+                onClick={() => window.history.back()}
+                className="p-2 hover:bg-gray-100 rounded-full transition-colors"
+              >
+                <ArrowLeft className="w-5 h-5 text-gray-600" />
+              </button>
+              <div className="flex items-center gap-2">
+                <div className="w-8 h-8 bg-green-600 rounded-lg flex items-center justify-center">
+                  <span className="text-white font-bold text-xl">B</span>
+                </div>
+                <span className="text-xl font-bold text-gray-800">idSmart</span>
+              </div>
+            </div>
+
+            {/* Right side - Sign in link */}
+            <button className="text-green-600 hover:text-green-700 font-medium text-sm sm:text-base">
+              Sign In →
+            </button>
+          </div>
+        </div>
+      </header>
 
       {/* Main Content */}
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 sm:py-8 lg:py-12">
-        {/* Logo */}
-        <div className="text-center mb-6 sm:mb-8 lg:mb-12">
-          <h1 className="text-3xl sm:text-4xl lg:text-5xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
-            BidSmart
+      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-12 lg:py-16">
+        {/* Heading Section */}
+        <div className="text-center mb-8 sm:mb-12 lg:mb-16">
+          <h1 className="text-3xl sm:text-4xl lg:text-5xl font-bold text-gray-800 mb-4">
+            Join as a <span className="text-green-600">Supplier</span> or{" "}
+            <span className="text-blue-600">Buyer</span>
           </h1>
-          <p className="text-sm sm:text-base lg:text-lg text-gray-600 mt-2 max-w-2xl mx-auto">
-            Join thousands of businesses and find your next opportunity
+          <p className="text-base sm:text-lg lg:text-xl text-gray-500 max-w-3xl mx-auto">
+            Choose the path that fits your business goals. Both roles get full
+            access to our marketplace features.
           </p>
         </div>
 
-        {/* Heading */}
-        <div className="text-center mb-8 sm:mb-12">
-          <h2 className="text-xl sm:text-2xl lg:text-3xl font-semibold text-gray-800">
-            Choose Your Role
-          </h2>
-          <p className="text-sm sm:text-base text-gray-500 mt-2">
-            Select how you want to participate in our marketplace
-          </p>
-        </div>
-
-        {/* Role Cards - Mobile first grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6 lg:gap-8 max-w-4xl mx-auto">
+        {/* Role Cards Grid - Upwork style */}
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 lg:gap-8 max-w-5xl mx-auto">
           {/* Supplier Card */}
-          <div className="group relative bg-white rounded-2xl shadow-sm hover:shadow-xl transition-all duration-300 border-2 border-transparent hover:border-blue-500 overflow-hidden">
-            {/* Background Pattern */}
-            <div className="absolute inset-0 bg-gradient-to-br from-blue-50 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
+          <div
+            className={`relative bg-white rounded-2xl border-2 transition-all duration-300 cursor-pointer
+              ${
+                hoveredRole === "supplier"
+                  ? "border-green-500 shadow-xl scale-[1.02]"
+                  : "border-gray-200 hover:border-green-200 hover:shadow-lg"
+              }`}
+            onMouseEnter={() => setHoveredRole("supplier")}
+            onMouseLeave={() => setHoveredRole(null)}
+          >
+            {/* Popular tag */}
+            <div className="absolute -top-3 left-6">
+              <span className="bg-green-600 text-white text-xs font-semibold px-3 py-1 rounded-full">
+                MOST POPULAR
+              </span>
+            </div>
 
-            <div className="relative p-6 sm:p-8">
-              {/* Icon */}
-              <div className="w-16 h-16 sm:w-20 sm:h-20 bg-blue-100 rounded-2xl flex items-center justify-center mb-4 sm:mb-6 group-hover:scale-110 transition-transform">
-                <Briefcase className="w-8 h-8 sm:w-10 sm:h-10 text-blue-600" />
+            <div className="p-6 sm:p-8 lg:p-10">
+              {/* Icon and Title */}
+              <div className="flex items-center gap-4 mb-6">
+                <div className="w-14 h-14 bg-green-100 rounded-xl flex items-center justify-center">
+                  <Briefcase className="w-7 h-7 text-green-600" />
+                </div>
+                <div>
+                  <h2 className="text-2xl sm:text-3xl font-bold text-gray-800">
+                    Supplier
+                  </h2>
+                  <p className="text-gray-500">Sell products & services</p>
+                </div>
               </div>
 
-              {/* Title */}
-              <h3 className="text-xl sm:text-2xl font-bold text-gray-800 mb-2">
-                I'm a Supplier
-              </h3>
-
-              {/* Description */}
-              <p className="text-sm sm:text-base text-gray-600 mb-4 sm:mb-6">
-                List your products, reach thousands of buyers, and grow your
-                business
-              </p>
-
               {/* Features */}
-              <ul className="space-y-2 sm:space-y-3 mb-6 sm:mb-8">
+              <ul className="space-y-4 mb-8">
                 {[
-                  "Create auctions in minutes",
-                  "Reach qualified buyers",
-                  "Secure payments",
-                  "Analytics dashboard",
+                  "Create unlimited auctions",
+                  "Reach 10K+ active buyers",
+                  "0% commission for first 3 months",
+                  "Advanced analytics dashboard",
+                  "Priority customer support",
                 ].map((feature, index) => (
-                  <li
-                    key={index}
-                    className="flex items-center text-xs sm:text-sm text-gray-600"
-                  >
-                    <Sparkles className="w-4 h-4 text-blue-500 mr-2 flex-shrink-0" />
-                    <span>{feature}</span>
+                  <li key={index} className="flex items-start gap-3">
+                    <div className="flex-shrink-0 w-5 h-5 bg-green-100 rounded-full flex items-center justify-center mt-0.5">
+                      <div className="w-2 h-2 bg-green-600 rounded-full" />
+                    </div>
+                    <span className="text-gray-600 text-sm sm:text-base">
+                      {feature}
+                    </span>
                   </li>
                 ))}
               </ul>
 
-              {/* Button */}
-              <button className="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 sm:py-4 px-4 sm:px-6 rounded-xl transition-all transform hover:scale-[1.02] active:scale-[0.98] text-sm sm:text-base">
-                Join as Supplier
-              </button>
+              {/* Price and CTA */}
+              <div className="border-t border-gray-100 pt-6">
+                <div className="flex items-baseline gap-2 mb-4">
+                  <span className="text-3xl font-bold text-gray-800">$0</span>
+                  <span className="text-gray-500">/month</span>
+                </div>
+                <button className="w-full bg-green-600 hover:bg-green-700 text-white font-semibold py-4 px-6 rounded-xl transition-all transform hover:scale-[1.02] active:scale-[0.98] text-lg">
+                  Join as Supplier
+                  <ChevronRight className="inline ml-2 w-5 h-5" />
+                </button>
+              </div>
             </div>
           </div>
 
           {/* Buyer Card */}
-          <div className="group relative bg-white rounded-2xl shadow-sm hover:shadow-xl transition-all duration-300 border-2 border-transparent hover:border-purple-500 overflow-hidden">
-            {/* Background Pattern */}
-            <div className="absolute inset-0 bg-gradient-to-br from-purple-50 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
-
-            <div className="relative p-6 sm:p-8">
-              {/* Icon */}
-              <div className="w-16 h-16 sm:w-20 sm:h-20 bg-purple-100 rounded-2xl flex items-center justify-center mb-4 sm:mb-6 group-hover:scale-110 transition-transform">
-                <ShoppingBag className="w-8 h-8 sm:w-10 sm:h-10 text-purple-600" />
+          <div
+            className={`bg-white rounded-2xl border-2 transition-all duration-300 cursor-pointer
+              ${
+                hoveredRole === "buyer"
+                  ? "border-blue-500 shadow-xl scale-[1.02]"
+                  : "border-gray-200 hover:border-blue-200 hover:shadow-lg"
+              }`}
+            onMouseEnter={() => setHoveredRole("buyer")}
+            onMouseLeave={() => setHoveredRole(null)}
+          >
+            <div className="p-6 sm:p-8 lg:p-10">
+              {/* Icon and Title */}
+              <div className="flex items-center gap-4 mb-6">
+                <div className="w-14 h-14 bg-blue-100 rounded-xl flex items-center justify-center">
+                  <Users className="w-7 h-7 text-blue-600" />
+                </div>
+                <div>
+                  <h2 className="text-2xl sm:text-3xl font-bold text-gray-800">
+                    Buyer
+                  </h2>
+                  <p className="text-gray-500">Find products & deals</p>
+                </div>
               </div>
 
-              {/* Title */}
-              <h3 className="text-xl sm:text-2xl font-bold text-gray-800 mb-2">
-                I'm a Buyer
-              </h3>
-
-              {/* Description */}
-              <p className="text-sm sm:text-base text-gray-600 mb-4 sm:mb-6">
-                Find unique products, place bids, and win amazing deals
-              </p>
-
               {/* Features */}
-              <ul className="space-y-2 sm:space-y-3 mb-6 sm:mb-8">
+              <ul className="space-y-4 mb-8">
                 {[
-                  "Browse thousands of listings",
-                  "Real-time bidding",
-                  "Secure transactions",
-                  "Saved searches",
+                  "Browse 50K+ active auctions",
+                  "Real-time bidding platform",
+                  "Secure payment protection",
+                  "Saved searches & alerts",
+                  "Bulk purchase discounts",
                 ].map((feature, index) => (
-                  <li
-                    key={index}
-                    className="flex items-center text-xs sm:text-sm text-gray-600"
-                  >
-                    <Sparkles className="w-4 h-4 text-purple-500 mr-2 flex-shrink-0" />
-                    <span>{feature}</span>
+                  <li key={index} className="flex items-start gap-3">
+                    <div className="flex-shrink-0 w-5 h-5 bg-blue-100 rounded-full flex items-center justify-center mt-0.5">
+                      <div className="w-2 h-2 bg-blue-600 rounded-full" />
+                    </div>
+                    <span className="text-gray-600 text-sm sm:text-base">
+                      {feature}
+                    </span>
                   </li>
                 ))}
               </ul>
 
-              {/* Button */}
-              <button className="w-full bg-purple-600 hover:bg-purple-700 text-white font-semibold py-3 sm:py-4 px-4 sm:px-6 rounded-xl transition-all transform hover:scale-[1.02] active:scale-[0.98] text-sm sm:text-base">
-                Join as Buyer
-              </button>
+              {/* Price and CTA */}
+              <div className="border-t border-gray-100 pt-6">
+                <div className="flex items-baseline gap-2 mb-4">
+                  <span className="text-3xl font-bold text-gray-800">Free</span>
+                  <span className="text-gray-500">forever</span>
+                </div>
+                <button className="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-4 px-6 rounded-xl transition-all transform hover:scale-[1.02] active:scale-[0.98] text-lg">
+                  Join as Buyer
+                  <ChevronRight className="inline ml-2 w-5 h-5" />
+                </button>
+              </div>
             </div>
           </div>
         </div>
 
-        {/* Stats Section */}
-        <div className="mt-12 sm:mt-16 lg:mt-20 max-w-4xl mx-auto">
-          <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 sm:gap-4 lg:gap-6">
+        {/* Trust Indicators - Upwork style */}
+        <div className="mt-16 sm:mt-20 lg:mt-24">
+          <div className="text-center mb-8">
+            <p className="text-sm uppercase tracking-wider text-gray-400 font-semibold">
+              Trusted by businesses worldwide
+            </p>
+          </div>
+
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-6 max-w-4xl mx-auto">
             {[
-              { icon: Users, label: "Active Users", value: "10K+" },
-              { icon: TrendingUp, label: "Monthly Bids", value: "50K+" },
-              { icon: Clock, label: "Avg. Response", value: "< 2hrs" },
-              { icon: Shield, label: "Secure Deals", value: "100%" },
-            ].map((stat, index) => {
-              const Icon = stat.icon;
+              {
+                icon: Shield,
+                label: "Secure Payments",
+                value: "100% protection",
+              },
+              { icon: Star, label: "4.8/5 Rating", value: "From 10K+ reviews" },
+              { icon: Clock, label: "Fast Response", value: "Avg. 2 hours" },
+              { icon: Globe, label: "Global Reach", value: "50+ countries" },
+            ].map((item, index) => {
+              const Icon = item.icon;
               return (
-                <div
-                  key={index}
-                  className="text-center p-3 sm:p-4 bg-gray-50 rounded-xl"
-                >
-                  <Icon className="w-5 h-5 sm:w-6 sm:h-6 text-blue-600 mx-auto mb-1 sm:mb-2" />
-                  <div className="font-bold text-sm sm:text-base lg:text-lg text-gray-800">
-                    {stat.value}
+                <div key={index} className="text-center">
+                  <div className="w-12 h-12 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-3">
+                    <Icon className="w-6 h-6 text-gray-600" />
                   </div>
-                  <div className="text-xs sm:text-sm text-gray-500">
-                    {stat.label}
+                  <div className="font-semibold text-gray-800">
+                    {item.label}
                   </div>
+                  <div className="text-sm text-gray-500">{item.value}</div>
                 </div>
               );
             })}
           </div>
         </div>
 
-        {/* Footer Note */}
-        <div className="text-center mt-8 sm:mt-12 lg:mt-16">
-          <p className="text-xs sm:text-sm text-gray-500">
-            Already have an account?{" "}
-            <button className="text-blue-600 hover:text-blue-700 font-medium hover:underline">
-              Sign In
+        {/* FAQ Teaser */}
+        <div className="mt-12 text-center">
+          <p className="text-gray-500 text-sm">
+            Have questions?{" "}
+            <button className="text-green-600 hover:text-green-700 font-medium hover:underline">
+              Read our FAQ
+            </button>{" "}
+            or{" "}
+            <button className="text-green-600 hover:text-green-700 font-medium hover:underline">
+              Contact support
             </button>
           </p>
         </div>
-      </div>
+      </main>
     </div>
   );
 };
