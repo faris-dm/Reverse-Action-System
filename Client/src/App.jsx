@@ -9,16 +9,19 @@ import NewHero from "./pages/newHero";
 import Database from "./pages/database";
 import SupplierFactor from "./components/supplier/supplier";
 import Role from "./pages/Role";
+import LoginPage from "./components/ui/Login";
 
 function App() {
   return (
     <div>
-      {/* <Supplier /> */}
+      <Supplier />
       {/* <SupplierFactor /> */}
       {/* <Buyer /> */}
       {/* <Admin /> */}
       {/* <NewBuyer /> */}
-      <NewHero />
+      {/* <NewHero /> */}
+      {/* <LoginPage /> */}
+
       {/* <Role /> */}
       {/* <Database /> */}
       {/* <Hero /> */}
