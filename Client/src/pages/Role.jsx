@@ -49,18 +49,15 @@ const Role = () => {
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-12 lg:py-16">
         {/* Heading Section */}
         <div className="text-center mb-8 sm:mb-12 lg:mb-16">
-          <h1 className="text-3xl sm:text-4xl lg:text-5xl font-bold text-gray-800 mb-4">
-            Join as a <span className="text-green-600">Supplier</span> or{" "}
-            <span className="text-blue-600">Buyer</span>
+          <h1 className="text-3xl sm:text-4xl lg:text-5xl font-bold text-green-600 mb-4">
+            Join as a
+            {/* <span className="text-green-600">Supplier</span> or{" "}
+            <span className="text-blue-600">Buyer</span> */}
           </h1>
-          <p className="text-base sm:text-lg lg:text-xl text-gray-500 max-w-3xl mx-auto">
-            Choose the path that fits your business goals. Both roles get full
-            access to our marketplace features.
-          </p>
         </div>
 
         {/* Role Cards Grid - Upwork style */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 lg:gap-8 max-w-5xl mx-auto">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 lg:gap-8 max-w-5xl  mb-5 mx-auto">
           {/* Supplier Card */}
           <div
             className={`relative bg-white rounded-2xl border-2 transition-all duration-300 cursor-pointer
