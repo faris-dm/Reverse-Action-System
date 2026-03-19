@@ -27,6 +27,18 @@ const Hero = () => {
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
+  // Prevent body scroll when menu is open
+  useEffect(() => {
+    if (isMenuOpen) {
+      document.body.style.overflow = "hidden";
+    } else {
+      document.body.style.overflow = "unset";
+    }
+    return () => {
+      document.body.style.overflow = "unset";
+    };
+  }, [isMenuOpen]);
+
   const scrollToSection = (id) => {
     const element = document.getElementById(id);
     if (element) {
@@ -90,57 +102,80 @@ const Hero = () => {
             </div>
           </div>
 
+          {/* Mobile menu button - positioned higher z-index */}
           <button
-            className="md:hidden p-2 text-slate-900 bg-slate-50 rounded-lg"
-            onClick={() => setIsMenuOpen(!isMenuOpen)}
+            className="md:hidden relative z-[100] p-2 text-slate-900 bg-slate-50 rounded-lg hover:bg-slate-100 transition-colors"
+            onClick={(e) => {
+              e.stopPropagation();
+              setIsMenuOpen(!isMenuOpen);
+            }}
+            aria-label="Toggle menu"
           >
             {isMenuOpen ? <X size={24} /> : <Menu size={24} />}
           </button>
         </div>
 
+        {/* Mobile menu overlay - higher z-index */}
+        {isMenuOpen && (
+          <div
+            className="fixed inset-0 bg-black/40 backdrop-blur-sm z-[150] md:hidden"
+            onClick={() => setIsMenuOpen(false)}
+          />
+        )}
+
+        {/* Mobile menu panel - highest z-index */}
         <div
-          className={`fixed inset-0 top-0 bg-white transition-transform duration-500 z-50 md:hidden ${
-            isMenuOpen ? "translate-y-0" : "-translate-y-full"
+          className={`fixed top-0 right-0 h-full w-full max-w-sm bg-white shadow-2xl z-[200] transform transition-transform duration-300 ease-in-out md:hidden ${
+            isMenuOpen ? "translate-x-0" : "translate-x-full"
           }`}
         >
-          <div className="p-4 flex justify-between items-center border-b">
-            <div className="flex items-center space-x-2">
-              <Gavel className="text-blue-600 w-6 h-6" />
-              <span className="text-xl font-bold">BidSync</span>
+          <div className="flex flex-col h-full">
+            {/* Mobile menu header */}
+            <div className="p-6 flex items-center justify-between border-b">
+              <div className="flex items-center space-x-2">
+                <Gavel className="text-blue-600 w-6 h-6" />
+                <span className="text-xl font-bold">BidSync</span>
+              </div>
+              <button
+                onClick={() => setIsMenuOpen(false)}
+                className="p-2 bg-slate-100 rounded-lg hover:bg-slate-200 transition-colors"
+                aria-label="Close menu"
+              >
+                <X size={20} />
+              </button>
             </div>
-            <button
-              onClick={() => setIsMenuOpen(false)}
-              className="p-2 bg-slate-100 rounded-lg"
-            >
-              <X size={24} />
-            </button>
-          </div>
-          <div className="flex flex-col p-8 space-y-8">
-            <button
-              onClick={() => scrollToSection("how-it-works")}
-              className="text-3xl font-bold text-slate-900 text-left"
-            >
-              The Protocol
-            </button>
-            <button
-              onClick={() => scrollToSection("buyers")}
-              className="text-3xl font-bold text-slate-900 text-left"
-            >
-              For Buyers
-            </button>
-            <button
-              onClick={() => scrollToSection("suppliers")}
-              className="text-3xl font-bold text-slate-900 text-left"
-            >
-              For Providers
-            </button>
-            <div className="pt-8 space-y-4">
-              <button className="w-full h-[56px] font-bold text-slate-900 border-2 border-slate-100 rounded-2xl">
-                Login
-              </button>
-              <button className="w-full h-[56px] font-bold bg-blue-600 text-white rounded-2xl shadow-xl shadow-blue-500/20">
-                Get Started Free
-              </button>
+
+            {/* Mobile menu content - scrollable */}
+            <div className="flex-1 overflow-y-auto p-6">
+              <div className="flex flex-col space-y-6">
+                <button
+                  onClick={() => scrollToSection("how-it-works")}
+                  className="text-2xl font-bold text-slate-900 text-left hover:text-blue-600 transition-colors py-2"
+                >
+                  The Protocol
+                </button>
+                <button
+                  onClick={() => scrollToSection("buyers")}
+                  className="text-2xl font-bold text-slate-900 text-left hover:text-blue-600 transition-colors py-2"
+                >
+                  For Buyers
+                </button>
+                <button
+                  onClick={() => scrollToSection("suppliers")}
+                  className="text-2xl font-bold text-slate-900 text-left hover:text-blue-600 transition-colors py-2"
+                >
+                  For Providers
+                </button>
+
+                <div className="pt-8 space-y-4 border-t">
+                  <button className="w-full h-14 font-bold text-slate-900 border-2 border-slate-200 rounded-xl hover:border-blue-600 hover:text-blue-600 transition-all">
+                    Login
+                  </button>
+                  <button className="w-full h-14 font-bold bg-blue-600 text-white rounded-xl shadow-lg shadow-blue-500/20 hover:bg-blue-700 transition-all active:scale-95">
+                    Get Started Free
+                  </button>
+                </div>
+              </div>
             </div>
           </div>
         </div>
