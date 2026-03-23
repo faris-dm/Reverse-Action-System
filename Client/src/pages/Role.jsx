@@ -1,5 +1,6 @@
 // RoleSelection.jsx
 import React, { useState } from "react";
+import { Link } from "react-router-dom";
 import {
   Search,
   Briefcase,
@@ -38,9 +39,12 @@ const Role = () => {
             </div>
 
             {/* Right side - Sign in link */}
-            <button className="text-green-600 hover:text-green-700 font-medium text-sm sm:text-base">
-              Sign In →
-            </button>
+            <Link
+              to="/login"
+              className="text-green-600 hover:text-green-700 font-medium text-sm sm:text-base"
+            >
+              <span>Sign In →</span>
+            </Link>
           </div>
         </div>
       </header>
@@ -116,10 +120,13 @@ const Role = () => {
                   <span className="text-3xl font-bold text-gray-800">$0</span>
                   <span className="text-gray-500">/month</span>
                 </div>
-                <button className="w-full bg-green-600 hover:bg-green-700 text-white font-semibold py-4 px-6 rounded-xl transition-all transform hover:scale-[1.02] active:scale-[0.98] text-lg">
-                  Join as Supplier
-                  <ChevronRight className="inline ml-2 w-5 h-5" />
-                </button>
+
+                <Link to="/supplerform">
+                  <button className="w-full bg-green-600 hover:bg-green-700 text-white font-semibold py-4 px-6 rounded-xl transition-all transform hover:scale-[1.02] active:scale-[0.98] text-lg">
+                    Join as Supplier
+                    <ChevronRight className="inline ml-2 w-5 h-5" />
+                  </button>
+                </Link>
               </div>
             </div>
           </div>
@@ -175,10 +182,12 @@ const Role = () => {
                   <span className="text-3xl font-bold text-gray-800">Free</span>
                   <span className="text-gray-500">forever</span>
                 </div>
-                <button className="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-4 px-6 rounded-xl transition-all transform hover:scale-[1.02] active:scale-[0.98] text-lg">
-                  Join as Buyer
-                  <ChevronRight className="inline ml-2 w-5 h-5" />
-                </button>
+                <Link to="/buyerform">
+                  <button className="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-4 px-6 rounded-xl transition-all transform hover:scale-[1.02] active:scale-[0.98] text-lg">
+                    Join as Buyer
+                    <ChevronRight className="inline ml-2 w-5 h-5" />
+                  </button>
+                </Link>
               </div>
             </div>
           </div>
