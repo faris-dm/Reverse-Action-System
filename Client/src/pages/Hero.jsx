@@ -1,4 +1,7 @@
 import React, { useState, useEffect } from "react";
+import { Link } from "react-router-dom";
+
+import BuyerRegistor from "../components/Registor/buyerRegistor";
 import {
   Menu,
   X,
@@ -54,7 +57,7 @@ const Hero = () => {
     <div className="min-h-screen bg-white text-slate-900 font-sans selection:bg-blue-600 selection:text-white overflow-x-hidden">
       {/* 4C. Navigation Bar - Modern Glassmorphism */}
       <nav
-        className={`fixed top-0 left-0 w-full z-50 transition-all duration-500 ${
+        className={`fixed top-0 left-0 w-full z-40 transition-all duration-500 ${
           scrolled
             ? "bg-white/80 backdrop-blur-md border-b border-slate-100 py-3 shadow-sm"
             : "bg-transparent py-5"
@@ -93,76 +96,78 @@ const Hero = () => {
               For Suppliers
             </button>
             <div className="flex items-center space-x-4 pl-4 border-l border-slate-200">
-              <button className="text-sm font-bold text-slate-900 px-4 py-2 hover:bg-slate-50 rounded-lg">
-                Login
-              </button>
-              <button className="bg-blue-600 text-white px-6 py-2.5 rounded-xl text-sm font-bold hover:bg-blue-700 transition-all shadow-lg shadow-blue-500/25 active:scale-95">
-                Sign Up
-              </button>
+              <Link
+                to="/login"
+                className="text-sm font-bold text-slate-900 px-4 py-2 hover:bg-slate-50 rounded-lg"
+              >
+                <span>Login</span>
+              </Link>
+
+              <Link
+                to="/role"
+                className="bg-blue-600 text-white px-6 py-2.5 rounded-xl text-sm font-bold hover:bg-blue-700 transition-all shadow-lg shadow-blue-500/25 active:scale-95"
+              >
+                <span>Sign Up</span>
+              </Link>
             </div>
           </div>
 
-          {/* Mobile menu button - positioned higher z-index */}
+          {/* Mobile menu button */}
           <button
-            className="md:hidden relative z-[100] p-2 text-slate-900 bg-slate-50 rounded-lg hover:bg-slate-100 transition-colors"
-            onClick={(e) => {
-              e.stopPropagation();
-              setIsMenuOpen(!isMenuOpen);
-            }}
-            aria-label="Toggle menu"
+            className="md:hidden relative z-50 p-2 text-slate-900 bg-slate-50 rounded-lg hover:bg-slate-100 transition-colors"
+            onClick={() => setIsMenuOpen(true)}
+            aria-label="Open menu"
           >
-            {isMenuOpen ? <X size={24} /> : <Menu size={24} />}
+            <Menu size={24} />
           </button>
         </div>
+      </nav>
 
-        {/* Mobile menu overlay - higher z-index */}
-        {isMenuOpen && (
+      {/* Mobile Menu - Rendered at root level with highest z-index */}
+      {/* Mobile Menu - Fixed with proper isolation */}
+      {isMenuOpen && (
+        <>
+          {/* Backdrop - covers everything */}
           <div
-            className="fixed inset-0 bg-black/40 backdrop-blur-sm z-[150] md:hidden"
+            className="fixed inset-0 bg-black/60 backdrop-blur-sm z-[9999]"
             onClick={() => setIsMenuOpen(false)}
           />
-        )}
 
-        {/* Mobile menu panel - highest z-index */}
-        <div
-          className={`fixed top-0 right-0 h-full w-full max-w-sm bg-white shadow-2xl z-[200] transform transition-transform duration-300 ease-in-out md:hidden ${
-            isMenuOpen ? "translate-x-0" : "translate-x-full"
-          }`}
-        >
-          <div className="flex flex-col h-full">
-            {/* Mobile menu header */}
-            <div className="p-6 flex items-center justify-between border-b">
-              <div className="flex items-center space-x-2">
-                <Gavel className="text-blue-600 w-6 h-6" />
-                <span className="text-xl font-bold">BidSync</span>
+          {/* Menu Panel - slides in from right */}
+          <div className="fixed top-0 right-0 h-full w-full max-w-sm bg-white shadow-2xl z-[10000] overflow-y-auto">
+            <div className="p-6 min-h-full">
+              {/* Header */}
+              <div className="flex items-center justify-between mb-8">
+                <div className="flex items-center space-x-2">
+                  <Gavel className="text-blue-600 w-8 h-8" />
+                  <span className="text-2xl font-bold">BidSync</span>
+                </div>
+                <button
+                  onClick={() => setIsMenuOpen(false)}
+                  className="p-2 bg-slate-100 rounded-lg hover:bg-slate-200 transition-colors"
+                  aria-label="Close menu"
+                >
+                  <X size={24} />
+                </button>
               </div>
-              <button
-                onClick={() => setIsMenuOpen(false)}
-                className="p-2 bg-slate-100 rounded-lg hover:bg-slate-200 transition-colors"
-                aria-label="Close menu"
-              >
-                <X size={20} />
-              </button>
-            </div>
 
-            {/* Mobile menu content - scrollable */}
-            <div className="flex-1 overflow-y-auto p-6">
-              <div className="flex flex-col space-y-6">
+              {/* Menu Items */}
+              <div className="space-y-6">
                 <button
                   onClick={() => scrollToSection("how-it-works")}
-                  className="text-2xl font-bold text-slate-900 text-left hover:text-blue-600 transition-colors py-2"
+                  className="w-full text-left text-2xl font-bold text-slate-900 hover:text-blue-600 transition-colors py-3"
                 >
                   The Protocol
                 </button>
                 <button
                   onClick={() => scrollToSection("buyers")}
-                  className="text-2xl font-bold text-slate-900 text-left hover:text-blue-600 transition-colors py-2"
+                  className="w-full text-left text-2xl font-bold text-slate-900 hover:text-blue-600 transition-colors py-3"
                 >
                   For Buyers
                 </button>
                 <button
                   onClick={() => scrollToSection("suppliers")}
-                  className="text-2xl font-bold text-slate-900 text-left hover:text-blue-600 transition-colors py-2"
+                  className="w-full text-left text-2xl font-bold text-slate-900 hover:text-blue-600 transition-colors py-3"
                 >
                   For Providers
                 </button>
@@ -178,8 +183,8 @@ const Hero = () => {
               </div>
             </div>
           </div>
-        </div>
-      </nav>
+        </>
+      )}
 
       {/* 4D. Hero Section - Bold & High Energy */}
       <section className="relative pt-32 pb-20 sm:pt-48 sm:pb-32 bg-white overflow-hidden">
@@ -211,13 +216,24 @@ const Hero = () => {
             </p>
 
             <div className="flex flex-col sm:flex-row items-center justify-center gap-4 max-w-md mx-auto">
-              <button className="group w-full h-[60px] bg-blue-600 text-white rounded-2xl font-bold text-lg shadow-xl shadow-blue-500/30 hover:bg-blue-700 hover:-translate-y-1 transition-all flex items-center justify-center space-x-2">
+              <Link
+                to="/buyerform"
+                className="group w-full h-[60px] bg-blue-600 text-white rounded-2xl font-bold text-lg shadow-xl shadow-blue-500/30 hover:bg-blue-700 hover:-translate-y-1 transition-all flex items-center justify-center space-x-2"
+              >
                 <span>I Need Something</span>
                 <ChevronRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
-              </button>
-              <button className="w-full h-[60px] border-2 border-slate-200 text-slate-900 bg-white rounded-2xl font-bold text-lg hover:border-blue-600 hover:text-blue-600 transition-all flex items-center justify-center">
-                I Want to Supply
-              </button>
+              </Link>
+
+              {/*  supplier Link*/}
+              <Link
+                to="/supplerform"
+                className="w-full h-[60px] border-2 border-slate-200
+                text-slate-900 bg-white rounded-2xl font-bold text-lg
+                hover:border-blue-600 hover:text-blue-600 transition-all flex
+                items-center justify-center"
+              >
+                <span>I Want to Supply</span>
+              </Link>
             </div>
 
             <div className="mt-16 flex flex-col items-center">
