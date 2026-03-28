@@ -8,7 +8,7 @@ import Admin from "./pages/admin";
 import NewBuyer from "./pages/newBuyer";
 import Hero from "./pages/Hero";
 import MainHero from "./pages/newHero";
-import Database from "./pages/database";
+
 import SupplierFactor from "./components/supplier/supplier";
 import Role from "./pages/Role";
 import LoginPage from "./components/ui/Login";
