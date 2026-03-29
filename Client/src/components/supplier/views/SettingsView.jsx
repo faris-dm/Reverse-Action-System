@@ -11,7 +11,7 @@ import {
   Briefcase,
 } from "lucide-react";
 import { InputField } from "../common/InputField";
-import { FileUploadCard } from "../common/FileUploadCard";
+import  FileUploadCard  from "../common/FileUploadCard";
 
 export const SettingsView = ({ profile, setProfile }) => {
   const [isSaving, setIsSaving] = useState(false);
