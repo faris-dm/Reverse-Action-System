@@ -13,40 +13,52 @@ datasource db {
 
 }
 
-enum UserType {
-  admin
-  supplier
-  buyer
-}
 
 model User {
-  id            String      @id @default(cuid() )
-  name          String
-  email         String   @unique
-  password_hash String   @map("password_hash")
-  user_type     UserType
+  id String @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  email String @unique @db.VarChar(255)
+  password_hash String @db.VarChar(255)
+  user_type     String   @db.VarChar(20) // Note: Prisma Enums are usually preferred here
   is_active     Boolean  @default(true)
-  created_at    DateTime @default(now()) @map("created_at")
-  updated_at    DateTime @updatedAt @map("updated_at")
+  created_at    DateTime @default(now())
+  updated_at    DateTime @updatedAt
+
+
+  // Relationships (Back-references)
+  supplier      Supplier? // A User can optionally have one Supplier profile
+  // buyer         Buyer?    // A User can optionally
 
   @@map("users")
 }
-model Bid{
-  id Int @id @default(autoincrement())
-  title String
-  price Float
-  Description String  
-  createdAt DateTime 
-
+enum UserRole {
+  ADMIN
+  SUPPLIER
+  BUYER
 }
-model Report {
-id Int @id @default(autoincrement())
-item String
-status Status
 
-}
-enum  Status{
-REJECTED
-APPROVED 
-PENDIG
+
+// supplier Table
+
+
+model  Supplier {
+  id String @id @db.Uuid
+  user User @relation(fields: [id],references: [id],onDelete:Cascade )
+  business_name String @db.VarChar(255)
+  phone String? @db.VarChar(50)
+  addressm String? @db.Text
+  tax_id              String?   @unique @db.VarChar(100)
+  registration_number String?   @unique @db.VarChar(100)
+  years_in_business   Int?
+  categories          String[]  // Prisma supports native PG arrays
+  bio                 String?   @db.Text
+  status              String    @default("pending") @db.VarChar(20)
+  verified_at         DateTime? @db.Timestamp
+  rejected_reason     String?   @db.Text
+  created_at          DateTime  @default(now())
+  updated_at          DateTime  @updatedAt
+
+  @@map("suppliers")
+
+
+
 }
