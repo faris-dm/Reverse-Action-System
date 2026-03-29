@@ -56,15 +56,15 @@ app.get("/", (req, res) => {
   res.render("index.ejs");
 });
 
-async function startDatabase() {
-  try {
-    console.log("creating the database");
-    await funcTable();
-  } catch (error) {
-    console.log("table creationn failed", error);
-  }
-}
-startDatabase();
+// async function startDatabase() {
+//   try {
+//     console.log("creating the database");
+//     await funcTable();
+//   } catch (error) {
+//     console.log("table creationn failed", error);
+//   }
+// }
+// startDatabase();
 
 let signUp = z.object({
   name: z.string().min(3, "userName Must Be at least three characters "),
