@@ -8,7 +8,7 @@ export const OverviewView = ({ bids, onNavigate }) => {
     <div className="space-y-10 animate-in fade-in duration-700 max-w-7xl mx-auto">
       <div className="flex flex-col md:flex-row md:items-end justify-between gap-4">
         <div>
-          <h1 className="text-4xl font-black tracking-tight">Hub Overview</h1>
+          <h1 className="text-4xl font-black tracking-tight">Supplier  Overview</h1>
           <p className="text-slate-400 font-bold mt-2">
             Active market position and quick stats.
           </p>
