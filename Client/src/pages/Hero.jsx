@@ -69,10 +69,10 @@ const Hero = () => {
             onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}
           >
             <div className="w-10 h-10 bg-blue-600 rounded-xl flex items-center justify-center shadow-lg shadow-blue-600/20 group-hover:rotate-6 transition-transform">
-              <Gavel className="text-white w-6 h-6" />
+              <TrendingDown className="text-white w-6 h-6" />
             </div>
             <span className="text-xl font-extrabold tracking-tighter text-slate-900">
-              Bid<span className="text-blue-600">Sync</span>
+              Bid<span className="text-blue-600">Smart</span>
             </span>
           </div>
 
@@ -140,7 +140,7 @@ const Hero = () => {
               <div className="flex items-center justify-between mb-8">
                 <div className="flex items-center space-x-2">
                   <Gavel className="text-blue-600 w-8 h-8" />
-                  <span className="text-2xl font-bold">BidSync</span>
+                  <span className="text-2xl font-bold">BidSmart</span>
                 </div>
                 <button
                   onClick={() => setIsMenuOpen(false)}
@@ -173,12 +173,16 @@ const Hero = () => {
                 </button>
 
                 <div className="pt-8 space-y-4 border-t">
-                  <button className="w-full h-14 font-bold text-slate-900 border-2 border-slate-200 rounded-xl hover:border-blue-600 hover:text-blue-600 transition-all">
-                    Login
-                  </button>
-                  <button className="w-full h-14 font-bold bg-blue-600 text-white rounded-xl shadow-lg shadow-blue-500/20 hover:bg-blue-700 transition-all active:scale-95">
-                    Get Started Free
-                  </button>
+                  <Link to="/login">
+                    <button className="w-full h-14 font-bold text-slate-900 border-2 border-slate-200 rounded-xl hover:border-blue-600 hover:text-blue-600 transition-all">
+                      Login
+                    </button>
+                  </Link>
+                  <Link to="/role">
+                    <button className="w-full h-14 font-bold bg-blue-600 text-white rounded-xl shadow-lg shadow-blue-500/20 hover:bg-blue-700 transition-all active:scale-95">
+                      Get Started Free
+                    </button>
+                  </Link>
                 </div>
               </div>
             </div>
@@ -349,9 +353,12 @@ const Hero = () => {
                   </div>
                 ))}
               </div>
-              <button className="bg-slate-900 text-white px-10 py-5 rounded-2xl font-bold hover:bg-blue-600 transition-all shadow-xl active:scale-95">
-                Launch My First Auction
-              </button>
+              <Link
+                to="/login"
+                className="bg-slate-900 text-white px-10 py-5 rounded-2xl font-bold hover:bg-blue-600 transition-all shadow-xl active:scale-95"
+              >
+                <span>Launch My First Auction </span>
+              </Link>
             </div>
             <div className="flex-1 w-full bg-slate-50 rounded-[40px] p-8 border border-slate-100 shadow-inner relative overflow-hidden">
               <div className="absolute top-0 right-0 p-4">
@@ -408,9 +415,12 @@ const Hero = () => {
                   </div>
                 ))}
               </div>
-              <button className="bg-blue-600 text-white px-10 py-5 rounded-2xl font-bold hover:bg-blue-700 transition-all shadow-xl shadow-blue-500/20 active:scale-95">
-                Browse Active Bids
-              </button>
+              <Link
+                to="/supplerform"
+                className="bg-blue-600 text-white px-10 py-5 rounded-2xl font-bold hover:bg-blue-700 transition-all shadow-xl shadow-blue-500/20 active:scale-95"
+              >
+                <span> Browse Active Bids</span>
+              </Link>
             </div>
             <div className="flex-1 w-full bg-blue-600 rounded-[40px] p-12 text-white relative overflow-hidden group">
               <div className="relative z-10">
