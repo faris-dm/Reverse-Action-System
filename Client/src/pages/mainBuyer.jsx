@@ -239,7 +239,7 @@ function App() {
               <ShoppingCart size={24} className="text-white" />
             </div>
             <span className="text-2xl font-black text-white italic uppercase tracking-tighter">
-              CHAIN<span className="text-blue-500">FLOW</span>
+              Buyer<span className="text-blue-500 px-1">hub</span>
             </span>
           </div>
         </div>
@@ -345,7 +345,7 @@ function App() {
                 <div className="flex flex-col md:flex-row md:items-end justify-between gap-6">
                   <div>
                     <h1 className="text-5xl font-black text-slate-900 tracking-tighter uppercase leading-[0.9]">
-                      Procurement <span className="text-blue-600">Hub</span>
+                      Over<span className="text-blue-600">View </span>
                     </h1>
                     <p className="text-[11px] font-black text-slate-400 uppercase tracking-widest mt-4">
                       Command center for your supply chain
