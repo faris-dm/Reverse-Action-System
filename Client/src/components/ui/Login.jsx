@@ -1,5 +1,6 @@
 // LoginPage.jsx
 import React, { useState } from "react";
+import { Link } from "react-router-dom";
 import {
   Mail,
   Lock,
@@ -9,6 +10,7 @@ import {
   ChevronRight,
   Briefcase,
   Facebook,
+  ChevronLeft,
   Apple,
   Chrome,
 } from "lucide-react";
@@ -83,8 +85,16 @@ const LoginPage = () => {
       </header>
 
       {/* Main Content */}
+
       <main className="flex-1 flex items-center justify-center py-8 sm:py-12 px-4">
         <div className="w-full max-w-[480px] bg-white rounded-2xl shadow-sm p-6 sm:p-8">
+          <button
+            onClick={() => window.history.back()}
+            className="group flex items-center text-sm font-bold text-gray-500 hover:text-[#108a00] mb-8 transition-colors"
+          >
+            <ChevronLeft className="w-4 h-4 mr-1 group-hover:-translate-x-1 transition-transform" />{" "}
+            Back
+          </button>
           {/* Welcome Text - Upwork style */}
           <div className="mb-8">
             <h1 className="text-2xl sm:text-3xl font-normal text-gray-900 mb-2">
@@ -195,9 +205,11 @@ const LoginPage = () => {
             <div className="text-center pt-2">
               <p className="text-sm text-gray-600">
                 Don't have an account?{" "}
-                <button className="text-[#14a800] hover:underline font-medium">
-                  Sign up
-                </button>
+                <Link to="/role">
+                  <button className="text-[#14a800] hover:underline font-medium">
+                    Sign up
+                  </button>
+                </Link>
               </p>
             </div>
           </form>
