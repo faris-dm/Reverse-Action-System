@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { Link } from "react-router-dom";
 import {
   ChevronLeft,
   Eye,
@@ -84,7 +85,10 @@ const BuyerRegistor = () => {
 
       <div className="relative z-10 max-w-[700px] mx-auto py-12 px-6">
         {/* Back Button */}
-        <button className="group flex items-center text-sm font-bold text-gray-500 hover:text-[#108a00] mb-8 transition-colors">
+        <button
+          onClick={() => window.history.back()}
+          className="group flex items-center text-sm font-bold text-gray-500 hover:text-[#108a00] mb-8 transition-colors"
+        >
           <ChevronLeft className="w-4 h-4 mr-1 group-hover:-translate-x-1 transition-transform" />{" "}
           Back
         </button>
@@ -362,12 +366,14 @@ const BuyerRegistor = () => {
                   <span className="text-sm text-gray-500">
                     Already have an account?{" "}
                   </span>
-                  <button
-                    type="button"
-                    className="text-sm text-[#108a00] font-bold hover:underline"
-                  >
-                    Log in
-                  </button>
+                  <Link to="/login">
+                    <button
+                      type="button"
+                      className="text-sm text-[#108a00] font-bold hover:underline"
+                    >
+                      Log in
+                    </button>
+                  </Link>
                 </div>
               </div>
             </section>
@@ -375,47 +381,15 @@ const BuyerRegistor = () => {
         </div>
 
         {/* Enhanced Footer */}
-        <footer className="relative z-10 border-t border-gray-200 pt-10 pb-16">
-          <div className="flex flex-col md:flex-row justify-between items-center gap-6">
-            <div className="flex items-center gap-2 text-gray-400">
-              <span className="text-lg font-bold text-gray-500 tracking-tight">
-                BidSmart
-              </span>
-              <span className="text-xs">© 2026 Global Inc.</span>
-            </div>
-
-            <div className="flex flex-wrap justify-center gap-x-8 gap-y-3">
-              <a
-                href="#"
-                className="text-sm font-semibold text-gray-500 hover:text-[#108a00] transition-colors"
-              >
-                Terms of Service
-              </a>
-              <a
-                href="#"
-                className="text-sm font-semibold text-gray-500 hover:text-[#108a00] transition-colors"
-              >
-                Privacy Policy
-              </a>
-              <a
-                href="#"
-                className="text-sm font-semibold text-gray-500 hover:text-[#108a00] transition-colors"
-              >
-                Accessibility
-              </a>
-              <a
-                href="#"
-                className="text-sm font-semibold text-gray-500 hover:text-[#108a00] transition-colors flex items-center gap-1"
-              >
-                Help Center <ExternalLink size={14} />
-              </a>
-            </div>
-
-            <div className="flex items-center gap-4">
-              <button className="p-2 rounded-full border border-gray-200 text-gray-400 hover:bg-[#108a00] hover:text-white transition-all">
-                <Globe size={18} />
-              </button>
-            </div>
+        <footer className="mt-12 text-center text-[#5e6d55] px-4 space-y-6">
+          <p className="text-xs">© 2026 BidSmart® Global Inc.</p>
+          <div className="flex flex-wrap justify-center gap-x-6 gap-y-3 font-bold text-[13px]">
+            <span className="hover:text-[#14a800] cursor-pointer">Terms</span>
+            <span className="hover:text-[#14a800] cursor-pointer">Privacy</span>
+            <span className="hover:text-[#14a800] cursor-pointer">Cookies</span>
+            <span className="hover:text-[#14a800] cursor-pointer">
+              Accessibility
+            </span>
           </div>
         </footer>
       </div>
