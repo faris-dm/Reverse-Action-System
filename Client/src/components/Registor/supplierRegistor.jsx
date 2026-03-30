@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import {Link} from "react-router-dom"
 import {
   User,
   Mail,
@@ -399,12 +400,14 @@ const App = () => {
                   <span className="text-[#5e6d55] text-[15px]">
                     Already have an account?{" "}
                   </span>
-                  <button
-                    type="button"
-                    className="text-[#14a800] font-extrabold text-[15px] hover:underline transition-all"
-                  >
-                    Log In
-                  </button>
+                  <Link to="/login">
+                    <button
+                      type="button"
+                      className="text-[#14a800] font-extrabold text-[15px] hover:underline transition-all"
+                    >
+                      Log In
+                    </button>
+                  </Link>
                 </div>
               </div>
             </form>
