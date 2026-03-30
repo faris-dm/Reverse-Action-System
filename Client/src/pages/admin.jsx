@@ -209,7 +209,7 @@ const AdminApp = () => {
         </div>
         {isSidebarOpen && (
           <span className="font-black text-2xl tracking-tighter text-slate-900">
-            PRO.BASE
+            Admin
           </span>
         )}
       </div>
@@ -536,7 +536,7 @@ const AdminApp = () => {
               <ShieldCheck className="text-white w-5 h-5" />
             </div>
             <h1 className="text-[10px] font-black text-slate-900 lg:text-slate-400 uppercase tracking-[0.2em]">
-              PRO.BASE //{" "}
+              Admin //{" "}
               {selectedSupplierId
                 ? "VERIFICATION_MODE"
                 : activeTab.toUpperCase()}
