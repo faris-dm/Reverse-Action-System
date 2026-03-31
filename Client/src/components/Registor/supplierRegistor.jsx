@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import {Link} from "react-router-dom"
+import { Link } from "react-router-dom";
 import {
   User,
   Mail,
@@ -60,15 +60,47 @@ const App = () => {
     return Object.keys(newErrors).length === 0;
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    if (!validate()) return;
 
+    // Clear previous errors and start loading
+    setErrors({});
     setIsSubmitting(true);
-    setTimeout(() => {
-      setIsSubmitting(false);
+
+    try {
+      // Send form data to the backend registration endpoint
+      const response = await fetch("/api/supplierRegistor", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(formData),
+        credentials: "include", // ensures cookies are sent/received
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        // Backend returned an error (Zod validation or business logic)
+        if (data.errors) {
+          // Field‑specific errors (e.g., { email: "Invalid email" })
+          setErrors(data.errors);
+        } else {
+          // General error message (e.g., "User already exists")
+          setErrors({ server: data.message || "Registration failed" });
+        }
+        return;
+      }
+
+      // Success: show success screen
       setSubmitted(true);
-    }, 1500);
+    } catch (error) {
+      // Network or unexpected error
+      console.error("Network error:", error);
+      setErrors({ server: "Network error. Please check your connection." });
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   // Static Ocean Wave Background
