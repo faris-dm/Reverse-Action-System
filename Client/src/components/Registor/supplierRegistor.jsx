@@ -63,20 +63,30 @@ const App = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
+    if (!validate()) {
+      console.log("Supplier REgitration is not filled Proparly");
+      return;
+    }
+
     // Clear previous errors and start loading
     setErrors({});
     setIsSubmitting(true);
 
     try {
       // Send form data to the backend registration endpoint
-      const response = await fetch("/api/supplierRegistor", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(formData),
-        credentials: "include", // ensures cookies are sent/received
-      });
+
+      // const response = await fetch("http://localhost:21000/api/supplierRegistor"
+      const response = await fetch(
+        "http://localhost:21000/api/supplierRegistor",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(formData),
+          credentials: "include", // ensures cookies are sent/received
+        }
+      );
 
       const data = await response.json();
 
@@ -93,7 +103,7 @@ const App = () => {
       }
 
       // Success: show success screen
-      setSubmitted(true);
+      window.location.href = "/supplier";
     } catch (error) {
       // Network or unexpected error
       console.error("Network error:", error);
