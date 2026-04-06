@@ -9,7 +9,12 @@ let refreshStore = [];
 const bcrypt = require("bcrypt");
 const { name } = require("ejs");
 const cors = require("cors");
-app.use(cors());
+app.use(
+  cors({
+    origin: "http://localhost:5173", // Your React app's address
+    credentials: true, // Allow cookies/credentials
+  })
+);
 const mysql = require("mysql2");
 app.use(express.json());
 
@@ -18,6 +23,10 @@ app.use(express.urlencoded({ extended: true }));
 const userMapStore = require("./models/storeage");
 let middlewareAuthToken = require("./middleware/auth");
 const { z } = require("zod");
+// import supplier Regidtor
+
+const SupplierRegidtor = require("./routes/supplierRegistor");
+app.use(SupplierRegidtor);
 
 const supplierRoutes = require("./routes/supplier");
 app.use(supplierRoutes);
