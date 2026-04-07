@@ -11,6 +11,7 @@ import {
 
 const BuyerRegistor = () => {
   const [showPassword, setShowPassword] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const [formData, setFormData] = useState({
     fullName: "",
     email: "",
@@ -23,8 +24,10 @@ const BuyerRegistor = () => {
     position: "",
     companyAddress: "",
     accountPurpose: "",
-    termsAccepted: false,
+    termsAccepted: false, // ← CHANGE TO THIS
   });
+
+  const [errors, setErrors] = useState({});
 
   const handleInputChange = (e) => {
     const { name, value, type, checked } = e.target;
@@ -32,12 +35,125 @@ const BuyerRegistor = () => {
       ...prev,
       [name]: type === "checkbox" ? checked : value,
     }));
+    if (errors[name]) {
+      setErrors((prev) => ({ ...prev, [name]: null }));
+    }
   };
 
-  const handleSubmit = (e) => {
+  const validate = () => {
+    const newErrors = {};
+
+    // Section 1: Basic Account Info
+    if (!formData.fullName) {
+      newErrors.fullName = "Full name is required";
+    }
+
+    if (!formData.email) {
+      newErrors.email = "Email is required";
+    } else if (!formData.email.includes("@")) {
+      newErrors.email = "Enter a valid email address";
+    }
+
+    if (!formData.phone) {
+      newErrors.phone = "Phone number is required";
+    }
+
+    if (!formData.password) {
+      newErrors.password = "Password is required";
+    } else if (formData.password.length < 8) {
+      newErrors.password = "Password must be at least 8 characters";
+    }
+
+    if (formData.password !== formData.confirmPassword) {
+      newErrors.confirmPassword = "Passwords do not match";
+    }
+
+    // Section 2: Company Info
+    if (!formData.companyName) {
+      newErrors.companyName = "Company name is required";
+    }
+
+    if (!formData.companyType) {
+      newErrors.companyType = "Please select a company type";
+    }
+
+    if (!formData.industrySector) {
+      newErrors.industrySector = "Please select an industry sector";
+    }
+
+    // Section 3: Basic Details
+    if (!formData.position) {
+      newErrors.position = "Position/Role is required";
+    }
+
+    if (!formData.accountPurpose) {
+      newErrors.accountPurpose = "Please select account purpose";
+    }
+
+    if (!formData.companyAddress) {
+      newErrors.companyAddress = "Company address is required";
+    }
+
+    // Terms and Conditions
+    if (!formData.termsAccepted) {
+      newErrors.termsAccepted = "You must accept the terms and conditions";
+    }
+
+    // Set errors to state
+    setErrors(newErrors);
+
+    // Return true if no errors, false if there are errors
+    return Object.keys(newErrors).length === 0;
+  };
+
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    if (!formData.termsAccepted) return;
-    console.log("Account Created:", formData);
+
+    if (!validate()) {
+      console.log("Buyer Registration is not filled Proparly");
+      return;
+    }
+
+    // Clear previous errors and start loading
+    setErrors({});
+    setIsSubmitting(true);
+
+    try {
+      // Send form data to the backend registration endpoint
+
+      // const response = await fetch("http://localhost:21000/api/supplierRegistor"
+      const response = await fetch("http://localhost:21000/api/BuyerRegistor", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(formData),
+        credentials: "include", // ensures cookies are sent/received
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        // Backend returned an error (Zod validation or business logic)
+        if (data.errors) {
+          // Field‑specific errors (e.g., { email: "Invalid email" })
+          setErrors(data.errors);
+        } else {
+          // General error message (e.g., "User already exists")
+          setErrors({ server: data.message || "Registration failed" });
+        }
+        return;
+      }
+
+      // Success: show success screen
+      window.location.href = "/buyer";
+    } catch (error) {
+      // Network or unexpected error
+      console.error("Network error:", error);
+      setErrors({ server: "Network error. Please check your connection." });
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   return (
@@ -126,9 +242,18 @@ const BuyerRegistor = () => {
                     value={formData.fullName}
                     onChange={handleInputChange}
                     placeholder="Enter your full name"
-                    className="px-4 py-3 border border-gray-300 rounded-lg focus:border-[#108a00] focus:ring-4 focus:ring-[#108a00]/5 outline-none transition-all placeholder:text-gray-300"
+                    className={`px-4 py-3 border rounded-lg focus:ring-4 outline-none transition-all placeholder:text-gray-300 ${
+                      errors.fullName
+                        ? "border-red-500 bg-red-50 focus:border-red-500"
+                        : "border-gray-300 focus:border-[#108a00] focus:ring-[#108a00]/5"
+                    }`}
                     required
                   />
+                  {errors.fullName && (
+                    <p className="text-red-500 text-sm mt-1">
+                      {errors.fullName}
+                    </p>
+                  )}
                 </div>
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -142,9 +267,20 @@ const BuyerRegistor = () => {
                       value={formData.email}
                       onChange={handleInputChange}
                       placeholder="email@example.com"
-                      className="px-4 py-3 border border-gray-300 rounded-lg focus:border-[#108a00] focus:ring-4 focus:ring-[#108a00]/5 outline-none transition-all placeholder:text-gray-300"
+                      className={`px-4 py-3 border border-gray-300 rounded-lg focus:border-[#108a00] focus:ring-4 focus:ring-[#108a00]/5 outline-none transition-all placeholder:text-gray-300 ${
+                        errors.email
+                          ? "border-red-500 bg-red-50 focus:border-red-500"
+                          : "border-gray-300 focus:border-[#108a00] focus:ring-[#108a00]/5"
+                      } 
+                         `}
                       required
                     />
+                    {errors.email && (
+                      <p className="text-red-500 text-sm mt-1">
+                        {" "}
+                        {errors.email}
+                      </p>
+                    )}
                   </div>
                   <div className="flex flex-col gap-2">
                     <label className="text-[13px] uppercase tracking-wider font-bold text-gray-500">
