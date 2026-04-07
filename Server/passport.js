@@ -28,6 +28,10 @@ const { z } = require("zod");
 const SupplierRegidtor = require("./routes/supplierRegistor");
 app.use(SupplierRegidtor);
 
+// import buyerRegistor
+const BuyerRegistor=require("./routes/BuyerRegistor")
+app.use(BuyerRegistor)
+
 const supplierRoutes = require("./routes/supplier");
 app.use(supplierRoutes);
 const buyerRoute = require("./routes/buyer");
