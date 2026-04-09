@@ -2,15 +2,17 @@ const jwt =require("jsonwebtoken")
 const cookiesParser=require("cookie-parser")
 const express=require("express")
 const UserStorage = require("../models/storeage");
+const { success } = require("zod");
 let secret = "W$q4=25*8%v-}UV";
-let RefreshTokenSecret = "W%&7=-^#-v}XL";
+
+
 
 // let router=express.Router()
 const verifyToken=(req,res,next) =>{
-    const token=req.cookies.accessToken
-    if(token) {
+    const token=req.cookies.token
+    if(!token) {
         return res.status(401).json({
-            message:"No Message found"
+            message:"No Token found"
         })
 
     }
@@ -19,7 +21,7 @@ const verifyToken=(req,res,next) =>{
     if (!UserStorage.get(decoded.email)) {
       return res
         .status(401)
-        .json({ message: "Token Has No Much in the database" });
+        .json({ message: "Token Has no match is the database" });
     }
 
     req.user = decoded;
@@ -27,9 +29,13 @@ const verifyToken=(req,res,next) =>{
     
  } catch (error) {
     console.table(error)
+    return res.status(401).json({
+        success:false,
+        message:"error  when verifying the tokens"
+    })
     
  }
 
 }
-
+module.exports=verifyToken
 

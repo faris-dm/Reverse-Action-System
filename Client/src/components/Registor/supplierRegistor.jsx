@@ -235,6 +235,7 @@ const App = () => {
                       name="fullName"
                       value={formData.fullName}
                       onChange={handleInputChange}
+                      
                       placeholder="e.g. John Doe"
                       className={`w-full px-4 py-3.5 rounded-xl border outline-none transition-all text-[16px] placeholder:text-gray-400 ${
                         errors.fullName

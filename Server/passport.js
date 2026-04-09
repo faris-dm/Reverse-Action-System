@@ -27,6 +27,7 @@ const { z } = require("zod");
 
 const SupplierRegidtor = require("./routes/supplierRegistor");
 app.use(SupplierRegidtor);
+// const jwtAuth=require("./middleware/tokenVerify")
 
 // import buyerRegistor
 const BuyerRegistor=require("./routes/BuyerRegistor")
