@@ -46,7 +46,7 @@ after the login the server create acces and refresh token
 access token go to the browser heading
 refresh go to cookies
 
-2: the user user access token o login and attch it to header then the se rver validate the segnture and validate
+2: the user use access token to login and attch it to header then the se rver validate the segnture and validate
 
 3: after that the access token expdat and it need new access tokens
 4: then the user request new acccess tokens

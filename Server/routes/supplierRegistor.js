@@ -34,7 +34,7 @@ router.post("/api/supplierRegistor", async (req, res) => {
   } = req.body;
   const cleanEmail = email.trim().toLowerCase();
 
-  if (password === !confirmPassword) {
+  if (password !== confirmPassword) {
     return res.status(400).json({
       success: false,
       message: "Password confiemation filed",
@@ -78,7 +78,7 @@ router.post("/api/supplierRegistor", async (req, res) => {
       role: "supplier",
       createdAt: new Date().toISOString(),
       refreshToken: refreshToken,
-      accessToken: accessToken,
+   
     };
     UserStorage.set(cleanEmail, NewUser);
     console.log(
