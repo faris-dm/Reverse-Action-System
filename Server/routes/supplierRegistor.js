@@ -54,15 +54,17 @@ router.post("/api/supplierRegistor", async (req, res) => {
     let UserId = crypto.randomUUID();
     const UserPayLoad = {
       id: UserId,
-      fullName: fullName,
       email: cleanEmail,
       role: "supplier",
     };
 
+    const UserPayLoadRefresh ={
+      email:cleanEmail
+    }
     // tokens
 
     let accessToken = generateAccess(UserPayLoad);
-    const refreshToken = jwt.sign(UserPayLoad, RefreshTokenSecret, {
+    const refreshToken = jwt.sign(UserPayLoadRefresh, RefreshTokenSecret, {
       expiresIn: "7d",
     });
 
@@ -82,21 +84,21 @@ router.post("/api/supplierRegistor", async (req, res) => {
     };
     UserStorage.set(cleanEmail, NewUser);
     console.log(
-      "✅ User saved with refresh token. Map size:",
+      "✅ User saved with  token. Map size:",
       UserStorage.size
     );
 
     // 8. Set cookies
     res.cookie("token", accessToken, {
       httpOnly: true,
-      secure: process.env.NODE_ENV === "production",
+     
       sameSite: "strict",
       maxAge: 15 * 60 * 1000,
     });
-    console.log(accessToken);
+    console.log("accessTokens", accessToken);
     res.cookie("refreshToken", refreshToken, {
       httpOnly: true,
-      secure: process.env.NODE_ENV === "production",
+     
       sameSite: "strict",
       maxAge: 7 * 24 * 60 * 60 * 1000,
     });
