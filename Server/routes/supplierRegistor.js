@@ -78,7 +78,7 @@ router.post("/api/supplierRegistor", async (req, res) => {
       businessName: businessName,
       businessType: businessType,
       role: "supplier",
-      createdAt: new Date().toISOString(),
+      createdAt: new Date().toString(),
       refreshToken: refreshToken,
    
     };
@@ -111,10 +111,16 @@ router.post("/api/supplierRegistor", async (req, res) => {
     console.log("Business:", businessName);
     console.log("=================================");
 
-    return res.status(200).json({
-      message: "Registration successful,!",
-      redirect: "/role",
-    });
+    return  res.status(201).json({
+            success: true,
+            message: "Registration successful",
+            user: {
+                id: UserId,
+                email: cleanEmail,
+                fullName: fullName,
+                role: "supplier"
+            }
+        });
   } catch (error) {
     console.error(error);
     res.status(500).json({ message: "Server error" });
@@ -122,3 +128,11 @@ router.post("/api/supplierRegistor", async (req, res) => {
 });
 
 module.exports = router;
+
+
+
+
+
+
+
+
