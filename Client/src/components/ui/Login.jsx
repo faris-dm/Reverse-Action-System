@@ -35,34 +35,40 @@ const LoginPage = () => {
   };
 
   // THIS IS THE ONLY PLACE THE API CALL SHOULD LIVE
-  const handleInputChange = (e) => {
-    const { name, value, type, checked } = e.target;
-    setFormData((prev) => ({
-      ...prev,
-      [name]: type === "checkbox" ? checked : value,
-    }));
-    // Clear error for this field when user starts typing
-    if (errors[name]) {
-      setErrors((prev) => ({ ...prev, [name]: null }));
-    }
-  };
+  // const handleInputChange = (e) => {
+  //   const { name, value, type, checked } = e.target;
+  //   setFormData((prev) => ({
+  //     ...prev,
+  //     [name]: type === "checkbox" ? checked : value,
+  //   }));
+  //   // Clear error for this field when user starts typing
+  //   if (errors[name]) {
+  //     setErrors((prev) => ({ ...prev, [name]: null }));
+  //   }
+  // };
 
   // No frontend validation – all validation happens on the backend (Zod)
   const handleSubmit = async (e) => {
     e.preventDefault();
+    const validationErrors = validateForm();
+    if (Object.keys(validationErrors).length > 0) {
+      setErrors(validationErrors);
+      return;
+    }
 
     setErrors({});
-    setIsSubmitting(true);
+
+    setIsLoading(true);
 
     try {
       // Send form data to backend registration endpoint
-      const response = await fetch("/api/login", {
+      const response = await fetch("http://localhost:21000/api/login", {
         // 👈 adjusted URL to match backend
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify(formData),
+        body: JSON.stringify({ email, password }),
         credentials: "include", // ensures cookies are sent/received
       });
 
@@ -77,19 +83,19 @@ const LoginPage = () => {
           // General error message (e.g., "User already exists")
           setErrors({ server: data.message || "Registration failed" });
         }
-        console.error("❌ Registration error:", data);
+        console.error("❌ login faild:", data);
         return;
       }
 
       // ✅ Success: redirect to supplier dashboard
-      console.log("🎉 Registration successful, redirecting to /supplier");
-      navigate("/supplier");
+      console.log("🎉 login successful, redirecting to /supplier");
+      window.location.href = "/buyer";
     } catch (error) {
       // Network or unexpected error
       console.error("❌ Network error:", error);
-      setErrors({ server: "Network error. Please check your connection." });
+      setErrors({ server: "server error. Please check your server." });
     } finally {
-      setIsSubmitting(false);
+      setIsLoading(false);
     }
   };
 
