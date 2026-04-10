@@ -7,7 +7,7 @@ let flash = require("express-flash");
 // let userMapStore = new Map();
 let refreshStore = [];
 const bcrypt = require("bcrypt");
-const { name } = require("ejs");
+
 const cors = require("cors");
 app.use(
   cors({
@@ -30,15 +30,15 @@ app.use(SupplierRegidtor);
 // const jwtAuth=require("./middleware/tokenVerify")
 
 // import buyerRegistor
-const BuyerRegistor=require("./routes/BuyerRegistor")
-app.use(BuyerRegistor)
+const BuyerRegistor = require("./routes/BuyerRegistor");
+app.use(BuyerRegistor);
 
 const supplierRoutes = require("./routes/supplier");
 app.use(supplierRoutes);
 const buyerRoute = require("./routes/buyer");
 app.use(buyerRoute);
-const loginRoutes = require("./routes/login");
-app.use(loginRoutes);
+const login = require("./routes/login");
+app.use(login);
 const tokenRoute = require("./routes/token");
 app.use(tokenRoute);
 const daConnect = require("./config/database");
@@ -49,26 +49,19 @@ app.use(Dashboard);
 const Logout = require("./routes/logout");
 app.use(Logout);
 
-app.get("/role", (req, res) => {
-  res.render("userRole.ejs");
-});
+
 
 app.use((req, res, next) => {
   req.db = daConnect;
   next();
 });
 
-app.set("view engine", "ejs");
-app.use(express.static("public"));
+
+
 let secret = "W$q4=25*8%v-}UV";
 let RefreshTokenSecret = "W%&7=-^#-v}XL";
 
-app.get("/", (req, res) => {
-  console.log("✅ Root route was accessed!");
-  console.log("📁 Trying to render index.ejs");
-  console.log("👤 User data:", req.user || "No user");
-  res.render("index.ejs");
-});
+
 
 // async function startDatabase() {
 //   try {
