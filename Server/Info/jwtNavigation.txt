@@ -1,0 +1,17 @@
+this   how Jwt  auth it user  to access the data from the database
+  frist there are there pages 
+#### regsitor pages
+   and in this page user send basic info 
+   
+   then this backend  recive the regitor logic verify it  hash it create tokens and store them in the database
+
+   then 
+######## the dashboard 
+ after the user regitor the usershould be sent to thir dashboard
+  so  we  create simple dashnaord that try to get user info from the backend
+ 
+ then to send the user info the tokens must be verifed  then the  the backend will have the  some route like /me  and 
+  it auth the user  tokens and  send the data to the dashboard  front end 
+
+
+    the dashboard will recive some json data then  the dahboard use the render methods to render them
