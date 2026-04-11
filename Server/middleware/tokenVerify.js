@@ -1,22 +1,19 @@
-const jwt =require("jsonwebtoken")
-const cookiesParser=require("cookie-parser")
-const express=require("express")
+const jwt = require("jsonwebtoken");
+const cookiesParser = require("cookie-parser");
+const express = require("express");
 const UserStorage = require("../models/storeage");
 const { success } = require("zod");
 let secret = "W$q4=25*8%v-}UV";
 
-
-
 // let router=express.Router()
-const verifyToken=(req,res,next) =>{
-    const token=req.cookies.token
-    if(!token) {
-        return res.status(401).json({
-            message:"No Token found"
-        })
-
-    }
- try {
+const verifyToken = (req, res, next) => {
+  const token = req.cookies.token;
+  if (!token) {
+    return res.status(401).json({
+      message: "No Token found",
+    });
+  }
+  try {
     let decoded = jwt.verify(token, secret);
     if (!UserStorage.get(decoded.email)) {
       return res
@@ -26,16 +23,12 @@ const verifyToken=(req,res,next) =>{
 
     req.user = decoded;
     next();
-    
- } catch (error) {
-    console.table(error)
+  } catch (error) {
+    console.table(error);
     return res.status(401).json({
-        success:false,
-        message:"error  when verifying the tokens"
-    })
-    
- }
-
-}
-module.exports=verifyToken
-
+      success: false,
+      message: "error  when verifying the tokens",
+    });
+  }
+};
+module.exports = verifyToken;
