@@ -27,7 +27,6 @@ const { z } = require("zod");
 
 const SupplierRegidtor = require("./routes/supplierRegistor");
 app.use(SupplierRegidtor);
-// const jwtAuth=require("./middleware/tokenVerify")
 
 // import buyerRegistor
 const BuyerRegistor = require("./routes/BuyerRegistor");
@@ -48,20 +47,18 @@ const Dashboard = require("./routes/Dashboard");
 app.use(Dashboard);
 const Logout = require("./routes/logout");
 app.use(Logout);
-
-
+const MeRoute=require("./controllers/me")
+const verifyTokens=require("./middleware/reFreshToken");
+app.use(verifyTokens)
+app.use(MeRoute)
 
 app.use((req, res, next) => {
   req.db = daConnect;
   next();
 });
 
-
-
 let secret = "W$q4=25*8%v-}UV";
 let RefreshTokenSecret = "W%&7=-^#-v}XL";
-
-
 
 // async function startDatabase() {
 //   try {
