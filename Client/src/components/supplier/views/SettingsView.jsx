@@ -1,5 +1,5 @@
 // src/components/supplier/views/SettingsView.jsx
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
   Building2,
   ShieldCheck,
@@ -11,9 +11,11 @@ import {
   Briefcase,
 } from "lucide-react";
 import { InputField } from "../common/InputField";
-import  FileUploadCard  from "../common/FileUploadCard";
+import FileUploadCard from "../common/FileUploadCard";
+import { data } from "react-router-dom";
 
 export const SettingsView = ({ profile, setProfile }) => {
+  const [user, setuser] = useState(null);
   const [isSaving, setIsSaving] = useState(false);
   const [activeSection, setActiveSection] = useState("business");
   const [showDeleteModal, setShowDeleteModal] = useState(false);
@@ -31,6 +33,12 @@ export const SettingsView = ({ profile, setProfile }) => {
     { id: "verification", label: "Trust & Verification", icon: ShieldCheck },
     { id: "security", label: "Account Security", icon: Lock },
   ];
+
+  // useEffect(() => {
+  //   fetch("http://localhost:21000/api/me", { credentials: "include" })
+  //     .then((res) => res.json())
+  //     .then((data) => setuser(data));
+  // }, []);
 
   return (
     <div className="max-w-6xl mx-auto space-y-10 animate-in fade-in duration-700 pb-20">
