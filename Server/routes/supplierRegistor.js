@@ -58,9 +58,9 @@ router.post("/api/supplierRegistor", async (req, res) => {
       role: "supplier",
     };
 
-    const UserPayLoadRefresh ={
-      email:cleanEmail
-    }
+    const UserPayLoadRefresh = {
+      email: cleanEmail,
+    };
     // tokens
 
     let accessToken = generateAccess(UserPayLoad);
@@ -80,47 +80,48 @@ router.post("/api/supplierRegistor", async (req, res) => {
       role: "supplier",
       createdAt: new Date().toString(),
       refreshToken: refreshToken,
-   
     };
     UserStorage.set(cleanEmail, NewUser);
-    console.log(
-      "✅ User saved with  token. Map size:",
-      UserStorage.size
-    );
+    console.log("✅ User saved with  token. Map size:", UserStorage.size);
 
     // 8. Set cookies
     res.cookie("token", accessToken, {
       httpOnly: true,
-     
+
       sameSite: "strict",
       maxAge: 15 * 60 * 1000,
     });
     console.log("accessTokens", accessToken);
     res.cookie("refreshToken", refreshToken, {
       httpOnly: true,
-     
+
       sameSite: "strict",
       maxAge: 7 * 24 * 60 * 60 * 1000,
     });
     // Log all data to console
-    console.log("=================================");
-    console.log("Supplier Registration:");
-    console.log("Name:", fullName);
-    console.log("Email:", email);
-    console.log("Phone:", phone);
-    console.log("Business:", businessName);
-    console.log("=================================");
+    console.log("=== REGISTRATION DEBUG ===");
 
-    return  res.status(201).json({
-            success: true,
-            message: "Registration successful",
-            user: {
-                id: UserId,
-                email: cleanEmail,
-                fullName: fullName,
-                role: "supplier"
-            }
-        });
+    console.log("All fields:", {
+      fullName: req.body.fullName,
+      email: req.body.email,
+      phone: req.body.phone,
+      password: req.body.password,
+      confirmPassword: req.body.confirmPassword,
+      businessName: req.body.businessName,
+      businessType: req.body.businessType,
+      agreementsAccepted: req.body.agreementsAccepted,
+    });
+
+    return res.status(201).json({
+      success: true,
+      message: "Registration successful",
+      user: {
+        id: UserId,
+        email: cleanEmail,
+        fullName: fullName,
+        role: "supplier",
+      },
+    });
   } catch (error) {
     console.error(error);
     res.status(500).json({ message: "Server error" });
@@ -128,11 +129,3 @@ router.post("/api/supplierRegistor", async (req, res) => {
 });
 
 module.exports = router;
-
-
-
-
-
-
-
-

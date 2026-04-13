@@ -6,12 +6,12 @@ const UserStorage = require("../models/storeage");
 router.get("/", verifyTokens, (req, res) => {
   console.log("=== /api/me called ===");
 
-  console.log("Cookies received:", req.cookies);
+
 
   try {
     console.log("req.user from verifyTokens:", req.user);
     const userEmail = req.user.email;
-    console.log("Looking for email:", userEmail);
+    console.log(" it is now veifying the  the tokens");
 
     const userFromStorage = UserStorage.get(userEmail);
     console.log("User found in storage:", userFromStorage ? "YES" : "NO");
@@ -21,7 +21,7 @@ router.get("/", verifyTokens, (req, res) => {
     }
     res.json({
       success: true,
-      id: user.id,
+      id: userFromStorage.id,
       fullName: userFromStorage.fullName,
       email: userFromStorage.email,
       businessName: userFromStorage.businessName,

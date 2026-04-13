@@ -47,14 +47,20 @@ const Dashboard = require("./routes/Dashboard");
 app.use(Dashboard);
 const Logout = require("./routes/logout");
 app.use(Logout);
-const MeRoute=require("./controllers/me")
-const verifyTokens=require("./middleware/reFreshToken");
-app.use(verifyTokens)
-app.use(MeRoute)
+const MeRoute = require("./controllers/me");
+const verifyTokens = require("./middleware/tokenVerify");
+
+app.use("/api/me", verifyTokens,MeRoute);
 
 app.use((req, res, next) => {
   req.db = daConnect;
   next();
+});
+
+// check the route
+// ADD THESE LINES
+app.get("/api/auth/status", verifyTokens, (req, res) => {
+  res.status(200).json({ loggedIn: true });
 });
 
 let secret = "W$q4=25*8%v-}UV";
