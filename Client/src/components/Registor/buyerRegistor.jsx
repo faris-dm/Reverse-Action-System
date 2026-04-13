@@ -6,7 +6,7 @@ import {
   EyeOff,
   Check,
   Globe,
-  ExternalLink,
+  TrendingDown,
 } from "lucide-react";
 
 const BuyerRegistor = () => {
@@ -187,13 +187,21 @@ const BuyerRegistor = () => {
       {/* Navigation / Header */}
       <nav className="relative z-10 px-6 py-4 flex items-center justify-between border-b border-gray-200 bg-white shadow-sm">
         <div className="flex items-center gap-8">
-          <span className="text-[#108a00] text-2xl font-extrabold tracking-tight">
-            BidSmart
-          </span>
+          <div
+            className="flex items-center space-x-2 cursor-pointer group"
+            onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}
+          >
+            <div className="w-10 h-10 bg-blue-600 rounded-xl flex items-center justify-center shadow-lg shadow-blue-600/20 group-hover:rotate-6 transition-transform">
+              <TrendingDown className="text-white w-6 h-6" />
+            </div>
+            <span className="text-xl font-extrabold tracking-tighter text-slate-900">
+              Bid<span className="text-blue-600">Smart</span>
+            </span>
+          </div>
         </div>
         <div className="hidden md:flex gap-4 text-sm font-medium">
           <span className="text-gray-600">Need help?</span>
-          <button className="text-[#108a00] font-bold hover:underline">
+          <button className="text-blue-600 font-bold hover:underline">
             Contact Support
           </button>
         </div>
@@ -215,7 +223,7 @@ const BuyerRegistor = () => {
           <div className="pt-12 pb-8 px-10 text-center border-b border-gray-50">
             {/* Added font-black and tracking-tight for more impact */}
             <h1 className="text-4xl md:text-5xl font-black mb-2 text-[#108a00] tracking-tight">
-              Join as a buyer
+              Join as a <span className="text-blue-500">buyer</span>
             </h1>
             <p className="text-[14px] text-gray-400 font-bold uppercase tracking-widest">
               Create Account
@@ -226,7 +234,7 @@ const BuyerRegistor = () => {
             {/* Section 1: Basic Account Info */}
             <section>
               <h2 className="text-xl font-bold mb-8 text-gray-800 flex items-center gap-2">
-                <span className="w-8 h-8 rounded-full bg-[#108a00]/10 text-[#108a00] flex items-center justify-center text-sm">
+                <span className="w-8 h-8 rounded-full bg-[#108a00]/10 text-blue-600 flex items-center justify-center text-sm">
                   1
                 </span>
                 Basic Account Info
@@ -340,7 +348,7 @@ const BuyerRegistor = () => {
             {/* Section 2: Company/Organization Info */}
             <section>
               <h2 className="text-xl font-bold mb-8 text-gray-800 flex items-center gap-2">
-                <span className="w-8 h-8 rounded-full bg-[#108a00]/10 text-[#108a00] flex items-center justify-center text-sm">
+                <span className="w-8 h-8 rounded-full bg-[#108a00]/10 text-blue-600 flex items-center justify-center text-sm">
                   2
                 </span>
                 Company Info
@@ -404,7 +412,7 @@ const BuyerRegistor = () => {
             {/* Section 3: Basic Details */}
             <section>
               <h2 className="text-xl font-bold mb-8 text-gray-800 flex items-center gap-2">
-                <span className="w-8 h-8 rounded-full bg-[#108a00]/10 text-[#108a00] flex items-center justify-center text-sm">
+                <span className="w-8 h-8 rounded-full bg-[#108a00]/10 text-blue-600 flex items-center justify-center text-sm">
                   3
                 </span>
                 Basic Details
@@ -468,7 +476,7 @@ const BuyerRegistor = () => {
                     id="unifiedConsent"
                     name="termsAccepted"
                     checked={formData.termsAccepted}
-                    className="peer h-6 w-6 cursor-pointer appearance-none rounded-md border-2 border-gray-300 checked:bg-[#108a00] checked:border-[#108a00] transition-all"
+                    className="peer h-6 w-6 cursor-pointer appearance-none rounded-md border-2 border-gray-300 checked:bg-blue-600 checked:border-blue-600 transition-all"
                     onChange={handleInputChange}
                   />
                   <Check className="absolute h-4 w-4 text-white opacity-0 peer-checked:opacity-100 pointer-events-none left-1" />
@@ -493,7 +501,7 @@ const BuyerRegistor = () => {
                 <button
                   type="submit"
                   disabled={!formData.termsAccepted}
-                  className="w-full bg-[#108a00] disabled:bg-gray-300 disabled:shadow-none text-white py-4 rounded-full font-bold text-xl hover:bg-[#14a800] transition-all shadow-lg shadow-[#108a00]/20 active:scale-[0.98]"
+                  className="w-full bg-blue-600 disabled:bg-gray-300 disabled:shadow-none text-white py-4 rounded-full font-bold text-xl hover:bg-blue-800 transition-all shadow-lg shadow-[#108a00]/20 active:scale-[0.98]"
                 >
                   Create an account
                 </button>
