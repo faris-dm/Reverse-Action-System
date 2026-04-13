@@ -230,7 +230,7 @@ const Hero = () => {
 
               {/*  supplier Link*/}
               <Link
-                to="/supplerform"
+                to="/supplierform"
                 className="w-full h-[60px] border-2 border-slate-200
                 text-slate-900 bg-white rounded-2xl font-bold text-lg
                 hover:border-blue-600 hover:text-blue-600 transition-all flex
@@ -416,7 +416,7 @@ const Hero = () => {
                 ))}
               </div>
               <Link
-                to="/supplerform"
+                to="/supplierform"
                 className="bg-blue-600 text-white px-10 py-5 rounded-2xl font-bold hover:bg-blue-700 transition-all shadow-xl shadow-blue-500/20 active:scale-95"
               >
                 <span> Browse Active Bids</span>

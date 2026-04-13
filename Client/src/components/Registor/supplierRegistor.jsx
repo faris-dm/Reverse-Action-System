@@ -193,7 +193,6 @@ const App = () => {
     );
   }
 
-
   if (checkingAuth) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-white">
@@ -220,9 +219,12 @@ const App = () => {
               BidSmart
             </span>
           </div>
-          <button className="text-[15px] font-bold text-[#14a800] hover:bg-[#14a800]/5 px-4 py-2 rounded-full transition-colors">
-            Log In
-          </button>
+          <Link
+            to="/login"
+            className="text-[15px] font-bold text-[#14a800] hover:bg-[#14a800]/5 px-4 py-2 rounded-full transition-colors"
+          >
+            <button>Log In</button>
+          </Link>
         </div>
       </header>
 

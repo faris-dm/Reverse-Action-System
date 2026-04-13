@@ -11,6 +11,7 @@ import {
   ChevronLeft,
   Apple,
   Chrome,
+  TrendingDown,
 } from "lucide-react";
 
 const LoginPage = () => {
@@ -111,12 +112,26 @@ const LoginPage = () => {
               >
                 <ArrowLeft className="w-5 h-5 text-gray-600" />
               </button>
-              <div className="flex items-center">
-                <span className="text-2xl font-bold text-[#14a800]">Bid</span>
-                <span className="text-2xl font-bold text-gray-900">Smart</span>
+              {/* <div className="flex items-center space-x-2 cursor-pointer group">
+                <span className="text-2xl font-bold  text-gray-900">Bid</span>
+                <span className="text-2xl font-bold text-blue-600">Smart</span>
+              </div> */}
+              {/* added */}
+              <div
+                className="flex items-center space-x-2 cursor-pointer group"
+                onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}
+              >
+                <div className="w-10 h-10 bg-blue-600 rounded-xl flex items-center justify-center shadow-lg shadow-blue-600/20 group-hover:rotate-6 transition-transform">
+                  <TrendingDown className="text-white w-6 h-6" />
+                </div>
+                <span className="text-xl font-extrabold tracking-tighter text-slate-900">
+                  Bid<span className="text-blue-600">Smart</span>
+                </span>
               </div>
+
+              {/* added */}
             </div>
-            <button className="text-sm text-gray-600 hover:text-[#14a800] font-medium">
+            <button className="text-sm text-gray-600  hover:text-blue-600 font-medium">
               Help
             </button>
           </div>
@@ -204,7 +219,7 @@ const LoginPage = () => {
             <button
               type="submit"
               disabled={isLoading}
-              className="w-full bg-[#14a800] hover:bg-[#108700] text-white font-medium py-3.5 px-4 rounded-full transition-colors disabled:opacity-50 flex items-center justify-center gap-2"
+              className="w-full  bg-blue-600  bg-blue-800 text-white font-medium py-3.5 px-4 rounded-full transition-colors disabled:opacity-50 flex items-center justify-center gap-2"
             >
               {isLoading ? (
                 "Logging in..."
