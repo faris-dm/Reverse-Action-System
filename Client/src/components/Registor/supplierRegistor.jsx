@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import {
   User,
@@ -16,6 +16,7 @@ import {
 } from "lucide-react";
 
 const App = () => {
+  const [checkingAuth, setCheckingAuth] = useState(true);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitted, setSubmitted] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
@@ -60,6 +61,23 @@ const App = () => {
     return Object.keys(newErrors).length === 0;
   };
 
+  // ADD THESE LINES at the top of your component
+  useEffect(() => {
+    const loggedInOnly = async () => {
+      try {
+        const res = await fetch("http://localhost:21000/api/auth/status", {
+          credentials: "include",
+        });
+        if (res.ok) window.location.href = "/supplier";
+        setCheckingAuth(false);
+      } catch (err) {
+        setCheckingAuth(false);
+        /* Not logged in, stay here */
+      }
+    };
+    loggedInOnly();
+  }, []);
+
   const handleSubmit = async (e) => {
     e.preventDefault();
 
@@ -89,11 +107,20 @@ const App = () => {
       );
 
       const data = await response.json();
+      console.log("=== FRONTEND DEBUG ===");
+      console.log("Form data being sent:", formData);
+
+      // Check if all required fields exist
+      if (!formData.fullName) console.log("❌ Missing fullName");
+      if (!formData.email) console.log("❌ Missing email");
+      if (!formData.password) console.log("❌ Missing password");
+      if (!formData.confirmPassword) console.log("❌ Missing confirmPassword");
+      if (!formData.businessName) console.log("❌ Missing businessName");
 
       if (!response.ok) {
         // Backend returned an error (Zod validation or business logic)
         if (data.errors) {
-          // Field‑specific errors (e.g., { email: "Invalid email" })
+          // Field‑specific errors (e.g., { email: "sInvalid email" })
           setErrors(data.errors);
         } else {
           // General error message (e.g., "User already exists")
@@ -161,6 +188,18 @@ const App = () => {
           <button className="w-full py-4 bg-[#14a800] text-white rounded-full font-bold hover:bg-[#108a00] transition-all text-lg shadow-md">
             Get Started
           </button>
+        </div>
+      </div>
+    );
+  }
+
+
+  if (checkingAuth) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-white">
+        <div className="flex flex-col items-center gap-4">
+          <div className="w-10 h-10 border-4 border-[#14a800] border-t-transparent rounded-full animate-spin"></div>
+          <p className="text-[#5e6d55] font-bold">Checking session...</p>
         </div>
       </div>
     );
@@ -235,7 +274,6 @@ const App = () => {
                       name="fullName"
                       value={formData.fullName}
                       onChange={handleInputChange}
-                      
                       placeholder="e.g. John Doe"
                       className={`w-full px-4 py-3.5 rounded-xl border outline-none transition-all text-[16px] placeholder:text-gray-400 ${
                         errors.fullName
