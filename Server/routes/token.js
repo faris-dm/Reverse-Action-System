@@ -1,11 +1,9 @@
 const express = require("express");
 const router = express.Router();
-const { z } = require("zod");
-let jwt = require("jsonwebtoken"); // ADD THIS!
-let refreshStore = []; // Make sure this array exists
-const userMapStore = require("../models/storeage");
-const { route } = require("./supplier");
-let RefreshTokenSecret = "W%&7=-^#-v}XL";
+let jwt = require("jsonwebtoken");
+const UserStorage = require("../models/storeage"); // Using your Map
+
+const RefreshTokenSecret = "W%&7=-^#-v}XL";
 const secret = "W$q4=25*8%v-}UV";
 
 function generateAccess(user) {
@@ -13,27 +11,38 @@ function generateAccess(user) {
 }
 
 router.post("/token", (req, res) => {
-  let authHeaderToken = req.body.token;
+  // Get token from body or cookies
+  const incomingToken = req.body.token || req.cookies.refreshToken;
 
-  if (!authHeaderToken) {
-    return res.status(401).send("No refresh Token found"); // Added return
+  if (!incomingToken) {
+    return res.status(401).json({ message: "No refresh Token found" });
   }
 
-  // Check if token exists in refreshStore (not userMapStore)
-  if (!refreshStore.includes(authHeaderToken)) {
-    return res.status(401).send("Token does not match"); // Added return
-  }
-
-  jwt.verify(authHeaderToken, RefreshTokenSecret, (err, user) => {
+  // 1. Verify the token first
+  jwt.verify(incomingToken, RefreshTokenSecret, (err, decoded) => {
     if (err) {
-      return res.status(403).send("Error happened. Please check again");
+      return res.status(403).json({ message: "Invalid Refresh Token" });
     }
-    let payload = {
-      email: user.email,
-      name: user.name,
+
+    // 2. Look up the user in your UserStorage Map using the email from the token
+    const userInStorage = UserStorage.get(decoded.email);
+
+    // 3. Check if user exists AND if the token matches what you stored in the Map
+    if (!userInStorage || userInStorage.refreshToken !== incomingToken) {
+      return res
+        .status(403)
+        .json({ message: "Token not recognized or session ended" });
+    }
+
+    // 4. Everything is good! Generate a new Access Token
+    const payload = {
+      id: userInStorage.id,
+      email: userInStorage.email,
+      role: userInStorage.role, // Make sure this matches your Map key
     };
-    let accessTokens = generateAccess(payload);
-    res.json({ accessTokens: accessTokens });
+
+    const accessToken = generateAccess(payload);
+    res.json({ success: true, accessToken });
   });
 });
 
