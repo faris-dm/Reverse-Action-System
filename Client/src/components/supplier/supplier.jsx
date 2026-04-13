@@ -1,6 +1,7 @@
 // src/components/supplier/Supplier.jsx
 import React, { useEffect, useState } from "react";
 import { Sidebar } from "./layouts/Sidebar";
+import { useNavigate } from "react-router-dom"; 
 
 // Import views
 import { OverviewView } from "./views/OverviewView";
@@ -16,119 +17,53 @@ import { BidModal } from "./modals/BidModal";
 import { Phone } from "lucide-react";
 
 const Supplier = () => {
+  // ADD THESE LINES at the top of your component
+  useEffect(() => {
+    const REandoumFun = async () => {
+      try {
+        const res = await fetch("http://localhost:21000/api/auth/status", {
+          credentials: "include",
+        });
+        if (!res.ok) window.location.href = "/supplerform";
+      } catch (err) {
+        window.location.href = "/supplerform";
+      }
+    };
+    REandoumFun();
+  }, []);
+  const navigate = useNavigate();
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [activeTab, setActiveTab] = useState("Overview");
-
-  // --- Profile State ---
-  // const [profile, setProfile] = useState({
-  //   businessName: "Ethio Build Ltd.",
-  //   email: "contact@ethiobuild.com",
-  //   phone: "+251 911 223 344",
-  //   address: "Bole Road, Addis Ababa",
-  //   taxId: "TIN-882910",
-  //   regNumber: "EB-2024-AA",
-  //   yearsInBusiness: "8",
-  //   categories: ["Construction", "Hardware"],
-  //   bio: "Leading supplier of premium building materials in East Africa.",
-  //   notifications: {
-  //     newRequests: true,
-  //     outbid: true,
-  //     messages: true,
-  //     wins: true,
-  //     weeklySummary: false,
-  //   },
-  // });
-
-  const [profile,setProfile]=useState(null)
+  const [profile, setProfile] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  useEffect(()=> {
-    fetch("http://localhost:21000/api/me", { credentials: "include" })
-      .then((res) => {
-        if (res.status === 401 ) {
-          throw new Error("Pleases Prove  your info pleases");
-        }
-        if (!res.ok) {
-          throw new Error("Error to dipalay user information");
-        }
-        return res.json();
-      })
-
-      .then((data) => {
-        setProfile({
-          businessName: data.businessName || "Ethio Build Ltd.",
-          email: data.email || "contact@ethiobuild.com",
-          phone: data.phone || "0979716502",
-          address: data.address || "Bole Road, Addis Ababa",
-          taxId: data.taxId || "TIN-882910",
-          regNumber: data.regNumber || "EB-2024-AA",
-          yearsInBusiness: data.yearsInBusiness || "8",
-          categories: data.categories || ["Construction", "Hardware"],
-          bio:
-            data.bio ||
-            "Leading supplier of premium building materials in East Africa.",
-          notifications: {
-            newRequests: true,
-            outbid: true,
-            messages: true,
-            wins: true,
-            weeklySummary: false,
-          },
+  useEffect(() => {
+    const getMyData = async () => {
+      try {
+        const res = await fetch("http://localhost:21000/api/me", {
+          credentials: "include",
         });
+
+        if (res.status === 401) {
+          // Only redirect if they aren't logged in
+          window.location.href = "/supplierform";
+          return;
+        }
+
+        if (!res.ok) throw new Error("Could not load profile");
+
+        const data = await res.json();
+        setProfile(data); // Just use the real data from your Map
         setLoading(false);
-      })
-      .catch((error) => {
-        console.log("error", error);
-        setError(error.message);
+      } catch (err) {
+        setError(err.message);
         setLoading(false);
-        console.log("Unable to fetch the data");
-        alert(error.message);
-        window.location.href = "/supplerform";
-      });
-  },[])
+      }
+    };
 
+    getMyData();
+  }, []);
 
-
-
-
-   // --- Show Loading Screen ---
-  if (loading) {
-    return (
-      <div className="flex items-center justify-center min-h-screen bg-[#f8fafc]">
-        <div className="text-center">
-          <div className="text-2xl font-bold text-slate-600">Loading profile...</div>
-          <div className="text-sm text-slate-400 mt-2">Please wait</div>
-        </div>
-      </div>
-    );
-  }
-
-  // --- Show Error Screen ---
-  if (error) {
-    return (
-      <div className="flex items-center justify-center min-h-screen bg-[#f8fafc]">
-        <div className="text-center">
-          <div className="text-2xl font-bold text-red-600">Error</div>
-          <div className="text-sm text-slate-600 mt-2">{error}</div>
-          <button 
-            onClick={() => window.location.href = "/login"}
-            className="mt-4 px-6 py-2 bg-blue-600 text-white rounded-lg"
-          >
-            Go to Login
-          </button>
-        </div>
-      </div>
-    );
-  }
-
-  // --- If no profile after loading (should not happen) ---
-  if (!profile) {
-    return (
-      <div className="flex items-center justify-center min-h-screen">
-        <div className="text-center">No profile data available</div>
-      </div>
-    );
-  }
   // --- Data State ---
   const [allRequests] = useState([
     {
@@ -237,6 +172,47 @@ const Supplier = () => {
   const [selectedRequest, setSelectedRequest] = useState(null);
   const [activeConversationId, setActiveConversationId] = useState(null);
   const [newMessage, setNewMessage] = useState("");
+
+  // --- Show Loading Screen ---
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center min-h-screen bg-[#f8fafc]">
+        <div className="text-center">
+          <div className="text-2xl font-bold text-slate-600">
+            Loading profile...
+          </div>
+          <div className="text-sm text-slate-400 mt-2">Please wait</div>
+        </div>
+      </div>
+    );
+  }
+
+  // --- Show Error Screen ---
+  if (error) {
+    return (
+      <div className="flex items-center justify-center min-h-screen bg-[#f8fafc]">
+        <div className="text-center">
+          <div className="text-2xl font-bold text-red-600">Error</div>
+          <div className="text-sm text-slate-600 mt-2">{error}</div>
+          <button
+            onClick={() => (window.location.href = "/login")}
+            className="mt-4 px-6 py-2 bg-blue-600 text-white rounded-lg"
+          >
+            Go to Login
+          </button>
+        </div>
+      </div>
+    );
+  }
+
+  // --- If no profile after loading (should not happen) ---
+  if (!profile) {
+    return (
+      <div className="flex items-center justify-center min-h-screen">
+        <div className="text-center">No profile data available</div>
+      </div>
+    );
+  }
 
   const handleBidSubmit = (newBid) => {
     setMyBids([newBid, ...myBids]);
