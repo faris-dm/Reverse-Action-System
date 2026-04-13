@@ -46,7 +46,7 @@ function App() {
           {/* login  page */}
           <Route path="/login" element={<LoginPage />} />
           {/* Supplier registor */}
-          <Route path="/supplerform" element={<SupplierRegitor />} />
+          <Route path="/supplierform" element={<SupplierRegitor />} />
           {/* Buyer Registor */}
           <Route path="/buyerform" element={<BuyerRegistor />} />
           {/* supplier  Dashboard */}
