@@ -5,7 +5,6 @@ let cookiesparser = require("cookie-parser");
 app.use(cookiesparser());
 let flash = require("express-flash");
 // let userMapStore = new Map();
-let refreshStore = [];
 const bcrypt = require("bcrypt");
 
 const cors = require("cors");
@@ -21,7 +20,7 @@ app.use(express.json());
 const { use } = require("passport");
 app.use(express.urlencoded({ extended: true }));
 const userMapStore = require("./models/storeage");
-let middlewareAuthToken = require("./middleware/auth");
+
 const { z } = require("zod");
 // import supplier Regidtor
 
@@ -41,7 +40,7 @@ app.use(login);
 const tokenRoute = require("./routes/token");
 app.use(tokenRoute);
 const daConnect = require("./config/database");
-const { funcTable } = require("./config/userTable");
+
 
 const Dashboard = require("./routes/Dashboard");
 app.use(Dashboard);
@@ -63,18 +62,8 @@ app.get("/api/auth/status", verifyTokens, (req, res) => {
   res.status(200).json({ loggedIn: true });
 });
 
-let secret = "W$q4=25*8%v-}UV";
-let RefreshTokenSecret = "W%&7=-^#-v}XL";
 
-// async function startDatabase() {
-//   try {
-//     console.log("creating the database");
-//     await funcTable();
-//   } catch (error) {
-//     console.log("table creationn failed", error);
-//   }
-// }
-// startDatabase();
+
 
 let signUp = z.object({
   name: z.string().min(3, "userName Must Be at least three characters "),
@@ -82,12 +71,7 @@ let signUp = z.object({
   password: z.string().min(5, "password must be five or more"),
 });
 
-// app.get("/register", (req, res) => {
-//   res.render("register.ejs");
-// });
-// app.get("/login", (req, res) => {
-//   res.render("login.ejs");
-// });
+
 
 app.post("/register", async (req, res) => {
   let resultZod = signUp.safeParse(req.body);
@@ -121,27 +105,7 @@ app.post("/register", async (req, res) => {
   }
 });
 
-// function generateAccess(user) {
-//   return jwt.sign(user, secret, { expiresIn: "15m" });
-// }
 
-// app.post("/token", (req, res) => {
-//   let authHeaderToken = req.body.token;
-//   if (!authHeaderToken) {
-//     res.status(401).send("No refresh Token found");
-//   } else if (!refreshStore.includes(authHeaderToken)) {
-//     res.status(401).send("Token does not much");
-//   }
-//   jwt.verify(authHeaderToken, RefreshTokenSecret, (err, user) => {
-//     if (err) return res.status(403).send("Error happend Pleases check again");
-//     let playload = {
-//       email: user.email,
-//       name: user.name,
-//     };
-//     let accessTokens = generateAccess(playload);
-//     res.json({ accessTokens: accessTokens });
-//   });
-// });
 app.get("/test", (req, res) => {
   console.log("🔵 TEST ROUTE WAS ACCESSED!");
   res.send("If you see this, the server is working!");

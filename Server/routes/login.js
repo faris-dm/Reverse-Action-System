@@ -54,8 +54,7 @@ router.post("/api/login", async (req, res) => {
           expiresIn: "7d",
         }
       );
-      console.log("accessTokens", accessToken);
-      console.log("refreshtoken", refreshToken);
+     
 
       foundUser.refreshToken = refreshToken;
       UserStorage.set(cleanEmail, foundUser);
@@ -76,7 +75,7 @@ router.post("/api/login", async (req, res) => {
         maxAge: 7 * 24 * 60 * 60 * 1000,
       });
 
-      return res.json({ success: true, message: "Login successful" });
+      return res.json({ success: true, message: "Login successful",role:foundUser.role });
       // return res.json({
       //   accessTokens: accessTokens,
       //   RefreshTokens: RefreshTokens,

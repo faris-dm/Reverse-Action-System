@@ -7,8 +7,7 @@ const router = express.Router();
 router.use(cookiesparser());
 const UserStorage = require("../models/storeage");
 const bcrypt = require("bcrypt");
-const { ref } = require("process");
-const { access } = require("fs/promises");
+
 router.use(express.json());
 router.use(express.urlencoded({ extended: true }));
 
@@ -37,7 +36,7 @@ router.post("/api/supplierRegistor", async (req, res) => {
   if (password !== confirmPassword) {
     return res.status(400).json({
       success: false,
-      message: "Password confiemation filed",
+      message: "Password is not simmilar filed",
     });
   }
 
@@ -87,7 +86,6 @@ router.post("/api/supplierRegistor", async (req, res) => {
     // 8. Set cookies
     res.cookie("token", accessToken, {
       httpOnly: true,
-
       sameSite: "strict",
       maxAge: 15 * 60 * 1000,
     });
@@ -101,16 +99,7 @@ router.post("/api/supplierRegistor", async (req, res) => {
     // Log all data to console
     console.log("=== REGISTRATION DEBUG ===");
 
-    console.log("All fields:", {
-      fullName: req.body.fullName,
-      email: req.body.email,
-      phone: req.body.phone,
-      password: req.body.password,
-      confirmPassword: req.body.confirmPassword,
-      businessName: req.body.businessName,
-      businessType: req.body.businessType,
-      agreementsAccepted: req.body.agreementsAccepted,
-    });
+  
 
     return res.status(201).json({
       success: true,

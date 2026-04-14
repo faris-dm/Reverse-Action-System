@@ -1,13 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import {
-  User,
-  Mail,
-  Phone,
-  Lock,
-  Building2,
   ChevronRight,
-  ShieldCheck,
   TrendingDown,
   Eye,
   EyeOff,
@@ -107,15 +101,10 @@ const App = () => {
       );
 
       const data = await response.json();
-      console.log("=== FRONTEND DEBUG ===");
       console.log("Form data being sent:", formData);
 
       // Check if all required fields exist
       if (!formData.fullName) console.log("❌ Missing fullName");
-      if (!formData.email) console.log("❌ Missing email");
-      if (!formData.password) console.log("❌ Missing password");
-      if (!formData.confirmPassword) console.log("❌ Missing confirmPassword");
-      if (!formData.businessName) console.log("❌ Missing businessName");
 
       if (!response.ok) {
         // Backend returned an error (Zod validation or business logic)
@@ -129,7 +118,7 @@ const App = () => {
         return;
       }
 
-      // Success: show success screen
+      // Success: show success  in the screen
       window.location.href = "/supplier";
     } catch (error) {
       // Network or unexpected error
