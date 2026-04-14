@@ -48,6 +48,27 @@ const LoginPage = () => {
   //   }
   // };
 
+  // ADD THIS GUARD
+  React.useEffect(() => {
+    const checkExistingSession = async () => {
+      try {
+        const res = await fetch("http://localhost:21000/api/auth/status", {
+          credentials: "include",
+        });
+        const data = await res.json();
+
+        if (res.ok) {
+          // If they already have a session, send them to their dashboard
+          if (data.role === "supplier") window.location.href = "/supplier";
+          else if (data.role === "buyer") window.location.href = "/buyer";
+        }
+      } catch (err) {
+        // Not logged in? Perfect, stay on the login page.
+      }
+    };
+    checkExistingSession();
+  }, []);
+
   // No frontend validation – all validation happens on the backend (Zod)
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -89,8 +110,17 @@ const LoginPage = () => {
       }
 
       // ✅ Success: redirect to supplier dashboard
-      console.log("🎉 login successful, redirecting to /supplier");
-      window.location.href = "/buyer";
+      console.log("🎉 login successful, redirecting  roles");
+
+      if (data.role === "supplier") {
+        window.location.href = "/supplier";
+      }
+      if (data.role === "buyer") {
+        window.location.href = "/buyer";
+      }
+      if (data.role === "admin") {
+        window.location.href = "/admin";
+      }
     } catch (error) {
       // Network or unexpected error
       console.error("❌ Network error:", error);
