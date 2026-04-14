@@ -1,15 +1,9 @@
-import React, { useState } from "react";
+import React, { useState,useEffect } from "react";
 import { Link } from "react-router-dom";
-import {
-  ChevronLeft,
-  Eye,
-  EyeOff,
-  Check,
-  Globe,
-  TrendingDown,
-} from "lucide-react";
+import { ChevronLeft, Eye, EyeOff, Check, TrendingDown } from "lucide-react";
 
 const BuyerRegistor = () => {
+  const [checkingAuth, setCheckingAuth] = useState(true);
   const [showPassword, setShowPassword] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [formData, setFormData] = useState({
@@ -20,7 +14,6 @@ const BuyerRegistor = () => {
     confirmPassword: "",
     companyName: "",
     companyType: "",
-    industrySector: "",
     position: "",
     companyAddress: "",
     accountPurpose: "",
@@ -77,10 +70,6 @@ const BuyerRegistor = () => {
       newErrors.companyType = "Please select a company type";
     }
 
-    if (!formData.industrySector) {
-      newErrors.industrySector = "Please select an industry sector";
-    }
-
     // Section 3: Basic Details
     if (!formData.position) {
       newErrors.position = "Position/Role is required";
@@ -106,11 +95,28 @@ const BuyerRegistor = () => {
     return Object.keys(newErrors).length === 0;
   };
 
+
+   useEffect(() => {
+     const loggedInOnly = async () => {
+       try {
+         const res = await fetch("http://localhost:21000/api/auth/status", {
+           credentials: "include",
+         });
+         if (res.ok) window.location.href = "/buyer";
+         setCheckingAuth(false);
+       } catch (err) {
+         setCheckingAuth(false);
+         /* Not logged in, stay here */
+       }
+     };
+     loggedInOnly();
+   }, []);
+
   const handleSubmit = async (e) => {
     e.preventDefault();
 
     if (!validate()) {
-      console.log("Buyer Registration is not filled Proparly");
+      tokee.log("Buyer Registration form  is not filled Proparly");
       return;
     }
 
@@ -146,7 +152,10 @@ const BuyerRegistor = () => {
       }
 
       // Success: show success screen
-      window.location.href = "/buyer";
+      if (response.ok) {
+        console.log("🎉 Buyer Registered!");
+        window.location.href = "/buyer";
+      }
     } catch (error) {
       // Network or unexpected error
       console.error("Network error:", error);
@@ -378,7 +387,7 @@ const BuyerRegistor = () => {
                       name="companyType"
                       value={formData.companyType}
                       onChange={handleInputChange}
-                      className="px-4 py-3 border border-gray-300 rounded-lg focus:border-[#108a00] focus:ring-4 focus:ring-[#108a00]/5 outline-none bg-white transition-all appearance-none"
+                      className="px-10 py-3 border border-gray-300 rounded-lg focus:border-[#108a00] focus:ring-4 focus:ring-[#108a00]/5 outline-none bg-white transition-all appearance-none"
                     >
                       <option value="">Select type</option>
                       <option>Construction Company</option>
@@ -388,7 +397,7 @@ const BuyerRegistor = () => {
                       <option>Individual</option>
                     </select>
                   </div>
-                  <div className="flex flex-col gap-2">
+                  {/* <div className="flex flex-col gap-2">
                     <label className="text-[13px] uppercase tracking-wider font-bold text-gray-500">
                       Industry Sector
                     </label>
@@ -404,7 +413,7 @@ const BuyerRegistor = () => {
                       <option>Commercial</option>
                       <option>Residential</option>
                     </select>
-                  </div>
+                  </div> */}
                 </div>
               </div>
             </section>
@@ -500,10 +509,18 @@ const BuyerRegistor = () => {
               <div className="space-y-4 pt-4">
                 <button
                   type="submit"
-                  disabled={!formData.termsAccepted}
-                  className="w-full bg-blue-600 disabled:bg-gray-300 disabled:shadow-none text-white py-4 rounded-full font-bold text-xl hover:bg-blue-800 transition-all shadow-lg shadow-[#108a00]/20 active:scale-[0.98]"
+                  disabled={isSubmitting}
+                  className="w-full py-4 bg-[#14a800] text-white font-bold rounded-full hover:bg-[#108a00] active:scale-[0.98] transition-all disabled:opacity-70 text-[18px] flex items-center justify-center gap-3 shadow-lg shadow-[#14a800]/20"
                 >
-                  Create an account
+                  {isSubmitting ? (
+                    <>
+                      {/* 3. Added a dedicated text so they know WHAT is happening */}
+                      <div className="w-6 h-6 border-2 border-white/20 border-t-white rounded-full animate-spin" />
+                      <span>Processing...</span>
+                    </>
+                  ) : (
+                    "Create my account"
+                  )}
                 </button>
 
                 <div className="text-center">
