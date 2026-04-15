@@ -14,7 +14,7 @@ import { Header } from "./layouts/Header";
 
 // Import modals
 import { BidModal } from "./modals/BidModal";
-import { Phone } from "lucide-react";
+
 
 const Supplier = () => {
   // ADD THESE LINES at the top of your component

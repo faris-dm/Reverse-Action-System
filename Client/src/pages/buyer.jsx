@@ -39,7 +39,8 @@ const App = () => {
   const [isSidebarOpen, setSidebarOpen] = useState(false);
 
   // Dynamic User State
-  const [userProfile, setUserProfile] = useState({
+  const [userProfile, setUserProfile] = useState(
+    {
     name: "Alex Thompson",
     email: "alex.t@industrial-procure.com",
     phone: "+1 (555) 0123-4567",
@@ -692,9 +693,9 @@ const App = () => {
                 />
                 <input
                   type="text"
-                  value={userProfile.name}
+                  value={userProfile.fullName}
                   onChange={(e) =>
-                    setUserProfile({ ...userProfile, name: e.target.value })
+                    setUserProfile({ ...userProfile, fullName: e.target.value })
                   }
                   className="w-full bg-white/5 border border-white/10 rounded-2xl pl-14 pr-6 py-5 text-sm text-white focus:outline-none focus:border-[#C0C0C0]"
                 />
@@ -711,15 +712,24 @@ const App = () => {
                 />
                 <input
                   type="text"
-                  value={userProfile.company}
+                  value={userProfile.businessName}
                   onChange={(e) =>
-                    setUserProfile({ ...userProfile, company: e.target.value })
+                    setUserProfile({
+                      ...userProfile,
+                      businessName: e.target.value,
+                    })
                   }
                   className="w-full bg-white/5 border border-white/10 rounded-2xl pl-14 pr-6 py-5 text-sm text-white focus:outline-none focus:border-[#C0C0C0]"
                 />
               </div>
             </div>
           </div>
+
+          {/* added here */}
+
+
+
+          {/*  */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
             <div className="space-y-2">
               <label className="text-[10px] font-black text-[#64748B] uppercase tracking-widest ml-1">
@@ -760,6 +770,12 @@ const App = () => {
               </div>
             </div>
           </div>
+
+
+          {/* added one */}
+
+
+          {/* added  */}
         </div>
         <div className="flex items-center gap-4">
           <button
@@ -792,7 +808,7 @@ const App = () => {
             <Gavel size={24} className="text-[#0F1115]" />
           </div>
           <span className="text-2xl font-black text-white italic uppercase tracking-tighter">
-            REVERSE<span className="text-[#C0C0C0]"> - AUCTION</span>
+            Bid<span className="text-[#C0C0C0]"> - Snart</span>
           </span>
         </div>
         <nav className="flex-1 px-6 mt-10 space-y-2">

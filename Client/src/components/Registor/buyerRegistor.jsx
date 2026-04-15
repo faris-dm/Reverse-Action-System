@@ -1,4 +1,4 @@
-import React, { useState,useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { ChevronLeft, Eye, EyeOff, Check, TrendingDown } from "lucide-react";
 
@@ -95,28 +95,27 @@ const BuyerRegistor = () => {
     return Object.keys(newErrors).length === 0;
   };
 
-
-   useEffect(() => {
-     const loggedInOnly = async () => {
-       try {
-         const res = await fetch("http://localhost:21000/api/auth/status", {
-           credentials: "include",
-         });
-         if (res.ok) window.location.href = "/buyer";
-         setCheckingAuth(false);
-       } catch (err) {
-         setCheckingAuth(false);
-         /* Not logged in, stay here */
-       }
-     };
-     loggedInOnly();
-   }, []);
+  useEffect(() => {
+    const loggedInOnly = async () => {
+      try {
+        const res = await fetch("http://localhost:21000/api/auth/status", {
+          credentials: "include",
+        });
+        if (res.ok) window.location.href = "/buyer";
+        setCheckingAuth(false);
+      } catch (err) {
+        setCheckingAuth(false);
+        /* Not logged in, stay here */
+      }
+    };
+    loggedInOnly();
+  }, []);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
 
     if (!validate()) {
-      tokee.log("Buyer Registration form  is not filled Proparly");
+      console.log("Buyer Registration form  is not filled Proparly");
       return;
     }
 
