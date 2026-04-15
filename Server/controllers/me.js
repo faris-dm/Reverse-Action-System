@@ -12,7 +12,7 @@ router.get("/", verifyTokens, (req, res) => {
     const userFromStorage = UserStorage.get(userEmail);
 
     if (!userFromStorage) {
-      return res.status(404).json({ message: "User not found" });
+      return res.status(404).json({ message: "User not found in the storage" });
     }
 
     if (userFromStorage.role === "supplier") {

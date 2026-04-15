@@ -41,7 +41,6 @@ const tokenRoute = require("./routes/token");
 app.use(tokenRoute);
 const daConnect = require("./config/database");
 
-
 const Dashboard = require("./routes/Dashboard");
 app.use(Dashboard);
 const Logout = require("./routes/logout");
@@ -49,7 +48,7 @@ app.use(Logout);
 const MeRoute = require("./controllers/me");
 const verifyTokens = require("./middleware/tokenVerify");
 
-app.use("/api/me", verifyTokens,MeRoute);
+app.use("/api/me", verifyTokens, MeRoute);
 
 app.use((req, res, next) => {
   req.db = daConnect;
@@ -62,16 +61,11 @@ app.get("/api/auth/status", verifyTokens, (req, res) => {
   res.status(200).json({ loggedIn: true });
 });
 
-
-
-
 let signUp = z.object({
   name: z.string().min(3, "userName Must Be at least three characters "),
   email: z.string().email("Please Inser Valid @ email"),
   password: z.string().min(5, "password must be five or more"),
 });
-
-
 
 app.post("/register", async (req, res) => {
   let resultZod = signUp.safeParse(req.body);
@@ -104,7 +98,6 @@ app.post("/register", async (req, res) => {
     res.redirect("register");
   }
 });
-
 
 app.get("/test", (req, res) => {
   console.log("🔵 TEST ROUTE WAS ACCESSED!");

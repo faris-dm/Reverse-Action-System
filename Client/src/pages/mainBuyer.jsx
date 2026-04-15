@@ -35,12 +35,40 @@ import {
 
 function App() {
   // --- CORE STATE ---
+  const [profile, setProfile] = useState(null);
   const [activeTab, setActiveTab] = useState("dashboard");
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
   const [isSignOutModalOpen, setIsSignOutModalOpen] = useState(false);
   const [isSidebarOpen, setSidebarOpen] = useState(false);
   const [formStep, setFormStep] = useState(1);
   const [selectedConversation, setSelectedConversation] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+  useEffect(() => {
+    const getBuyerData = async () => {
+      try {
+        const respond = await fetch("http://localhost:21000/api/me", {
+          credentials: "include",
+        });
+        if (respond.status === 401) {
+          window.location.href = "/BuyerRegistor";
+          return;
+        }
+
+        if (!respond.ok) {
+          throw new Error("could not load the data to biyrt profile");
+        }
+
+        const data = await respond.json();
+        setProfile(data);
+        setLoading(false);
+      } catch (err) {
+        setError(err.message);
+        setLoading(false);
+      }
+    };
+    getBuyerData();
+  }, []);
 
   // --- DATA STATE ---
   const [newRfp, setNewRfp] = useState({
@@ -324,14 +352,19 @@ function App() {
             >
               <div className="text-right hidden sm:block">
                 <p className="text-[10px] font-black uppercase tracking-tight">
-                  John Doe
+                  {profile?.fullName || "Lading ......."}.toUpperCase()
                 </p>
                 <p className="text-[8px] font-black text-slate-400 uppercase tracking-widest">
-                  Master Buyer
+                  {profile?.role || "Buyer"}
                 </p>
               </div>
               <div className="w-12 h-12 bg-slate-900 rounded-[18px] flex items-center justify-center text-white font-black text-sm shadow-xl hover:bg-blue-600 transition-colors">
-                JD
+                {profile?.fullName
+                  ? profile.fullName
+                      .split(" ")
+                      .map((n) => n[0])
+                      .join("")
+                  : "..."}
               </div>
             </div>
           </div>
@@ -355,7 +388,7 @@ function App() {
                     onClick={() => setIsCreateModalOpen(true)}
                     className="px-8 py-5 bg-blue-600 text-white font-black text-[10px] uppercase tracking-[0.3em] rounded-[24px] shadow-2xl hover:bg-blue-700 active:scale-95 transition-all flex items-center gap-3 w-fit"
                   >
-                    <Plus size={18} /> Create RFP
+                    <Plus size={18} /> Create Auction
                   </button>
                 </div>
                 <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
@@ -397,7 +430,7 @@ function App() {
                                 {req.title}
                               </p>
                               <p className="text-[9px] font-black text-slate-400 uppercase tracking-widest">
-                                Update received • 2m ago
+                                Update received • 3m ago
                               </p>
                             </div>
                           </div>
@@ -727,6 +760,40 @@ function App() {
 
             {activeTab === "settings" && (
               <div className="space-y-10 animate-in fade-in duration-500">
+                {/* ✅ ADD THIS - Show loading spinner */}
+                {loading && (
+                  <div className="flex justify-center items-center py-20">
+                    <div className="text-center">
+                      <div className="w-12 h-12 border-4 border-blue-600 border-t-transparent rounded-full animate-spin mx-auto"></div>
+                      <p className="mt-4 text-slate-500">
+                        Loading your profile...
+                      </p>
+                    </div>
+                  </div>
+                )}
+
+                {/* ✅ ADD THIS - Show error message */}
+                {error && (
+                  <div className="bg-red-50 border border-red-200 rounded-2xl p-6 text-center">
+                    <p className="text-red-600 font-bold">Error: {error}</p>
+                    <button
+                      onClick={() => window.location.reload()}
+                      className="mt-4 px-6 py-2 bg-red-600 text-white rounded-xl text-sm"
+                    >
+                      Try Again
+                    </button>
+                  </div>
+                )}
+
+                {/* ✅ ADD THIS - Show settings only when profile is loaded */}
+                {!loading && !error && profile && (
+                  <>{/* Your existing settings JSX goes here */}</>
+                )}
+              </div>
+            )}
+
+            {activeTab === "settings" && (
+              <div className="space-y-10 animate-in fade-in duration-500">
                 <div className="flex justify-between items-end">
                   <div>
                     <h2 className="text-4xl font-black uppercase italic tracking-tighter">
@@ -742,15 +809,21 @@ function App() {
                     <BentoCard>
                       <div className="flex flex-col items-center text-center">
                         <div className="relative group">
-                          <div className="w-32 h-32 rounded-[40px] bg-slate-900 flex items-center justify-center text-white text-4xl font-black shadow-2xl">
-                            JD
+                          <div
+                            key={profile?.companyName}
+                            className="w-32 h-32 rounded-[40px] bg-slate-900 flex items-center justify-center text-white text-4xl font-black shadow-2xl"
+                          >
+                            {profile?.companyName}
                           </div>
                           <button className="absolute -bottom-2 -right-2 p-3 bg-blue-600 text-white rounded-2xl shadow-lg hover:scale-110 transition-transform">
                             <Camera size={18} />
                           </button>
                         </div>
-                        <h3 className="text-xl font-black uppercase text-slate-900 mt-6">
-                          John Doe
+                        <h3
+                          key={profile?.fullName}
+                          className="text-xl font-black uppercase text-slate-900 mt-6"
+                        >
+                          {(profile?.fullName || "Jone Done").toUpperCase()}
                         </h3>
                         <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest">
                           Procurement Director
@@ -765,7 +838,7 @@ function App() {
                                 Email Address
                               </p>
                               <p className="text-[10px] font-black uppercase text-slate-900">
-                                john.doe@enterprise.com
+                                {profile?.email}
                               </p>
                             </div>
                           </div>
@@ -794,19 +867,106 @@ function App() {
                             Full Name
                           </label>
                           <input
-                            defaultValue="John Doe"
+                            key={profile?.fullName}
+                            defaultValue={(
+                              profile?.fullName || "Jone Doe"
+                            ).toUpperCase()}
                             className="w-full bg-slate-50 border border-slate-100 rounded-[20px] p-4 text-xs font-bold outline-none focus:border-blue-600"
                           />
                         </div>
+                        {/* phone */}
                         <div className="space-y-2">
                           <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">
-                            Company
+                            Phone
                           </label>
                           <input
-                            defaultValue="Enterprise Logistics Co."
+                            key={profile?.phone}
+                            defaultValue={profile?.phone || "+251987307655"}
                             className="w-full bg-slate-50 border border-slate-100 rounded-[20px] p-4 text-xs font-bold outline-none focus:border-blue-600"
                           />
                         </div>
+
+                        {/* added new */}
+                        {/* email */}
+                        <div className="space-y-2">
+                          <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">
+                            email
+                          </label>
+                          <input
+                            key={profile?.email}
+                            defaultValue={profile?.email || "solonan@gmail.com"}
+                            className="w-full bg-slate-50 border border-slate-100 rounded-[20px] p-4 text-xs font-bold outline-none focus:border-blue-600"
+                          />
+                        </div>
+
+                        {/* business Name */}
+                        <div className="space-y-2">
+                          <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">
+                            business Name
+                          </label>
+                          <input
+                            key={profile?.companyName}
+                            defaultValue={profile?.companyName}
+                            className="w-full bg-slate-50 border border-slate-100 rounded-[20px] p-4 text-xs font-bold outline-none focus:border-blue-600"
+                          />
+                        </div>
+                        {/* address */}
+                        <div className="space-y-2">
+                          <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">
+                            Address
+                          </label>
+                          <input
+                            key={
+                              profile?.companyAddress ||
+                              "Jimma City City Center"
+                            }
+                            defaultValue={
+                              profile?.companyAddress ||
+                              "City Center ,Jimmax City"
+                            }
+                            className="w-full bg-slate-50 border border-slate-100 rounded-[20px] p-4 text-xs font-bold outline-none focus:border-blue-600"
+                          />
+                        </div>
+
+                        {/* tax Id */}
+
+                        <div className="space-y-2">
+                          <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">
+                            Tin Number
+                          </label>
+                          <input
+                            key={profile?.taxId}
+                            defaultValue={profile?.taxId || "Tin= DER4567TY"}
+                            className="w-full bg-slate-50 border border-slate-100 rounded-[20px] p-4 text-xs font-bold outline-none focus:border-blue-600"
+                          />
+                        </div>
+
+                        {/* business express  */}
+                        <div className="space-y-2">
+                          <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">
+                            Business Expreance
+                          </label>
+                          <input
+                            key={profile?.yearsInBusiness}
+                            defaultValue={
+                              profile?.yearsInBusiness || "Bigginer "
+                            }
+                            className="w-full bg-slate-50 border border-slate-100 rounded-[20px] p-4 text-xs font-bold outline-none focus:border-blue-600"
+                          />
+                        </div>
+
+                        {/* catagores */}
+                        <div className="space-y-2">
+                          <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">
+                            Buyer Catagories
+                          </label>
+                          <input
+                            defaultValue="Construction"
+                            className="w-full bg-slate-50 border border-slate-100 rounded-[20px] p-4 text-xs font-bold outline-none focus:border-blue-600"
+                          />
+                        </div>
+
+                        {/* added alol */}
                       </div>
                     </BentoCard>
                     <BentoCard title="Security & Authentication" icon={Lock}>
@@ -945,6 +1105,7 @@ function App() {
                         <option>IT Services</option>
                         <option>Logistics</option>
                         <option>Office Supplies</option>
+                        <option>Metal Supplier</option>
                       </select>
                     </div>
                     <div className="space-y-2">
