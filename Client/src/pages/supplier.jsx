@@ -1,17 +1,10 @@
 import React, { useState } from "react";
 import {
-  User,
-  Mail,
-  Phone,
-  Lock,
-  Building2,
   ChevronRight,
-  ShieldCheck,
   TrendingDown,
   Eye,
   EyeOff,
   CheckCircle2,
-  ArrowLeft,
 } from "lucide-react";
 
 const App = () => {
@@ -250,7 +243,7 @@ const App = () => {
                         name="phone"
                         value={formData.phone}
                         onChange={handleInputChange}
-                        placeholder="+1 (555) 000-0000"
+                        placeholder="+251-987-304-403"
                         className="w-full px-4 py-3 rounded-lg border border-[#d5e0d5] focus:border-[#14a800] outline-none transition-all text-[15px]"
                       />
                     </div>

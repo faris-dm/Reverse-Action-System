@@ -12,7 +12,7 @@ import {
 } from "lucide-react";
 import { InputField } from "../common/InputField";
 import FileUploadCard from "../common/FileUploadCard";
-import { data } from "react-router-dom";
+
 
 export const SettingsView = ({ profile, setProfile }) => {
   const [user, setuser] = useState(null);
