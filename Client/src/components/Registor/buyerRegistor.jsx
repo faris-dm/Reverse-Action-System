@@ -90,9 +90,9 @@ const BuyerRegistor = () => {
 
     // Set errors to state
     setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
 
     // Return true if no errors, false if there are errors
-    return Object.keys(newErrors).length === 0;
   };
 
   useEffect(() => {
@@ -137,6 +137,7 @@ const BuyerRegistor = () => {
       });
 
       const data = await response.json();
+      if (!data.fullName) console.log("Missing");
 
       if (!response.ok) {
         // Backend returned an error (Zod validation or business logic)

@@ -1,5 +1,5 @@
 // src/components/supplier/views/SettingsView.jsx
-import React, { useState, useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import {
   Building2,
   ShieldCheck,
@@ -13,12 +13,30 @@ import {
 import { InputField } from "../common/InputField";
 import FileUploadCard from "../common/FileUploadCard";
 
-
 export const SettingsView = ({ profile, setProfile }) => {
-  const [user, setuser] = useState(null);
   const [isSaving, setIsSaving] = useState(false);
   const [activeSection, setActiveSection] = useState("business");
   const [showDeleteModal, setShowDeleteModal] = useState(false);
+
+  async function DoneDelite() {
+    try {
+      const response = await fetch("http://localhost:21000/api/logout", {
+        credentials: "include",
+        method: "POST",
+      });
+
+      if (response.status === 401) {
+        window.location.href = "/supplier";
+        return;
+      }
+      if (!response.ok) {
+        throw new Error("could not Delete  the tokens from the buyer profile");
+      }
+      window.location.href = "/login";
+    } catch (error) {
+      console.error("Network error:", error);
+    }
+  }
 
   const handleSave = (e) => {
     e.preventDefault();
@@ -33,12 +51,6 @@ export const SettingsView = ({ profile, setProfile }) => {
     { id: "verification", label: "Trust & Verification", icon: ShieldCheck },
     { id: "security", label: "Account Security", icon: Lock },
   ];
-
-  // useEffect(() => {
-  //   fetch("http://localhost:21000/api/me", { credentials: "include" })
-  //     .then((res) => res.json())
-  //     .then((data) => setuser(data));
-  // }, []);
 
   return (
     <div className="max-w-6xl mx-auto space-y-10 animate-in fade-in duration-700 pb-20">
@@ -296,7 +308,7 @@ export const SettingsView = ({ profile, setProfile }) => {
                   </div>
                 </div>
                 <p className="text-sm font-bold text-red-800 leading-relaxed max-w-xl">
-                  Once you delete your account, there is no going back. All your
+                  Once you Logout your account, there is no going back. All your
                   bid history, won contracts, and communication will be
                   permanently removed.
                 </p>
@@ -305,7 +317,7 @@ export const SettingsView = ({ profile, setProfile }) => {
                   onClick={() => setShowDeleteModal(true)}
                   className="px-8 py-4 bg-red-600 text-white rounded-2xl font-black text-sm hover:bg-red-700 transition-all shadow-lg shadow-red-200"
                 >
-                  Delete My Account
+                  Logout My Account
                 </button>
               </section>
             </div>
@@ -383,15 +395,17 @@ export const SettingsView = ({ profile, setProfile }) => {
               Are you sure?
             </h3>
             <p className="text-slate-500 font-bold mt-3 leading-relaxed">
-              This will permanently delete your account and all associated data.
-              This action cannot be undone.
+              {/* This will permanently */}
+              This will logout your account and all associated data. This action
+              cannot be undone.
             </p>
             <div className="mt-8 space-y-3">
               <button
-                onClick={() => setShowDeleteModal(false)}
+                onClick={() => DoneDelite()}
                 className="w-full py-4 bg-red-600 text-white rounded-2xl font-black text-sm hover:bg-red-700 transition-all shadow-lg shadow-red-100"
               >
-                Yes, Delete Permanently
+                {/* Yes, Delete Permanently */}
+                Yes logout Now
               </button>
               <button
                 onClick={() => setShowDeleteModal(false)}

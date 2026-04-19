@@ -121,6 +121,7 @@ const App = () => {
       // Success: show success  in the screen
       window.location.href = "/supplier";
     } catch (error) {
+      
       // Network or unexpected error
       console.error("Network error:", error);
       setErrors({ server: "Network error. Please check your connection." });
