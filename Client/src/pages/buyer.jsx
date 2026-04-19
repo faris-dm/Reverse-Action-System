@@ -39,8 +39,7 @@ const App = () => {
   const [isSidebarOpen, setSidebarOpen] = useState(false);
 
   // Dynamic User State
-  const [userProfile, setUserProfile] = useState(
-    {
+  const [userProfile, setUserProfile] = useState({
     name: "Alex Thompson",
     email: "alex.t@industrial-procure.com",
     phone: "+1 (555) 0123-4567",
@@ -727,8 +726,6 @@ const App = () => {
 
           {/* added here */}
 
-
-
           {/*  */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
             <div className="space-y-2">
@@ -771,9 +768,7 @@ const App = () => {
             </div>
           </div>
 
-
           {/* added one */}
-
 
           {/* added  */}
         </div>
