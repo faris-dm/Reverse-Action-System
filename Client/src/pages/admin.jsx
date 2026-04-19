@@ -18,6 +18,7 @@ import {
   ChevronRight,
   Filter,
   X,
+  AwardIcon,
 } from "lucide-react";
 
 // --- INITIAL DATA ---
@@ -90,6 +91,7 @@ const INITIAL_SUPPLIERS = [
 ];
 
 const AdminApp = () => {
+  const [profile, setProfile] = useState(null);
   const [activeTab, setActiveTab] = useState("dashboard");
   const [isSidebarOpen, setSidebarOpen] = useState(false);
   const [selectedSupplierId, setSelectedSupplierId] = useState(null);
@@ -99,6 +101,44 @@ const AdminApp = () => {
     reason: "",
     supplierId: null,
   });
+
+  useEffect(() => {
+    const REandoumFun = async () => {
+      try {
+        const res = await fetch("http://localhost:21000/api/auth/status", {
+          credentials: "include",
+        });
+        if (!res.ok) window.location.href = "/supplerform";
+      } catch (err) {
+        window.location.href = "/supplerform";
+      }
+    };
+    REandoumFun();
+  }, []);
+
+  useEffect(() => {
+    const AdminFetch = async () => {
+      try {
+        const adminDataFetch = await fetch("http://localhost:21000/api/me", {
+          credentials: "include",
+          signal: controller.signal,
+        });
+
+        if (adminDataFetch.status === 401) {
+          window.location.href = "/login";
+          return;
+        }
+        if (!adminDataFetch.ok) throw new Error("Could not load profile");
+
+        const data = await adminDataFetch.json();
+        setProfile(data);
+      } catch (error) {
+        console.error("Fetch error:", error);
+        setError(error.message);
+      }
+    };
+    AdminFetch();
+  }, []);
 
   const selectedSupplier = useMemo(
     () => suppliers.find((s) => s.id === selectedSupplierId),

@@ -1,7 +1,7 @@
 // src/components/supplier/Supplier.jsx
 import React, { useEffect, useState } from "react";
 import { Sidebar } from "./layouts/Sidebar";
-import { useNavigate } from "react-router-dom"; 
+import { useNavigate } from "react-router-dom";
 
 // Import views
 import { OverviewView } from "./views/OverviewView";
@@ -15,7 +15,6 @@ import { Header } from "./layouts/Header";
 // Import modals
 import { BidModal } from "./modals/BidModal";
 
-
 const Supplier = () => {
   // ADD THESE LINES at the top of your component
   useEffect(() => {
@@ -24,9 +23,9 @@ const Supplier = () => {
         const res = await fetch("http://localhost:21000/api/auth/status", {
           credentials: "include",
         });
-        if (!res.ok) window.location.href = "/supplerform";
+        if (!res.ok) window.location.href = "/supplierform";
       } catch (err) {
-        window.location.href = "/supplerform";
+        window.location.href = "/supplierform";
       }
     };
     REandoumFun();
@@ -266,7 +265,7 @@ const Supplier = () => {
 
       <div className="flex-1 flex flex-col min-w-0 h-screen overflow-hidden">
         <Header
-          businessName={profile.businessName}
+          businessName={profile?.businessName || "Aman"}
           onMenuClick={() => setIsSidebarOpen(true)}
         />
 

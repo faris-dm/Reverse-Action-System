@@ -35,19 +35,6 @@ const LoginPage = () => {
     return newErrors;
   };
 
-  // THIS IS THE ONLY PLACE THE API CALL SHOULD LIVE
-  // const handleInputChange = (e) => {
-  //   const { name, value, type, checked } = e.target;
-  //   setFormData((prev) => ({
-  //     ...prev,
-  //     [name]: type === "checkbox" ? checked : value,
-  //   }));
-  //   // Clear error for this field when user starts typing
-  //   if (errors[name]) {
-  //     setErrors((prev) => ({ ...prev, [name]: null }));
-  //   }
-  // };
-
   // ADD THIS GUARD
   React.useEffect(() => {
     const checkExistingSession = async () => {
@@ -61,6 +48,7 @@ const LoginPage = () => {
           // If they already have a session, send them to their dashboard
           if (data.role === "supplier") window.location.href = "/supplier";
           else if (data.role === "buyer") window.location.href = "/buyer";
+          else if (data.role === "admin") window.location.href = "/admin";
         }
       } catch (err) {
         // Not logged in? Perfect, stay on the login page.
