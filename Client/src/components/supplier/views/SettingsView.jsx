@@ -331,7 +331,7 @@ export const SettingsView = ({ profile, setProfile }) => {
 
             <div className="text-center space-y-4">
               <div className="w-24 h-24 bg-white/10 rounded-3xl mx-auto flex items-center justify-center text-4xl font-black border border-white/10 shadow-inner">
-                {profile.businessName[0]}
+                {profile.businessName?.[0] || "?"}
               </div>
               <div>
                 <h4 className="text-xl font-black">{profile.businessName}</h4>
