@@ -8,8 +8,10 @@ import {
   CheckCircle2,
   ArrowLeft,
 } from "lucide-react";
+import { useNavigate } from "react-router-dom";
 
 const App = () => {
+  const navigate = useNavigate();
   const [checkingAuth, setCheckingAuth] = useState(true);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitted, setSubmitted] = useState(false);
@@ -62,8 +64,18 @@ const App = () => {
         const res = await fetch("http://localhost:21000/api/auth/status", {
           credentials: "include",
         });
-        if (res.ok) window.location.href = "/supplier";
-        setCheckingAuth(false);
+        if (res.ok) {
+          const data = await res.json(); // Assuming your backend sends { role: 'admin' }
+
+          // Route them based on their power level
+          if (data.role === "admin") {
+            navigate("/admin", { replace: true });
+          } else if (data.role === "buyer") {
+            navigate("/buyer", { replace: true });
+          } else {
+            navigate("/supplier", { replace: true });
+          }
+        }
       } catch (err) {
         setCheckingAuth(false);
         /* Not logged in, stay here */
@@ -109,7 +121,7 @@ const App = () => {
       if (!response.ok) {
         // Backend returned an error (Zod validation or business logic)
         if (data.errors) {
-          // Field‑specific errors (e.g., { email: "sInvalid email" })
+          // Field‑specific errors ya (e.g., { email: "sInvalid email" })
           setErrors(data.errors);
         } else {
           // General error message (e.g., "User already exists")
@@ -121,7 +133,6 @@ const App = () => {
       // Success: show success  in the screen
       window.location.href = "/supplier";
     } catch (error) {
-      
       // Network or unexpected error
       console.error("Network error:", error);
       setErrors({ server: "Network error. Please check your connection." });
@@ -178,17 +189,6 @@ const App = () => {
           <button className="w-full py-4 bg-[#14a800] text-white rounded-full font-bold hover:bg-[#108a00] transition-all text-lg shadow-md">
             Get Started
           </button>
-        </div>
-      </div>
-    );
-  }
-
-  if (checkingAuth) {
-    return (
-      <div className="min-h-screen flex items-center justify-center bg-white">
-        <div className="flex flex-col items-center gap-4">
-          <div className="w-10 h-10 border-4 border-[#14a800] border-t-transparent rounded-full animate-spin"></div>
-          <p className="text-[#5e6d55] font-bold">Checking session...</p>
         </div>
       </div>
     );
