@@ -35,6 +35,7 @@ import {
   Camera,
   SendHorizontal,
 } from "lucide-react";
+import { useNavigate } from "react-router-dom";
 
 function App() {
   // --- CORE STATE ---
@@ -47,20 +48,26 @@ function App() {
   const [selectedConversation, setSelectedConversation] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-
+  const navigate = useNavigate();
+  const [checkingAuth, setCheckingAuth] = useState(true);
 
   useEffect(() => {
-    const REandoumFun = async () => {
+    const protectPage = async () => {
       try {
         const res = await fetch("http://localhost:21000/api/auth/status", {
           credentials: "include",
         });
-        if (!res.ok) window.location.href = "/buyerform";
+
+        // If NOT logged in (401), kick them to login
+        if (res.status === 401) {
+          navigate("/buyerform");
+        }
       } catch (err) {
-        window.location.href = "/buyerform";
+        navigate("/buyerform");
+        setCheckingAuth(false);
       }
     };
-    REandoumFun();
+    protectPage();
   }, []);
 
   // the auth of the User before going to the dashboard
@@ -289,6 +296,7 @@ function App() {
     );
   };
 
+  
   return (
     <div className="min-h-screen bg-[#fcfdfe] flex font-sans antialiased text-slate-900 overflow-hidden">
       {/* SIDEBAR */}
