@@ -15,11 +15,14 @@ import {
   PlusCircle,
   ChevronDown,
 } from "lucide-react";
+import { useNavigate } from "react-router-dom";
 
 const App = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
   const [openFaq, setOpenFaq] = useState(0);
+  const navigate = useNavigate();
+    const [checkingAuth, setCheckingAuth] = useState(true);
 
   useEffect(() => {
     const handleScroll = () => setScrolled(window.scrollY > 20);
@@ -46,6 +49,44 @@ const App = () => {
     }
     setIsMenuOpen(false);
   };
+
+ useEffect(() => {
+   const loggedInOnly = async () => {
+     try {
+       const res = await fetch("http://localhost:21000/api/auth/status", {
+         credentials: "include",
+       });
+       if (res.ok) {
+         const data = await res.json(); // Assuming your backend sends { role: 'admin' }
+
+         // Route them based on their power level
+         if (data.role === "admin") {
+           navigate("/admin", { replace: true });
+         } else if (data.role === "buyer") {
+           navigate("/buyer", { replace: true });
+         } else {
+           navigate("/supplier", { replace: true });
+         }
+       }
+     } catch (err) {
+       setCheckingAuth(false);
+       /* Not logged in, stay here */
+     }
+   };
+   loggedInOnly();
+ }, []);
+
+
+    if (checkingAuth) {
+      return (
+        <div className="min-h-screen flex items-center justify-center bg-white">
+          <div className="flex flex-col items-center gap-4">
+            <div className="w-10 h-10 border-4 border-[#14a800] border-t-transparent rounded-full animate-spin"></div>
+            <p className="text-[#5e6d55] font-bold">Checking session...</p>
+          </div>
+        </div>
+      );
+    }
 
   return (
     <div className="min-h-screen bg-white text-[#001e00] font-sans selection:bg-[#108a00] selection:text-white">
