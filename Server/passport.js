@@ -17,7 +17,6 @@ app.use(
 const mysql = require("mysql2");
 app.use(express.json());
 
-const { use } = require("passport");
 app.use(express.urlencoded({ extended: true }));
 const userMapStore = require("./models/storeage");
 
@@ -43,13 +42,14 @@ const daConnect = require("./config/database");
 
 const Dashboard = require("./routes/Dashboard");
 app.use(Dashboard);
-const Logout = require("./routes/logout");
-app.use(Logout);
+
 const MeRoute = require("./controllers/me");
+
 const verifyTokens = require("./middleware/tokenVerify");
-
 app.use("/api/me", verifyTokens, MeRoute);
-
+const Logout = require("./routes/logout/logout");
+// C:\Users\Administrator\Desktop\fyp\Construction_Auction\Server\routes\logout\logout.js
+app.use(Logout);
 app.use((req, res, next) => {
   req.db = daConnect;
   next();
@@ -97,11 +97,6 @@ app.post("/register", async (req, res) => {
     console.log("error happened", error);
     res.redirect("register");
   }
-});
-
-app.get("/test", (req, res) => {
-  console.log("🔵 TEST ROUTE WAS ACCESSED!");
-  res.send("If you see this, the server is working!");
 });
 
 let port = 21000;
