@@ -17,25 +17,35 @@ import { BidModal } from "./modals/BidModal";
 
 const Supplier = () => {
   // ADD THESE LINES at the top of your component
-  useEffect(() => {
-    const REandoumFun = async () => {
-      try {
-        const res = await fetch("http://localhost:21000/api/auth/status", {
-          credentials: "include",
-        });
-        if (!res.ok) window.location.href = "/supplierform";
-      } catch (err) {
-        window.location.href = "/supplierform";
-      }
-    };
-    REandoumFun();
-  }, []);
+ 
   const navigate = useNavigate();
+   const [checkingAuth, setCheckingAuth] = useState(true);
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [activeTab, setActiveTab] = useState("Overview");
   const [profile, setProfile] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+
+
+
+  useEffect(() => {
+    const protectPage = async () => {
+      try {
+        const res = await fetch("http://localhost:21000/api/auth/status", {
+          credentials: "include",
+        });
+
+        // If NOT logged in (401), kick them out to the login page
+        if (res.status === 401) {
+          navigate("/login");
+        }
+        setCheckingAuth(false);
+      } catch (err) {
+        navigate("/login");
+      }
+    };
+    protectPage();
+  }, []);
   useEffect(() => {
     const getMyData = async () => {
       try {
