@@ -1,8 +1,9 @@
 import React, { useState, useEffect } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { ChevronLeft, Eye, EyeOff, Check, TrendingDown } from "lucide-react";
 
 const BuyerRegistor = () => {
+  const navigate = useNavigate();
   const [checkingAuth, setCheckingAuth] = useState(true);
   const [showPassword, setShowPassword] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -32,6 +33,32 @@ const BuyerRegistor = () => {
       setErrors((prev) => ({ ...prev, [name]: null }));
     }
   };
+
+  useEffect(() => {
+    const loggedInOnly = async () => {
+      try {
+        const res = await fetch("http://localhost:21000/api/auth/status", {
+          credentials: "include",
+        });
+        if (res.ok) {
+          const data = await res.json(); // Assuming your backend sends { role: 'admin' }
+
+          // Route them based on their power level
+          if (data.role === "admin") {
+            navigate("/admin", { replace: true });
+          } else if (data.role === "buyer") {
+            navigate("/buyer", { replace: true });
+          } else {
+            navigate("/supplier", { replace: true });
+          }
+        }
+      } catch (err) {
+        setCheckingAuth(false);
+        /* Not logged in, stay here */
+      }
+    };
+    loggedInOnly();
+  }, []);
 
   const validate = () => {
     const newErrors = {};
@@ -94,22 +121,6 @@ const BuyerRegistor = () => {
 
     // Return true if no errors, false if there are errors
   };
-
-  useEffect(() => {
-    const loggedInOnly = async () => {
-      try {
-        const res = await fetch("http://localhost:21000/api/auth/status", {
-          credentials: "include",
-        });
-        if (res.ok) window.location.href = "/buyer";
-        setCheckingAuth(false);
-      } catch (err) {
-        setCheckingAuth(false);
-        /* Not logged in, stay here */
-      }
-    };
-    loggedInOnly();
-  }, []);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
