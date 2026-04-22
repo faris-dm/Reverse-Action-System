@@ -6,6 +6,8 @@ import {
   Calendar,
   Loader2,
   Check,
+  Eye,
+  FileText,
   ArrowRight,
 } from "lucide-react";
 
@@ -84,17 +86,37 @@ export const BidModal = ({ isOpen, onClose, selectedRequest, onSubmit }) => {
                 </div>
                 <div>
                   <p className="text-[10px] font-black text-blue-400 uppercase tracking-widest mb-1">
-                    Current Low Bid
+                    {/* Current Low Bid */}
                   </p>
-                  <p className="text-lg font-black text-emerald-600">
+                  {/* <p className="text-lg font-black text-emerald-600">
                     {selectedRequest?.currentLow?.toLocaleString()} ETB
-                  </p>
+                  </p> */}
                 </div>
               </div>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                {/* addded Name */}
                 <div className="space-y-2">
                   <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">
-                    Total Quote (ETB)
+                    Supplier Name
+                  </label>
+                  <div className="relative">
+                    <Eye
+                      className="absolute left-5 top-1/2 -translate-y-1/2 text-slate-400"
+                      size={18}
+                    />
+                    <input
+                      name="amount"
+                      required
+                      type="text"
+                      placeholder="Full Name"
+                      className="w-full pl-12 pr-6 py-5 bg-slate-50 rounded-2xl outline-none border-2 border-transparent focus:border-blue-600 font-black text-lg transition-all"
+                    />
+                  </div>
+                </div>
+                {/* name ends here */}
+                <div className="space-y-2">
+                  <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">
+                    The Price (ETB)
                   </label>
                   <div className="relative">
                     <DollarSign
@@ -110,6 +132,33 @@ export const BidModal = ({ isOpen, onClose, selectedRequest, onSubmit }) => {
                     />
                   </div>
                 </div>
+
+                {/* added the proof layer  */}
+                <div className="space-y-2">
+                  <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">
+                    Your Experience & Proposal
+                  </label>
+                  <div className="relative">
+                    <FileText
+                      className="absolute left-5 top-5 text-slate-400"
+                      size={18}
+                    />
+                    <textarea
+                      name="experience"
+                      required
+                      rows={6}
+                      placeholder="Tell us about your experience in construction, past projects, your expertise, and why you're the right fit for this project..."
+                      className="w-full pl-12 pr-6 py-5 bg-slate-50 rounded-2xl outline-none border-2 border-transparent focus:border-blue-600 font-medium text-base transition-all resize-y"
+                    />
+                  </div>
+                  <p className="text-xs text-slate-400 ml-1 mt-1">
+                    Minimum 50 characters • Share your relevant experience
+                  </p>
+                </div>
+
+                {/* end the prof layer */}
+
+                {/* added the text */}
                 <div className="space-y-2">
                   <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">
                     Delivery Lead Time
