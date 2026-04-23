@@ -12,6 +12,40 @@ const CreateAuctionModal = ({
 }) => {
   if (!isCreateModalOpen) return null;
 
+  // Validation Logic: Checks if current step fields are filled
+  const isStepValid = () => {
+    if (formStep === 1) {
+      return (
+        newRfp.title?.trim() && newRfp.description?.trim() && newRfp.category
+      );
+    }
+    if (formStep === 2) {
+      return (
+        newRfp.budget > 0 &&
+        newRfp.quantity > 0 &&
+        newRfp.location?.trim() &&
+        newRfp.expedet
+      );
+    }
+    return true;
+  };
+
+  const handleNext = () => {
+    if (isStepValid()) {
+      setFormStep((s) => s + 1);
+    } else {
+      alert("Please fill in all required fields before proceeding.");
+    }
+  };
+
+  const handleFinalSubmit = () => {
+    if (isStepValid()) {
+      handlePublishRfp();
+    } else {
+      alert("Please complete the form requirements.");
+    }
+  };
+
   return (
     <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 md:p-6 overflow-hidden">
       <div
@@ -50,7 +84,6 @@ const CreateAuctionModal = ({
           {/* STEP 1: IDENTITY & CATEGORY */}
           {formStep === 1 && (
             <div className="space-y-8 animate-in slide-in-from-right-8 duration-300">
-              {/* 1. Title */}
               <div className="space-y-2">
                 <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">
                   Title of RFP
@@ -72,7 +105,6 @@ const CreateAuctionModal = ({
                 </div>
               </div>
 
-              {/* 2. Description */}
               <div className="space-y-2">
                 <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">
                   Item Description
@@ -84,7 +116,7 @@ const CreateAuctionModal = ({
                   />
                   <input
                     value={newRfp.description}
-                    onChange={(e) =>  
+                    onChange={(e) =>
                       setNewRfp({ ...newRfp, description: e.target.value })
                     }
                     required
@@ -95,7 +127,6 @@ const CreateAuctionModal = ({
               </div>
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                {/* 3. Category */}
                 <div className="space-y-2">
                   <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">
                     Category
@@ -108,6 +139,7 @@ const CreateAuctionModal = ({
                     required
                     className="w-full bg-slate-50 border border-slate-100 rounded-[24px] p-6 text-sm font-bold outline-none appearance-none"
                   >
+                    <option value="">Select Category</option>
                     <option>Industrial</option>
                     <option>IT Services</option>
                     <option>Logistics</option>
@@ -115,7 +147,6 @@ const CreateAuctionModal = ({
                     <option>Metal Supplier</option>
                   </select>
                 </div>
-                {/* 4. Priority */}
                 <div className="space-y-2">
                   <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">
                     Priority
@@ -124,6 +155,7 @@ const CreateAuctionModal = ({
                     {["Normal", "Urgent"].map((p) => (
                       <button
                         key={p}
+                        type="button"
                         onClick={() => setNewRfp({ ...newRfp, priority: p })}
                         className={`flex-1 py-6 rounded-[24px] border transition-all text-[10px] font-black uppercase ${
                           newRfp.priority === p
@@ -144,7 +176,6 @@ const CreateAuctionModal = ({
           {formStep === 2 && (
             <div className="space-y-8 animate-in slide-in-from-right-8 duration-300">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                {/* 5. Budget */}
                 <div className="space-y-2">
                   <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">
                     Budget (₱)
@@ -159,7 +190,6 @@ const CreateAuctionModal = ({
                     className="w-full bg-slate-50 border border-slate-100 rounded-[24px] p-6 text-sm font-bold outline-none"
                   />
                 </div>
-                {/* 6. Quantity */}
                 <div className="space-y-2">
                   <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">
                     Quantity (Q)
@@ -176,7 +206,6 @@ const CreateAuctionModal = ({
                 </div>
               </div>
 
-              {/* 7. Address */}
               <div className="space-y-2">
                 <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">
                   Address
@@ -198,25 +227,20 @@ const CreateAuctionModal = ({
                 </div>
               </div>
 
-              {/* 8. Auction End Date */}
-              {/* Auction End Date with Countdown Description */}
               <div className="space-y-2">
                 <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">
                   Auction Ends
                 </label>
-
                 <input
                   type="datetime-local"
-                  // Blocks past dates
                   min={new Date().toISOString().slice(0, 16)}
                   value={newRfp.expedet}
                   onChange={(e) =>
                     setNewRfp({ ...newRfp, expedet: e.target.value })
                   }
+                  required
                   className="w-full bg-slate-50 border border-slate-100 rounded-[24px] p-6 text-sm font-bold outline-none focus:border-blue-600 focus:bg-white transition-all"
                 />
-
-                {/* This is the part I missed - The dynamic description */}
                 {newRfp.expedet && (
                   <div className="mt-3 ml-2 flex items-center gap-2">
                     <div className="w-1.5 h-1.5 rounded-full bg-blue-600 animate-pulse" />
@@ -262,14 +286,14 @@ const CreateAuctionModal = ({
           )}
           {formStep < 3 ? (
             <button
-              onClick={() => setFormStep((s) => s + 1)}
+              onClick={handleNext}
               className="flex-[2] py-6 bg-slate-900 text-white font-black uppercase rounded-[28px] text-[9px]"
             >
               Next Stage
             </button>
           ) : (
             <button
-              onClick={handlePublishRfp}
+              onClick={handleFinalSubmit}
               className="flex-[2] py-6 bg-blue-600 text-white font-black uppercase rounded-[28px] text-[9px]"
             >
               Publish RFQ
