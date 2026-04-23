@@ -18,7 +18,7 @@ let generateAccess = (UserPayLoad) => {
   return jwt.sign(UserPayLoad, secret, { expiresIn: "15m" });
 };
 
-// Supplier registration route
+// Supplier registration route von
 router.post("/api/supplierRegistor", async (req, res) => {
   // Get data from React form
   const {
@@ -112,8 +112,8 @@ router.post("/api/supplierRegistor", async (req, res) => {
       },
     });
   } catch (error) {
-    console.error(error);
-    res.status(500).json({ message: "Server error" });
+     console.error(error);
+    return res.status(500).json({ message: "Server error" });
   }
 });
 

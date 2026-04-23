@@ -105,7 +105,7 @@ export const BidModal = ({ isOpen, onClose, selectedRequest, onSubmit }) => {
                       size={18}
                     />
                     <input
-                      name="amount"
+                      name="fullName"
                       required
                       type="text"
                       placeholder="Full Name"

@@ -25,6 +25,8 @@ const { z } = require("zod");
 
 const SupplierRegidtor = require("./routes/supplierRegistor");
 app.use(SupplierRegidtor);
+const createAuction = require("./routes/buyereCom/create");
+app.use(createAuction);
 
 // import buyerRegistor
 const BuyerRegistor = require("./routes/BuyerRegistor");
