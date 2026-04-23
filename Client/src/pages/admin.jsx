@@ -20,6 +20,7 @@ import {
   X,
   AwardIcon,
 } from "lucide-react";
+import { useNavigate } from "react-router-dom";
 
 // --- INITIAL DATA ---
 const INITIAL_SUPPLIERS = [
@@ -91,7 +92,9 @@ const INITIAL_SUPPLIERS = [
 ];
 
 const AdminApp = () => {
+  const Navigate = useNavigate();
   const [profile, setProfile] = useState(null);
+  const [checkingAuth, setCheckingAuth] = useState(true);
   const [activeTab, setActiveTab] = useState("dashboard");
   const [isSidebarOpen, setSidebarOpen] = useState(false);
   const [selectedSupplierId, setSelectedSupplierId] = useState(null);
@@ -103,17 +106,31 @@ const AdminApp = () => {
   });
 
   useEffect(() => {
-    const REandoumFun = async () => {
+    const protectPage = async () => {
       try {
         const res = await fetch("http://localhost:21000/api/auth/status", {
           credentials: "include",
         });
-        if (!res.ok) window.location.href = "/supplerform";
+
+        // If NOT logged in (401), kick them to login
+        if (res.status === 401) {
+          Navigate("/supplierform");
+        } else {
+          setCheckingAuth(false);
+          if (res.role === "admin") {
+            navigator("/admin");
+            if (res.role === "supplier") {
+              navigator("/supplier");
+            }
+            navigator("/buyer");
+          }
+        }
       } catch (err) {
-        window.location.href = "/supplerform";
+        Navigate("/supplierform");
+        setCheckingAuth(false);
       }
     };
-    REandoumFun();
+    protectPage();
   }, []);
 
   useEffect(() => {
@@ -124,17 +141,19 @@ const AdminApp = () => {
           signal: controller.signal,
         });
 
-        if (adminDataFetch.status === 401) {
-          window.location.href = "/login";
-          return;
-        }
-        if (!adminDataFetch.ok) throw new Error("Could not load profile");
+        const data = await res.json();
 
-        const data = await adminDataFetch.json();
-        setProfile(data);
+        // If not logged in OR logged in but NOT an admin
+        if (!adminDataFetch.ok || data.role !== "admin") {
+          navigate("/login", { replace: true });
+        } else {
+          // Let them see the dashboard
+          setCheckingAuth(false);
+        }
       } catch (error) {
         console.error("Fetch error:", error);
         setError(error.message);
+        setCheckingAuth(false);
       }
     };
     AdminFetch();
