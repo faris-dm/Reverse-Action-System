@@ -29,9 +29,16 @@ export const MarketplaceView = ({ requests, onBid, onMessage }) => {
                 <span className="text-[10px] font-black uppercase tracking-widest text-blue-600 bg-blue-50 px-4 py-1.5 rounded-full">
                   {req.category}
                 </span>
-                <span className="text-xs font-bold text-slate-400 flex items-center gap-1">
-                  <Clock size={14} /> Expires {req.deadline}
-                </span>
+              <span className="text-xs font-bold text-slate-400 flex items-center gap-1">
+  <Clock size={14} /> 
+  Expires: {req.expedet && !isNaN(new Date(req.expedet)) 
+    ? new Date(req.expedet).toLocaleDateString("en-GB", { 
+        day: '2-digit', 
+        month: 'short', 
+        year: 'numeric' 
+      }) 
+    : "No Date Set"}
+</span>
               </div>
               <div>
                 <h3 className="text-2xl font-black group-hover:text-blue-600 transition-colors">
@@ -42,17 +49,17 @@ export const MarketplaceView = ({ requests, onBid, onMessage }) => {
                 </p>
               </div>
               <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 py-4 border-t border-slate-50">
-                <InfoItem label="Needed Qty" value={req.qty} />
+                <InfoItem label="Needed Qty" value={req.quantity} />
                 <InfoItem
                   label="Est. Budget"
-                  value={req.maxBudget.toLocaleString() + " ETB"}
+                  value={req.budget.toLocaleString() + " ETB"}
                 />
                 <InfoItem label="Lead Time" value="Within 4 Days" />
-                <InfoItem
+                {/* <InfoItem
                   label="Low Bid"
                   value={req.currentLow.toLocaleString() + " ETB"}
                   color="text-emerald-500"
-                />
+                /> */}
               </div>
             </div>
             <div className="flex lg:flex-col gap-3 w-full lg:w-44">

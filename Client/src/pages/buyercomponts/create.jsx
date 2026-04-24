@@ -104,28 +104,50 @@ const CreateAuctionModal = ({
                   />
                 </div>
               </div>
-
               <div className="space-y-2">
                 <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">
                   Item Description
                 </label>
                 <div className="relative">
                   <FileText
-                    className="absolute left-6 top-1/2 -translate-y-1/2 text-slate-300"
+                    className="absolute left-5 top-5 text-slate-400"
                     size={18}
                   />
-                  <input
+                  <textarea
                     value={newRfp.description}
                     onChange={(e) =>
                       setNewRfp({ ...newRfp, description: e.target.value })
                     }
+                    rows={6}
                     required
                     placeholder="Item Description"
-                    className="w-full bg-slate-50 border border-slate-100 rounded-[24px] p-6 pl-16 text-sm font-bold outline-none focus:bg-white focus:border-blue-600"
+                    className="w-full pl-12 pr-6 py-5 bg-slate-50 rounded-2xl outline-none border-2 border-transparent focus:border-blue-600 font-medium text-base transition-all resize-y"
                   />
                 </div>
               </div>
-
+              {/* added  */}
+              {/* <div className="space-y-2">
+                <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">
+                  Your Experience & Proposal
+                </label>
+                <div className="relative">
+                  <FileText
+                    className="absolute left-5 top-5 text-slate-400"
+                    size={18}
+                  />
+                  <textarea
+                    name="experience"
+                    required
+                    rows={6}
+                    placeholder="Tell us about your experience in construction, past projects, your expertise, and why you're the right fit for this project..."
+                    className="w-full pl-12 pr-6 py-5 bg-slate-50 rounded-2xl outline-none border-2 border-transparent focus:border-blue-600 font-medium text-base transition-all resize-y"
+                  />
+                </div>
+                <p className="text-xs text-slate-400 ml-1 mt-1">
+                  Minimum 50 characters • Share your relevant experience
+                </p>
+              </div> */}
+              {/* endss here */}
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div className="space-y-2">
                   <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">
