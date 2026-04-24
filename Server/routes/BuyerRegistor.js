@@ -94,7 +94,7 @@ router.post("/api/BuyerRegistor", async (req, res) => {
     console.log("Name:", fullName);
     console.log("email", cleanEmail);
 
-    // Send success response
+    // Send success respons
     res.status(201).json({
       message: "buyer Registration successful!",
       user: {
