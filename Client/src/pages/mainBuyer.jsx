@@ -34,8 +34,12 @@ import {
   Globe,
   Camera,
   SendHorizontal,
+  icons,
 } from "lucide-react";
+
 import { useNavigate } from "react-router-dom";
+
+import Proposal from "./buyercomponts/proposal";
 
 function App() {
   // --- CORE STATE ---
@@ -78,7 +82,7 @@ function App() {
           credentials: "include",
         });
         if (respond.status === 401) {
-          window.location.href = "/BuyerRegistor";
+          window.location.href = "/buyerform";
           return;
         }
 
@@ -122,7 +126,7 @@ function App() {
       budget: 55000,
       quantity: "10",
       location: "Jimma ,City center",
-      deadline: "2025-05-20",
+      expedet: "2025-05-20",
       status: "Open",
       category: "Safety",
     },
@@ -134,7 +138,7 @@ function App() {
       budget: 150000,
       quantity: "10",
       location: "Jimma ,City center",
-      deadline: "2025-06-12",
+      expedet: "2025-06-12",
       status: "Open",
       category: "Maintenance",
     },
@@ -146,7 +150,7 @@ function App() {
       budget: 10000,
       quantity: "10",
       location: "Jimma ,City center",
-      deadline: "2025-04-10",
+      expedet: "2025-04-10",
       status: "Awarded",
       category: "Logistics",
     },
@@ -217,14 +221,16 @@ function App() {
       category: "Industrial",
       description: "",
       budget: "",
-      deadline: "",
+      expedet: "",
       priority: "Normal",
     });
     setFormStep(1);
     setIsCreateModalOpen(false);
   };
 
-  const handlePublishRfp = () => {
+  //
+
+  const handlePublishRfp = async () => {
     const rfpId = `REQ-${Math.floor(Math.random() * 9000) + 1000}`;
     const newEntry = {
       id: rfpId,
@@ -235,14 +241,33 @@ function App() {
       budget: parseInt(newRfp.budget) || 0,
       quantity: newRfp.quantity, // Added
       location: newRfp.location, // Added
-      deadline: newRfp.expedet, // Match this to your form state 'expedet'
+      expedet: newRfp.expedet, // Match this to your form state 'expedet'
       status: "Open",
       bidsCount: 0,
       lowBid: null,
     };
-    setMyRequests([newEntry, ...myRequests]);
-    resetForm();
-    setActiveTab("requests");
+    try {
+      const response = await fetch("http://localhost:21000/api/createAuction", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(newEntry),
+      });
+      if (response.ok) {
+        alert("Success! Auction is now live for suppliers.");
+        setMyRequests([newEntry, ...myRequests]);
+        resetForm();
+        setActiveTab("requests");
+        resetForm();
+      } else {
+        alert("Server error. Could not publish.");
+        const errorMsg = await response.json();
+        alert(`Failed: ${errorMsg.message || "Server error"}`);
+      }
+    } catch (error) {
+      console.error(error);
+    }
   };
 
   const handleSignOut = () => {
@@ -296,7 +321,6 @@ function App() {
     );
   };
 
-  
   return (
     <div className="min-h-screen bg-[#fcfdfe] flex font-sans antialiased text-slate-900 overflow-hidden">
       {/* SIDEBAR */}
@@ -319,7 +343,9 @@ function App() {
           {[
             { id: "dashboard", icon: LayoutDashboard, label: "Overview" },
             { id: "requests", icon: Gavel, label: "My RFPs" },
+            { id: "proposals", icon: Building2, label: " Proposals" },
             { id: "suppliers", icon: Building2, label: "Suppliers" },
+
             { id: "messages", icon: MessageSquare, label: "Messages" },
             { id: "settings", icon: Settings, label: "Settings" },
           ].map((item) => (
@@ -517,7 +543,6 @@ function App() {
                 </div>
               </div>
             )}
-
             {activeTab === "requests" && (
               <div className="space-y-8 animate-in fade-in duration-500">
                 <div className="flex justify-between items-end">
@@ -595,7 +620,7 @@ function App() {
                               <Calendar size={14} className="text-blue-600" />
                               <span className="text-[10px] font-black uppercase tracking-widest text-slate-500">
                                 Closes:{" "}
-                                {new Date(req.deadline).toLocaleDateString()}
+                                {new Date(req.expedet).toLocaleDateString()}
                               </span>
                             </div>
                           </div>
@@ -616,7 +641,6 @@ function App() {
                 </div>
               </div>
             )}
-
             {activeTab === "suppliers" && (
               <div className="space-y-8 animate-in fade-in duration-500">
                 <div className="flex justify-between items-end">
@@ -676,7 +700,13 @@ function App() {
                 </div>
               </div>
             )}
-
+            // added here
+            {activeTab === "proposals" && (
+              <div className="animate-in fade-in duration-500">
+                <Proposal />
+              </div>
+            )}
+            // finsihe here
             {activeTab === "messages" && (
               <div className="flex h-[calc(100vh-200px)] gap-8 animate-in fade-in slide-in-from-bottom-4 duration-500">
                 <div
@@ -834,7 +864,6 @@ function App() {
                 </div>
               </div>
             )}
-
             {activeTab === "settings" && (
               <div className="space-y-10 animate-in fade-in duration-500">
                 {/* ✅ ADD THIS - Show loading spinner */}
@@ -868,7 +897,6 @@ function App() {
                 )}
               </div>
             )}
-
             {activeTab === "settings" && (
               <div className="space-y-10 animate-in fade-in duration-500">
                 <div className="flex justify-between items-end">
