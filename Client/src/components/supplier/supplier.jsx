@@ -17,16 +17,14 @@ import { BidModal } from "./modals/BidModal";
 
 const Supplier = () => {
   // ADD THESE LINES at the top of your component
- 
+
   const navigate = useNavigate();
-   const [checkingAuth, setCheckingAuth] = useState(true);
+  const [checkingAuth, setCheckingAuth] = useState(true);
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [activeTab, setActiveTab] = useState("Overview");
   const [profile, setProfile] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-
-
 
   useEffect(() => {
     const protectPage = async () => {
@@ -51,6 +49,7 @@ const Supplier = () => {
       try {
         const res = await fetch("http://localhost:21000/api/me", {
           credentials: "include",
+          method: "GET",
         });
 
         if (res.status === 401) {
@@ -74,43 +73,46 @@ const Supplier = () => {
   }, []);
 
   // --- Data State ---
-  const [allRequests] = useState([
+  const [allRequests, setRequested] = useState([
     {
       id: "req_1",
-      title: "Grade 42.5 OPC Cement",
-      category: "Construction",
-      qty: "500 Bags",
-      maxBudget: 450000,
-      deadline: "2024-06-25",
+      title: "Grade 42.5  Cement",
       description:
         "High-quality OPC cement needed for a commercial foundation project.",
-      buyerName: "Skyline Developers",
-      currentLow: 435000,
+      category: "Construction",
+      budget: 450000,
+      quantity: "500 Bags",
+      // location: data.location,
+      expedet: "2024-06-25",
+
+      // buyerName: "Skyline Developers",
+      // currentLow: 435000,
     },
     {
       id: "req_2",
       title: "Reinforcement Bars 12mm",
       category: "Metal",
-      qty: "15 Tons",
-      maxBudget: 890000,
-      deadline: "2024-06-22",
+      quantity: "15 Tons",
+      budget: 890000,
+      expedet: "2024-06-22",
       description: "Standard 12mm rebar for residential slab reinforcement.",
-      buyerName: "MetalWorks Co.",
-      currentLow: 870000,
+      // buyerName: "MetalWorks Co.",
+      // currentLow: 870000,
     },
     {
       id: "req_3",
       title: "River Sand (Washed)",
       category: "Aggregates",
-      qty: "20 Trucks",
-      maxBudget: 120000,
-      deadline: "2024-06-30",
+      quantity: "20 Trucks",
+      budget: 120000,
+      expedet: "2024-06-30",
       description: "Fine washed river sand for plastering work.",
-      buyerName: "Urban Pavements",
-      currentLow: 115000,
+      // buyerName: "Urban Pavements",
+      // currentLow: 115000,
     },
   ]);
 
+  //  thsis are my bids
   const [myBids, setMyBids] = useState([
     {
       id: "bid_101",
@@ -122,6 +124,34 @@ const Supplier = () => {
       date: "2024-06-18",
     },
   ]);
+
+  useEffect(() => {
+    const showAuction = async () => {
+      try {
+        const response = await fetch("http://localhost:21000/api/getAuction", {
+          credentials: "include",
+        });
+        if (response.status === 401) {
+          console.log("Unable to send the aution");
+          return;
+        }
+        if (!response.ok) {
+          throw new Error("could not load the data to biyrt profile");
+        }
+
+        const data = await response.json();
+        setRequested((newData) => {
+          const mockData = newData.filter(
+            (item) => typeof item.id === "string" && item.id.startsWith("req_")
+          );
+          return [...data, ...mockData];
+        });
+      } catch (error) {
+        console.error(error);
+      }
+    };
+    showAuction();
+  }, []);
 
   const [conversations, setConversations] = useState([
     {

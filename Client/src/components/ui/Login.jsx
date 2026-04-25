@@ -1,5 +1,5 @@
 // LoginPage.jsx
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 
 import {
@@ -15,6 +15,7 @@ import {
 } from "lucide-react";
 
 const LoginPage = () => {
+  const [checkingAuth, setCheckingAuth] = useState(true);
   const navigate = useNavigate();
   const [showPassword, setShowPassword] = useState(false);
   const [email, setEmail] = useState("");
@@ -36,25 +37,30 @@ const LoginPage = () => {
   };
 
   // ADD THIS GUARD
-  React.useEffect(() => {
-    const checkExistingSession = async () => {
+  useEffect(() => {
+    const loggedInOnly = async () => {
       try {
         const res = await fetch("http://localhost:21000/api/auth/status", {
           credentials: "include",
-        });
-        const data = await res.json();
-
+        })
         if (res.ok) {
-          // If they already have a session, send them to their dashboard
-          if (data.role === "supplier") window.location.href = "/supplier";
-          else if (data.role === "buyer") window.location.href = "/buyer";
-          else if (data.role === "admin") window.location.href = "/admin";
+          const data = await res.json(); // Assuming your backend sends { role: 'admin' }
+
+          // Route them based on their power level
+          if (data.role === "admin") {
+            navigate("/admin", { replace: true });
+          } else if (data.role === "buyer") {
+            navigate("/buyer", { replace: true });
+          } else {
+            navigate("/supplier", { replace: true });
+          }
         }
       } catch (err) {
-        // Not logged in? Perfect, stay on the login page.
+        setCheckingAuth(false);
+        /* Not logged in, stay here */
       }
     };
-    checkExistingSession();
+    loggedInOnly();
   }, []);
 
   // No frontend validation – all validation happens on the backend (Zod)
