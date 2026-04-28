@@ -296,6 +296,8 @@
 //   );
 // };
 
+
+
 import React, { useState } from "react";
 import {
   X,
@@ -308,7 +310,7 @@ import {
   ArrowRight,
 } from "lucide-react";
 
-const BidModal = ({ isOpen, onClose, selectedRequest, onSubmit }) => {
+ export const BidModal = ({ isOpen, onClose, selectedRequest, onSubmit }) => {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isSubmitted, setIsSubmitted] = useState(false);
   const [fileDone, setFileDone] = useState(null);
@@ -559,4 +561,4 @@ const BidModal = ({ isOpen, onClose, selectedRequest, onSubmit }) => {
   );
 };
 
-export default BidModal;
+
