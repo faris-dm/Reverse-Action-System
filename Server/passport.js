@@ -10,7 +10,7 @@ const bcrypt = require("bcrypt");
 const cors = require("cors");
 app.use(
   cors({
-    origin: "http://localhost:5173", // Your React app's address
+    origin: ["http://localhost:5173", "http://localhost:5174"], // Your React app's address
     credentials: true, // Allow cookies/credentials
   })
 );
@@ -31,7 +31,7 @@ app.use(createAuction);
 // import buyerRegistor
 const BuyerRegistor = require("./routes/BuyerRegistor");
 app.use(BuyerRegistor);
-
+  
 const supplierRoutes = require("./routes/supplier");
 app.use(supplierRoutes);
 const buyerRoute = require("./routes/buyer");
@@ -57,6 +57,9 @@ app.use((req, res, next) => {
   next();
 });
 
+const BidModel = require("./routes/buyereCom/BidProposal");
+app.use(BidModel);
+app.use('/uploads',express.static('uploads'))
 // check the route
 // ADD THESE LINES
 app.get("/api/auth/status", verifyTokens, (req, res) => {
