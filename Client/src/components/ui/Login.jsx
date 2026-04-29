@@ -42,7 +42,7 @@ const LoginPage = () => {
       try {
         const res = await fetch("http://localhost:21000/api/auth/status", {
           credentials: "include",
-        })
+        });
         if (res.ok) {
           const data = await res.json(); // Assuming your backend sends { role: 'admin' }
 
@@ -57,6 +57,7 @@ const LoginPage = () => {
         }
       } catch (err) {
         setCheckingAuth(false);
+
         /* Not logged in, stay here */
       }
     };
@@ -91,6 +92,7 @@ const LoginPage = () => {
       const data = await response.json();
 
       if (!response.ok) {
+        alert("No user found  with this email");
         // Backend returned an error (Zod validation or business logic)
         if (data.errors) {
           // Field‑specific errors (e.g., { email: "Invalid email" })
@@ -118,7 +120,7 @@ const LoginPage = () => {
     } catch (error) {
       // Network or unexpected error
       console.error("❌ Network error:", error);
-      setErrors({ server: "server error. Please check your server." });
+      setErrors({ server: "there is no User With this email." });
     } finally {
       setIsLoading(false);
     }

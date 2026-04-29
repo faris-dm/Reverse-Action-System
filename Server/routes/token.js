@@ -47,3 +47,28 @@ router.post("/token", (req, res) => {
 });
 
 module.exports = router;
+
+
+
+
+
+
+
+
+
+
+    // res.clearCookies("token", {
+    //   httpOnly: true,
+    //   sameSite: "lax",
+    //   path: "/login",
+    // });
+    // res.clearCookies("refreshToken", {
+    //   httpOnly: "true",
+    //   sameSite: "lax",
+    //   path: "/login",
+    // });
+
+    // res.status(200).json({
+    //   success: true,
+    //   message: "Token delated succefully ",
+    // });

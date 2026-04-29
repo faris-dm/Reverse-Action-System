@@ -31,7 +31,7 @@ app.use(createAuction);
 // import buyerRegistor
 const BuyerRegistor = require("./routes/BuyerRegistor");
 app.use(BuyerRegistor);
-  
+
 const supplierRoutes = require("./routes/supplier");
 app.use(supplierRoutes);
 const buyerRoute = require("./routes/buyer");
@@ -57,9 +57,9 @@ app.use((req, res, next) => {
   next();
 });
 
-const BidModel = require("./routes/buyereCom/BidProposal");
-app.use(BidModel);
-app.use('/uploads',express.static('uploads'))
+const BidProposal = require("./routes/buyereCom/BidProposal");
+app.use(BidProposal);
+app.use("/uploads", express.static("uploads"));
 // check the route
 // ADD THESE LINES
 app.get("/api/auth/status", verifyTokens, (req, res) => {

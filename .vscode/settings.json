@@ -1,3 +1,14 @@
 {
-  "postman.settings.dotenv-detection-notification-visibility": false
+  "postman.settings.dotenv-detection-notification-visibility": false,
+  "simpleCodingTimeTracker.inactivityTimeout": 2,
+  "simpleCodingTimeTracker.focusTimeout": 2,
+  "simpleCodingTimeTracker.statusBar.showSeconds": true,
+  "simpleCodingTimeTracker.statusBar.icon": "$(zap)",
+  "simpleCodingTimeTracker.statusBar.backgroundStyle": "error",
+  "simpleCodingTimeTracker.statusBar.color": "#7d9871",
+  "simpleCodingTimeTracker.health.enableNotifications": true,
+  "simpleCodingTimeTracker.health.modalNotifications": true,
+  "simpleCodingTimeTracker.health.eyeRestInterval": 25,
+  "simpleCodingTimeTracker.health.stretchInterval": 50,
+  "simpleCodingTimeTracker.health.breakThreshold": 58
 }

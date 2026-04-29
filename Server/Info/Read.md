@@ -108,3 +108,31 @@ console.log(`Server running on http://localhost:${PORT}`)
 
 single response :server only send one res.redirect
 id:there is no idticicATION NUMBER and it is needed to retrive it later
+
+
+
+
+####  Axios
+  when data is communicating with frontend and backend there should be a way to communicate so  use fetch to recive info from the backend  and the more simple way is axios
+  axios:convert the data that is send in to data without writing
+   the old fetch
+    const response=awit fetch("localjost:21000),{includes{:truw}}
+    methods:"post.....
+
+    but in axioss like
+    const response =axios.post("localhost:21000)
+also this axios manage all the reponese like 401 and all the pages within
+
+### REduix   and Props Roeling
+REduix is used to manage the  data or componts sharing between  componts  that make it complex
+
+### Reduix --Centralize 
+ manly it is used  to fix the props complicity of multiple componts at once
+ . we move everythigs inyo global store
+
+
+### Context APi
+  is created to pass data between componts without the need of props
+
+
+ 

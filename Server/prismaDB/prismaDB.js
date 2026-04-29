@@ -1,6 +1,5 @@
 const { PrismaClient } = require("@prisma/client");
-const { where } = require("sequelize");
-const { email } = require("zod");
+
 const prisma = new PrismaClient();
 
 

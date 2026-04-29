@@ -495,7 +495,7 @@ const App = () => {
             <span className="hover:text-[#14a800] cursor-pointer">Privacy</span>
             <span className="hover:text-[#14a800] cursor-pointer">Cookies</span>
             <span className="hover:text-[#14a800] cursor-pointer">
-              Accessibility
+              Accessibidlity
             </span>
           </div>
         </footer>

@@ -24,17 +24,7 @@ let signUpsupplier = z.object({
 
 // POST /supplier – handle form submission
 router.post("/supplier", async (req, res) => {
-  // save logic...
-
-  // let RegistorSuppleZod = signUpsupplier.safeParse(req.body);
-  // if (!RegistorSuppleZod.success) {
-  //   return res.status(400).json({
-  //     err: RegistorSuppleZod.error.errors.map((errors) => ({
-  //       field: errors.path[0],
-  //       message: errors.message,
-  //     })),
-  //   });
-  // }
+ 
 
   let { email, password, name, businessName, confirmPassword } = req.body;
   let role = "supplier";

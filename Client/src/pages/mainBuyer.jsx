@@ -34,7 +34,6 @@ import {
   Globe,
   Camera,
   SendHorizontal,
-  icons,
 } from "lucide-react";
 
 import { useNavigate } from "react-router-dom";
@@ -103,7 +102,9 @@ function App() {
 
   // Added the files
 
-  //
+  //   
+
+  
 
   // --- DATA STATE ---
   const [newRfp, setNewRfp] = useState({
@@ -700,13 +701,13 @@ function App() {
                 </div>
               </div>
             )}
-            // added here
+             {/* added here */}
             {activeTab === "proposals" && (
               <div className="animate-in fade-in duration-500">
                 <Proposal />
               </div>
             )}
-            // finsihe here
+            {/* // finsihe here */}
             {activeTab === "messages" && (
               <div className="flex h-[calc(100vh-200px)] gap-8 animate-in fade-in slide-in-from-bottom-4 duration-500">
                 <div

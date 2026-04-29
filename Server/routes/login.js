@@ -39,6 +39,7 @@ router.post("/api/login", async (req, res) => {
   // }
   let foundUser = UserStorage.get(cleanEmail);
   if (!foundUser) {
+    // alert("No User found with this email, Try other ways");
     return res.status(401).json({ message: "No email found with this email" });
   }
 

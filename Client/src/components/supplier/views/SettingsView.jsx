@@ -84,7 +84,7 @@ export const SettingsView = ({ profile, setProfile }) => {
         className="grid grid-cols-1 lg:grid-cols-3 gap-10"
       >
         <div className="lg:col-span-2 space-y-10">
-          {/* Business Info Section */}
+          {/* Business Info Section ttt */}
           {activeSection === "business" && (
             <div className="space-y-10 animate-in slide-in-from-bottom-4 duration-500">
               <section className="bg-white p-8 md:p-12 rounded-[40px] border border-slate-100 shadow-sm space-y-10">
