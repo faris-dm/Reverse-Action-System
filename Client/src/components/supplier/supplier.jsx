@@ -112,6 +112,16 @@ const Supplier = () => {
     },
   ]);
 
+
+   const [Newproposal, setNewProposal] = useState({
+    title: "",
+    fullName:"",
+    price: "",
+     description: "",
+     diliveryDate:""
+   
+  });
+
   //  thsis are my bids
   const [myBids, setMyBids] = useState([
     {
@@ -152,6 +162,43 @@ const Supplier = () => {
     };
     showAuction();
   }, []);
+
+
+//    const Sendproposal= async()=> {
+//    const ProposalId=`pr-${Math.floor(Math.random()*5000)+100}`
+
+//  const ListProposal = {
+//    id: ProposalId,
+//    title:Newproposal.title,
+//    fullName:Newproposal.fullName,
+//    price:Newproposal.price,
+//    description:Newproposal.description,
+//    diliveryDate:Newproposal.diliveryDate
+//  };
+
+//     try {
+//        const ResposeProposal = await fetch(
+//          "http//localhost:21000/api/sendProposal",
+//          {
+//            method: "POST",
+//            headers: {
+//              "Content-Type": "applicationn/json",
+//            },
+//            body: JSON.stringify(ListProposal)
+//          }
+//        );
+
+//       if(ResposeProposal.ok) {
+//         alert("Proposal Sent Succeully")
+//         setProposal([ListProposal,...myProposal])
+
+//       }
+//     } catch (error) {
+//       console.log(error)
+//        alert(`Failed: ${error.message || "Server error"}`);
+      
+//     }
+//    }
 
   const [conversations, setConversations] = useState([
     {
