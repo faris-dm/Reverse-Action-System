@@ -296,8 +296,6 @@
 //   );
 // };
 
-
-
 import React, { useState } from "react";
 import {
   X,
@@ -310,7 +308,7 @@ import {
   ArrowRight,
 } from "lucide-react";
 
- export const BidModal = ({ isOpen, onClose, selectedRequest, onSubmit }) => {
+export const BidModal = ({ isOpen, onClose, selectedRequest, onSubmit }) => {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isSubmitted, setIsSubmitted] = useState(false);
   const [fileDone, setFileDone] = useState(null);
@@ -382,7 +380,11 @@ import {
           setFileDone(null);
         }, 1800);
       } else {
-        alert("Submission Failed");
+        if (!PostProposal.ok) {
+          const errorData = await PostProposal.text(); // Add this
+          console.error("Server response:", errorData);
+          alert(`Submission Failed: ${PostProposal.status}`);
+        }
       }
     } catch (error) {
       console.log("Error sending proposal:", error);
@@ -560,5 +562,3 @@ import {
     </div>
   );
 };
-
-
