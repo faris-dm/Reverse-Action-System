@@ -241,7 +241,7 @@ const App = () => {
               </span>
               <h1 className="text-3xl md:text-5xl leading-tight font-black tracking-tight mb-3">
                 Join as a{" "}
-                <span className="bg-gradient-to-r from-[#14a800] to-[#006d00] bg-clip-text text-transparent">
+                <span className="bg-linear-to-r from-[#14a800] to-[#006d00] bg-clip-text text-transparent">
                   supplier
                 </span>
               </h1>
@@ -338,7 +338,7 @@ const App = () => {
                       <button
                         type="button"
                         onClick={() => setShowPassword(!showPassword)}
-                        className="absolute right-4 top-[38px] text-gray-400 hover:text-[#14a800] h-10 w-10 flex items-center justify-center rounded-full active:bg-gray-100 transition-colors"
+                        className="absolute right-4 top-9.5 text-gray-400 hover:text-[#14a800] h-10 w-10 flex items-center justify-center rounded-full active:bg-gray-100 transition-colors"
                       >
                         {showPassword ? (
                           <EyeOff size={20} />
