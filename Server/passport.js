@@ -1,12 +1,6 @@
 const express = require("express");
 const jwt = require("jsonwebtoken");
 const app = express();
-let cookiesparser = require("cookie-parser");
-app.use(cookiesparser());
-let flash = require("express-flash");
-// let userMapStore = new Map();
-const bcrypt = require("bcrypt");
-
 const cors = require("cors");
 app.use(
   cors({
@@ -14,6 +8,12 @@ app.use(
     credentials: true, // Allow cookies/credentials
   })
 );
+let cookiesparser = require("cookie-parser");
+app.use(cookiesparser());
+let flash = require("express-flash");
+// let userMapStore = new Map();
+const bcrypt = require("bcrypt");
+
 const mysql = require("mysql2");
 app.use(express.json());
 
