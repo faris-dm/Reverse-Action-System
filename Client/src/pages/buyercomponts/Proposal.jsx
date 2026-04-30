@@ -1,4 +1,4 @@
-import React, { useState } from "react"; // FIXED: Added useState import
+import React, { useState, useEffect } from "react"; // FIXED: Added useState import
 import {
   Building2,
   Hash,
@@ -58,6 +58,72 @@ function Proposal() {
     },
   ]);
 
+  useEffect(() => {
+    const getProposal = async () => {
+      try {
+        const response = await fetch("http://localhost:21000/api/getProposal", {
+          credentials: "include",
+        });
+
+        const result = await response.json();
+
+        if (response.ok) {
+          // 1. Get raw data or empty array
+          const rawItems = result?.data || [];
+
+          // 2. Filter and Hydrate in ONE step
+          const processedData = rawItems
+            .filter((item) => item.type === "proposal")
+            .map((item, index) => ({
+              // Start with backend data
+              ...item,
+
+              // Fix Naming Mismatches: UI expects 'supplier', backend might have 'fullName'
+              supplier:
+                item.supplier || item.fullName || `Supplier ${index + 1}`,
+
+              // Fallback for ID
+              id:
+                item._id ||
+                item.id ||
+                `PROP-${Math.floor(Math.random() * 9000) + 1000}`,
+
+              // Fallback for missing strings
+              date: item.date || "Pending Date",
+              time: item.time || "03:87",
+              rfpReference: item.rfpReference || `REF-00${index + 1}`,
+              subject: item.subject || "No Subject Provided",
+              summary:
+                item.summary || "No summary available for this proposal.",
+              status: item.status || "Pending",
+
+              // Ensure nested details object exists
+              details: {
+                experience:
+                  item.details?.experience ||
+                  `${Math.floor(Math.random() * 10) + 1} Years`,
+                certifications: item.details?.certifications || [
+                  "ISO Standard",
+                  "Verified",
+                ],
+                terms: item.details?.terms || "Standard Commercial Terms",
+                note:
+                  item.details?.note || "System generated note for testing.",
+              },
+            }));
+
+          // 3. Set state once!
+          setProposals(processedData);
+        }
+      } catch (error) {
+        console.error("Fetch error:", error);
+        setToastMsg("Server Error: Check Console");
+        setShowToast(true);
+      }
+    };
+    getProposal();
+  }, []);
+
   const updateProposalStatus = (id, newStatus) => {
     setProposals((prev) =>
       prev.map((p) => (p.id === id ? { ...p, status: newStatus } : p))
@@ -71,16 +137,24 @@ function Proposal() {
   };
 
   const StatusChip = ({ status }) => {
+    // Normalize status to handle any casing from backend
+    const normalizedStatus = status
+      ? status.charAt(0).toUpperCase() + status.slice(1).toLowerCase()
+      : "Pending";
+
     const styles = {
       Pending: "bg-amber-50 text-amber-600 border-amber-100",
       Accepted: "bg-emerald-50 text-emerald-600 border-emerald-100",
       Rejected: "bg-rose-50 text-rose-600 border-rose-100",
     };
+
     return (
       <span
-        className={`px-2.5 py-1 rounded-md text-[10px] font-bold uppercase tracking-tight border ${styles[status]}`}
+        className={`px-2.5 py-1 rounded-md text-[10px] font-bold uppercase tracking-tight border ${
+          styles[normalizedStatus] || styles.Pending
+        }`}
       >
-        {status}
+        {normalizedStatus}
       </span>
     );
   };
@@ -233,9 +307,9 @@ function Proposal() {
                                 <ShieldCheck size={14} /> Certifications
                               </div>
                               <p className="text-sm font-bold text-slate-800">
-                                {selectedProposal.details.certifications.join(
+                                {selectedProposal?.details?.certifications?.join(
                                   ", "
-                                )}
+                                ) || "No certifications listed"}
                               </p>
                             </div>
                             <div className="space-y-1.5">

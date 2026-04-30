@@ -73,7 +73,8 @@ function App() {
     protectPage();
   }, []);
 
-  // the auth of the User before going to the dashboard
+  // the auth of the User
+  // before going to the dashboard
   useEffect(() => {
     const getBuyerData = async () => {
       try {
@@ -101,10 +102,35 @@ function App() {
   }, []);
 
   // Added the files
+  // useEffect(() => {
+  //   const getProposal = async () => {
+  //     try {
+  //       const fetchProposal = await fetch(
+  //         "http://localhost:21000/api/getProposal",
+  //         {
+  //           credentials: "include",
+  //         }
+  //       );
+  //       const reslut = await fetchProposal.json();
 
-  //   
-
-  
+  //       if (fetchProposal.status === 401) {
+  //         throw new Error("could not load the data to biyrt profile");
+  //       } else {
+  //         if (fetchProposal.ok) {
+  //           const RecivedProposalData = reslut.data.filter(
+  //             (item) => item.type === "proposal"
+  //           );
+  //         }
+  //       }
+  //     } catch (error) {
+  //       console.error("Fetch error:", error);
+  //     } finally {
+  //       setLoading(false);
+  //     }
+  //   };
+  //   getProposal();
+  // }, []);
+  //
 
   // --- DATA STATE ---
   const [newRfp, setNewRfp] = useState({
@@ -701,7 +727,7 @@ function App() {
                 </div>
               </div>
             )}
-             {/* added here */}
+            {/* added here */}
             {activeTab === "proposals" && (
               <div className="animate-in fade-in duration-500">
                 <Proposal />
