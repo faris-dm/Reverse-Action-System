@@ -1,15 +1,12 @@
-import React, { useState } from "react";
-import {
-  ChevronLeft,
-  Eye,
-  EyeOff,
-  Check,
-  Globe,
-  ExternalLink,
-} from "lucide-react";
+import React, { useState, useEffect } from "react";
+import { Link, useNavigate } from "react-router-dom";
+import { ChevronLeft, Eye, EyeOff, Check, TrendingDown } from "lucide-react";
 
 const BuyerRegistor = () => {
+  const navigate = useNavigate();
+  const [checkingAuth, setCheckingAuth] = useState(true);
   const [showPassword, setShowPassword] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const [formData, setFormData] = useState({
     fullName: "",
     email: "",
@@ -18,12 +15,13 @@ const BuyerRegistor = () => {
     confirmPassword: "",
     companyName: "",
     companyType: "",
-    industrySector: "",
     position: "",
     companyAddress: "",
     accountPurpose: "",
-    termsAccepted: false,
+    termsAccepted: false, // ← CHANGE TO THIS
   });
+
+  const [errors, setErrors] = useState({});
 
   const handleInputChange = (e) => {
     const { name, value, type, checked } = e.target;
@@ -31,12 +29,155 @@ const BuyerRegistor = () => {
       ...prev,
       [name]: type === "checkbox" ? checked : value,
     }));
+    if (errors[name]) {
+      setErrors((prev) => ({ ...prev, [name]: null }));
+    }
   };
 
-  const handleSubmit = (e) => {
+  useEffect(() => {
+    const loggedInOnly = async () => {
+      try {
+        const res = await fetch("http://localhost:21000/api/auth/status", {
+          credentials: "include",
+        });
+        if (res.ok) {
+          const data = await res.json(); // Assuming your backend sends { role: 'admin' }
+
+          // Route them based on their power level
+          if (data.role === "admin") {
+            navigate("/admin", { replace: true });
+          } else if (data.role === "buyer") {
+            navigate("/buyer", { replace: true });
+          } else {
+            navigate("/supplier", { replace: true });
+          }
+        }
+      } catch (err) {
+        setCheckingAuth(false);
+        /* Not logged in, stay here */
+      }
+    };
+    loggedInOnly();
+  }, []);
+
+  const validate = () => {
+    const newErrors = {};
+
+    // Section 1: Basic Account Info
+    if (!formData.fullName) {
+      newErrors.fullName = "Full name is required";
+    }
+
+    if (!formData.email) {
+      newErrors.email = "Email is required";
+    } else if (!formData.email.includes("@")) {
+      newErrors.email = "Enter a valid email address";
+    }
+
+if (!formData.phone) {prisma
+  newErrors.phone = "Phone number is required";
+} else if (formData.phone.length < 10) {
+  newErrors.phone = "Phone number is too short";
+} else if (formData.phone.length > 14) {
+  newErrors.phone = "Phone number must be 14 characters or less";
+}
+
+    if (!formData.password) {
+      newErrors.password = "Password is required";
+    } else if (formData.password.length < 8) {
+      newErrors.password = "Password must be at least 8 characters";
+    }
+
+    if (formData.password !== formData.confirmPassword) {
+      newErrors.confirmPassword = "Passwords do not match";
+    }
+
+    // Section 2: Company Info
+    if (!formData.companyName) {
+      newErrors.companyName = "Company name is required";
+    }
+
+    if (!formData.companyType) {
+      newErrors.companyType = "Please select a company type";
+    }
+
+    // Section 3: Basic Details
+    if (!formData.position) {
+      newErrors.position = "Position/Role is required";
+    }
+
+    if (!formData.accountPurpose) {
+      newErrors.accountPurpose = "Please select account purpose";
+    }
+
+    if (!formData.companyAddress) {
+      newErrors.companyAddress = "Company address is required";
+    }
+
+    // Terms and Conditions
+    if (!formData.termsAccepted) {
+      newErrors.termsAccepted = "You must accept the terms and conditions";
+    }
+
+    // Set errors to state
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
+
+    // Return true if no errors, false if there are errors
+  };
+
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    if (!formData.termsAccepted) return;
-    console.log("Account Created:", formData);
+
+    if (!validate()) {
+      console.log("Buyer Registration form  is not filled Proparly");
+      return;
+    }
+
+    // Clear previous errors and start loading
+    setErrors({});
+    setIsSubmitting(true);
+
+    try {
+      // Send form data to the backend registration endpoint
+
+      // const response = await fetch("http://localhost:21000/api/supplierRegistor"
+      const response = await fetch("http://localhost:21000/api/BuyerRegistor", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(formData),
+        credentials: "include", // ensures cookies are sent/received
+      });
+
+      const data = await response.json();
+      if (!data.fullName) console.log("Missing");
+
+      if (!response.ok) {
+        // Backend returned an error (Zod validation or business logic)
+        if (data.errors) {
+          // Field‑specific errors (e.g., { email: "Invalid email" })
+          setErrors(data.errors);
+        } else {
+          // General error message (e.g., "User already exists")
+          setErrors({ server: data.message || "Registration failed" });
+        }
+        return;
+      }
+
+      // Success: show success screen
+      if (response.ok) {
+        console.log("🎉 Buyer Registered!");
+        window.location.href = "/buyer";
+      }
+    } catch (error) {
+      // Network or unexpected error
+      console.error("Network error:", error);
+      setErrors({ server: "Network error. Please check your connection." });
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   return (
@@ -70,13 +211,21 @@ const BuyerRegistor = () => {
       {/* Navigation / Header */}
       <nav className="relative z-10 px-6 py-4 flex items-center justify-between border-b border-gray-200 bg-white shadow-sm">
         <div className="flex items-center gap-8">
-          <span className="text-[#108a00] text-2xl font-extrabold tracking-tight">
-            BidSmart
-          </span>
+          <div
+            className="flex items-center space-x-2 cursor-pointer group"
+            onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}
+          >
+            <div className="w-10 h-10 bg-blue-600 rounded-xl flex items-center justify-center shadow-lg shadow-blue-600/20 group-hover:rotate-6 transition-transform">
+              <TrendingDown className="text-white w-6 h-6" />
+            </div>
+            <span className="text-xl font-extrabold tracking-tighter text-slate-900">
+              Bid<span className="text-blue-600">Smart</span>
+            </span>
+          </div>
         </div>
         <div className="hidden md:flex gap-4 text-sm font-medium">
           <span className="text-gray-600">Need help?</span>
-          <button className="text-[#108a00] font-bold hover:underline">
+          <button className="text-blue-600 font-bold hover:underline">
             Contact Support
           </button>
         </div>
@@ -84,7 +233,10 @@ const BuyerRegistor = () => {
 
       <div className="relative z-10 max-w-[700px] mx-auto py-12 px-6">
         {/* Back Button */}
-        <button className="group flex items-center text-sm font-bold text-gray-500 hover:text-[#108a00] mb-8 transition-colors">
+        <button
+          onClick={() => window.history.back()}
+          className="group flex items-center text-sm font-bold text-gray-500 hover:text-[#108a00] mb-8 transition-colors"
+        >
           <ChevronLeft className="w-4 h-4 mr-1 group-hover:-translate-x-1 transition-transform" />{" "}
           Back
         </button>
@@ -95,7 +247,7 @@ const BuyerRegistor = () => {
           <div className="pt-12 pb-8 px-10 text-center border-b border-gray-50">
             {/* Added font-black and tracking-tight for more impact */}
             <h1 className="text-4xl md:text-5xl font-black mb-2 text-[#108a00] tracking-tight">
-              Join as a buyer
+              Join as a <span className="text-blue-500">buyer</span>
             </h1>
             <p className="text-[14px] text-gray-400 font-bold uppercase tracking-widest">
               Create Account
@@ -106,7 +258,7 @@ const BuyerRegistor = () => {
             {/* Section 1: Basic Account Info */}
             <section>
               <h2 className="text-xl font-bold mb-8 text-gray-800 flex items-center gap-2">
-                <span className="w-8 h-8 rounded-full bg-[#108a00]/10 text-[#108a00] flex items-center justify-center text-sm">
+                <span className="w-8 h-8 rounded-full bg-[#108a00]/10 text-blue-600 flex items-center justify-center text-sm">
                   1
                 </span>
                 Basic Account Info
@@ -122,9 +274,18 @@ const BuyerRegistor = () => {
                     value={formData.fullName}
                     onChange={handleInputChange}
                     placeholder="Enter your full name"
-                    className="px-4 py-3 border border-gray-300 rounded-lg focus:border-[#108a00] focus:ring-4 focus:ring-[#108a00]/5 outline-none transition-all placeholder:text-gray-300"
+                    className={`px-4 py-3 border rounded-lg focus:ring-4 outline-none transition-all placeholder:text-gray-300 ${
+                      errors.fullName
+                        ? "border-red-500 bg-red-50 focus:border-red-500"
+                        : "border-gray-300 focus:border-[#108a00] focus:ring-[#108a00]/5"
+                    }`}
                     required
                   />
+                  {errors.fullName && (
+                    <p className="text-red-500 text-sm mt-1">
+                      {errors.fullName}
+                    </p>
+                  )}
                 </div>
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -138,9 +299,20 @@ const BuyerRegistor = () => {
                       value={formData.email}
                       onChange={handleInputChange}
                       placeholder="email@example.com"
-                      className="px-4 py-3 border border-gray-300 rounded-lg focus:border-[#108a00] focus:ring-4 focus:ring-[#108a00]/5 outline-none transition-all placeholder:text-gray-300"
+                      className={`px-4 py-3 border border-gray-300 rounded-lg focus:border-[#108a00] focus:ring-4 focus:ring-[#108a00]/5 outline-none transition-all placeholder:text-gray-300 ${
+                        errors.email
+                          ? "border-red-500 bg-red-50 focus:border-red-500"
+                          : "border-gray-300 focus:border-[#108a00] focus:ring-[#108a00]/5"
+                      } 
+                         `}
                       required
                     />
+                    {errors.email && (
+                      <p className="text-red-500 text-sm mt-1">
+                        {" "}
+                        {errors.email}
+                      </p>
+                    )}
                   </div>
                   <div className="flex flex-col gap-2">
                     <label className="text-[13px] uppercase tracking-wider font-bold text-gray-500">
@@ -149,6 +321,10 @@ const BuyerRegistor = () => {
                     <input
                       type="tel"
                       name="phone"
+                      min="10"
+                      max="14"
+                      minLength="10" // Check character count
+                      maxLength="14"
                       value={formData.phone}
                       onChange={handleInputChange}
                       placeholder="+1 (555) 000-0000"
@@ -184,7 +360,7 @@ const BuyerRegistor = () => {
                       Confirm Password
                     </label>
                     <input
-                      type="password"
+                      type={showPassword ? "text" : "password"}
                       name="confirmPassword"
                       value={formData.confirmPassword}
                       onChange={handleInputChange}
@@ -192,6 +368,7 @@ const BuyerRegistor = () => {
                       className="px-4 py-3 border border-gray-300 rounded-lg focus:border-[#108a00] focus:ring-4 focus:ring-[#108a00]/5 outline-none transition-all placeholder:text-gray-300"
                       required
                     />
+                    
                   </div>
                 </div>
               </div>
@@ -200,7 +377,7 @@ const BuyerRegistor = () => {
             {/* Section 2: Company/Organization Info */}
             <section>
               <h2 className="text-xl font-bold mb-8 text-gray-800 flex items-center gap-2">
-                <span className="w-8 h-8 rounded-full bg-[#108a00]/10 text-[#108a00] flex items-center justify-center text-sm">
+                <span className="w-8 h-8 rounded-full bg-[#108a00]/10 text-blue-600 flex items-center justify-center text-sm">
                   2
                 </span>
                 Company Info
@@ -230,7 +407,7 @@ const BuyerRegistor = () => {
                       name="companyType"
                       value={formData.companyType}
                       onChange={handleInputChange}
-                      className="px-4 py-3 border border-gray-300 rounded-lg focus:border-[#108a00] focus:ring-4 focus:ring-[#108a00]/5 outline-none bg-white transition-all appearance-none"
+                      className="px-10 py-3 border border-gray-300 rounded-lg focus:border-[#108a00] focus:ring-4 focus:ring-[#108a00]/5 outline-none bg-white transition-all appearance-none"
                     >
                       <option value="">Select type</option>
                       <option>Construction Company</option>
@@ -240,7 +417,7 @@ const BuyerRegistor = () => {
                       <option>Individual</option>
                     </select>
                   </div>
-                  <div className="flex flex-col gap-2">
+                  {/* <div className="flex flex-col gap-2">
                     <label className="text-[13px] uppercase tracking-wider font-bold text-gray-500">
                       Industry Sector
                     </label>
@@ -256,7 +433,7 @@ const BuyerRegistor = () => {
                       <option>Commercial</option>
                       <option>Residential</option>
                     </select>
-                  </div>
+                  </div> */}
                 </div>
               </div>
             </section>
@@ -264,7 +441,7 @@ const BuyerRegistor = () => {
             {/* Section 3: Basic Details */}
             <section>
               <h2 className="text-xl font-bold mb-8 text-gray-800 flex items-center gap-2">
-                <span className="w-8 h-8 rounded-full bg-[#108a00]/10 text-[#108a00] flex items-center justify-center text-sm">
+                <span className="w-8 h-8 rounded-full bg-[#108a00]/10 text-blue-600 flex items-center justify-center text-sm">
                   3
                 </span>
                 Basic Details
@@ -328,7 +505,7 @@ const BuyerRegistor = () => {
                     id="unifiedConsent"
                     name="termsAccepted"
                     checked={formData.termsAccepted}
-                    className="peer h-6 w-6 cursor-pointer appearance-none rounded-md border-2 border-gray-300 checked:bg-[#108a00] checked:border-[#108a00] transition-all"
+                    className="peer h-6 w-6 cursor-pointer appearance-none rounded-md border-2 border-gray-300 checked:bg-blue-600 checked:border-blue-600 transition-all"
                     onChange={handleInputChange}
                   />
                   <Check className="absolute h-4 w-4 text-white opacity-0 peer-checked:opacity-100 pointer-events-none left-1" />
@@ -352,22 +529,32 @@ const BuyerRegistor = () => {
               <div className="space-y-4 pt-4">
                 <button
                   type="submit"
-                  disabled={!formData.termsAccepted}
-                  className="w-full bg-[#108a00] disabled:bg-gray-300 disabled:shadow-none text-white py-4 rounded-full font-bold text-xl hover:bg-[#14a800] transition-all shadow-lg shadow-[#108a00]/20 active:scale-[0.98]"
+                  disabled={isSubmitting}
+                  className="w-full py-4 bg-[#14a800] text-white font-bold rounded-full hover:bg-[#108a00] active:scale-[0.98] transition-all disabled:opacity-70 text-[18px] flex items-center justify-center gap-3 shadow-lg shadow-[#14a800]/20"
                 >
-                  Create an account
+                  {isSubmitting ? (
+                    <>
+                      {/* 3. Added a dedicated text so they know WHAT is happening */}
+                      <div className="w-6 h-6 border-2 border-white/20 border-t-white rounded-full animate-spin" />
+                      <span>Processing...</span>
+                    </>
+                  ) : (
+                    "Create my account"
+                  )}
                 </button>
 
                 <div className="text-center">
                   <span className="text-sm text-gray-500">
                     Already have an account?{" "}
                   </span>
-                  <button
-                    type="button"
-                    className="text-sm text-[#108a00] font-bold hover:underline"
-                  >
-                    Log in
-                  </button>
+                  <Link to="/login">
+                    <button
+                      type="button"
+                      className="text-sm text-[#108a00] font-bold hover:underline"
+                    >
+                      Log in
+                    </button>
+                  </Link>
                 </div>
               </div>
             </section>
@@ -375,47 +562,15 @@ const BuyerRegistor = () => {
         </div>
 
         {/* Enhanced Footer */}
-        <footer className="relative z-10 border-t border-gray-200 pt-10 pb-16">
-          <div className="flex flex-col md:flex-row justify-between items-center gap-6">
-            <div className="flex items-center gap-2 text-gray-400">
-              <span className="text-lg font-bold text-gray-500 tracking-tight">
-                BidSmart
-              </span>
-              <span className="text-xs">© 2026 Global Inc.</span>
-            </div>
-
-            <div className="flex flex-wrap justify-center gap-x-8 gap-y-3">
-              <a
-                href="#"
-                className="text-sm font-semibold text-gray-500 hover:text-[#108a00] transition-colors"
-              >
-                Terms of Service
-              </a>
-              <a
-                href="#"
-                className="text-sm font-semibold text-gray-500 hover:text-[#108a00] transition-colors"
-              >
-                Privacy Policy
-              </a>
-              <a
-                href="#"
-                className="text-sm font-semibold text-gray-500 hover:text-[#108a00] transition-colors"
-              >
-                Accessibility
-              </a>
-              <a
-                href="#"
-                className="text-sm font-semibold text-gray-500 hover:text-[#108a00] transition-colors flex items-center gap-1"
-              >
-                Help Center <ExternalLink size={14} />
-              </a>
-            </div>
-
-            <div className="flex items-center gap-4">
-              <button className="p-2 rounded-full border border-gray-200 text-gray-400 hover:bg-[#108a00] hover:text-white transition-all">
-                <Globe size={18} />
-              </button>
-            </div>
+        <footer className="mt-12 text-center text-[#5e6d55] px-4 space-y-6">
+          <p className="text-xs">© 2026 BidSmart® Global Inc.</p>
+          <div className="flex flex-wrap justify-center gap-x-6 gap-y-3 font-bold text-[13px]">
+            <span className="hover:text-[#14a800] cursor-pointer">Terms</span>
+            <span className="hover:text-[#14a800] cursor-pointer">Privacy</span>
+            <span className="hover:text-[#14a800] cursor-pointer">Cookies</span>
+            <span className="hover:text-[#14a800] cursor-pointer">
+              Accessibility
+            </span>
           </div>
         </footer>
       </div>

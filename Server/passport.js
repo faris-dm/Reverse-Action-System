@@ -1,83 +1,76 @@
 const express = require("express");
 const jwt = require("jsonwebtoken");
 const app = express();
+const cors = require("cors");
+app.use(
+  cors({
+    origin: ["http://localhost:5173", "http://localhost:5174"], // Your React app's address
+    credentials: true, // Allow cookies/credentials
+  })
+);
 let cookiesparser = require("cookie-parser");
 app.use(cookiesparser());
 let flash = require("express-flash");
 // let userMapStore = new Map();
-let refreshStore = [];
 const bcrypt = require("bcrypt");
-const { name } = require("ejs");
-const cors = require("cors");
-app.use(cors());
+
 const mysql = require("mysql2");
 app.use(express.json());
 
-const { use } = require("passport");
 app.use(express.urlencoded({ extended: true }));
 const userMapStore = require("./models/storeage");
-let middlewareAuthToken = require("./middleware/auth");
+
 const { z } = require("zod");
+// import supplier Regidtor
+
+const SupplierRegidtor = require("./routes/supplierRegistor");
+app.use(SupplierRegidtor);
+const createAuction = require("./routes/buyereCom/create");
+app.use(createAuction);
+
+// import buyerRegistor
+const BuyerRegistor = require("./routes/BuyerRegistor");
+app.use(BuyerRegistor);
 
 const supplierRoutes = require("./routes/supplier");
 app.use(supplierRoutes);
 const buyerRoute = require("./routes/buyer");
 app.use(buyerRoute);
-const loginRoutes = require("./routes/login");
-app.use(loginRoutes);
+const login = require("./routes/login");
+app.use(login);
 const tokenRoute = require("./routes/token");
 app.use(tokenRoute);
 const daConnect = require("./config/database");
-const { funcTable } = require("./config/userTable");
 
 const Dashboard = require("./routes/Dashboard");
 app.use(Dashboard);
-const Logout = require("./routes/logout");
+
+const MeRoute = require("./controllers/me");
+
+const verifyTokens = require("./middleware/tokenVerify");
+app.use("/api/me", verifyTokens, MeRoute);
+const Logout = require("./routes/logout/logout");
+// C:\Users\Administrator\Desktop\fyp\Construction_Auction\Server\routes\logout\logout.js
 app.use(Logout);
-
-app.get("/role", (req, res) => {
-  res.render("userRole.ejs");
-});
-
 app.use((req, res, next) => {
   req.db = daConnect;
   next();
 });
 
-app.set("view engine", "ejs");
-app.use(express.static("public"));
-let secret = "W$q4=25*8%v-}UV";
-let RefreshTokenSecret = "W%&7=-^#-v}XL";
-
-app.get("/", (req, res) => {
-  console.log("✅ Root route was accessed!");
-  console.log("📁 Trying to render index.ejs");
-  console.log("👤 User data:", req.user || "No user");
-  res.render("index.ejs");
+const BidProposal = require("./routes/buyereCom/BidProposal");
+app.use(BidProposal);
+app.use("/uploads", express.static("uploads"));
+// check the route
+// ADD THESE LINES
+app.get("/api/auth/status", verifyTokens, (req, res) => {
+  res.status(200).json({ loggedIn: true });
 });
-
-// async function startDatabase() {
-//   try {
-//     console.log("creating the database");
-//     await funcTable();
-//   } catch (error) {
-//     console.log("table creationn failed", error);
-//   }
-// }
-// startDatabase();
 
 let signUp = z.object({
   name: z.string().min(3, "userName Must Be at least three characters "),
   email: z.string().email("Please Inser Valid @ email"),
   password: z.string().min(5, "password must be five or more"),
 });
-
-// app.get("/register", (req, res) => {
-//   res.render("register.ejs");
-// });
-// app.get("/login", (req, res) => {
-//   res.render("login.ejs");
-// });
 
 app.post("/register", async (req, res) => {
   let resultZod = signUp.safeParse(req.body);
@@ -109,32 +102,6 @@ app.post("/register", async (req, res) => {
     console.log("error happened", error);
     res.redirect("register");
   }
-});
-
-// function generateAccess(user) {
-//   return jwt.sign(user, secret, { expiresIn: "15m" });
-// }
-
-// app.post("/token", (req, res) => {
-//   let authHeaderToken = req.body.token;
-//   if (!authHeaderToken) {
-//     res.status(401).send("No refresh Token found");
-//   } else if (!refreshStore.includes(authHeaderToken)) {
-//     res.status(401).send("Token does not much");
-//   }
-//   jwt.verify(authHeaderToken, RefreshTokenSecret, (err, user) => {
-//     if (err) return res.status(403).send("Error happend Pleases check again");
-//     let playload = {
-//       email: user.email,
-//       name: user.name,
-//     };
-//     let accessTokens = generateAccess(playload);
-//     res.json({ accessTokens: accessTokens });
-//   });
-// });
-app.get("/test", (req, res) => {
-  console.log("🔵 TEST ROUTE WAS ACCESSED!");
-  res.send("If you see this, the server is working!");
 });
 
 let port = 21000;

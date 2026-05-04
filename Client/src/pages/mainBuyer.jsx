@@ -1,15 +1,21 @@
 import React, { useState, useEffect } from "react";
+
+import CreateRfpModal from "./buyercomponts/create";
 import {
   Gavel,
   Settings,
   LogOut,
   MessageSquare,
   Plus,
+  MapPin,
+  Package,
+  DollarSign,
   LayoutDashboard,
   ShoppingCart,
   Clock,
   ChevronRight,
   ArrowLeft,
+  Calendar,
   Menu,
   X,
   Search,
@@ -17,15 +23,12 @@ import {
   Trophy,
   Bell,
   FileText,
-  Calendar,
-  DollarSign,
   CheckCircle2,
-  Users,
   TrendingUp,
   ShieldCheck,
   CreditCard,
   Building2,
-  User,
+  Users,
   Mail,
   Lock,
   Globe,
@@ -33,23 +36,112 @@ import {
   SendHorizontal,
 } from "lucide-react";
 
+import { useNavigate } from "react-router-dom";
+
+import Proposal from "./buyercomponts/proposal";
+
 function App() {
   // --- CORE STATE ---
+  const [profile, setProfile] = useState(null);
   const [activeTab, setActiveTab] = useState("dashboard");
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
   const [isSignOutModalOpen, setIsSignOutModalOpen] = useState(false);
   const [isSidebarOpen, setSidebarOpen] = useState(false);
   const [formStep, setFormStep] = useState(1);
   const [selectedConversation, setSelectedConversation] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+  const navigate = useNavigate();
+  const [checkingAuth, setCheckingAuth] = useState(true);
+
+  useEffect(() => {
+    const protectPage = async () => {
+      try {
+        const res = await fetch("http://localhost:21000/api/auth/status", {
+          credentials: "include",
+        });
+
+        // If NOT logged in (401), kick them to login
+        if (res.status === 401) {
+          navigate("/buyerform");
+        }
+      } catch (err) {
+        navigate("/buyerform");
+        setCheckingAuth(false);
+      }
+    };
+    protectPage();
+  }, []);
+
+  // the auth of the User
+  // before going to the dashboard
+  useEffect(() => {
+    const getBuyerData = async () => {
+      try {
+        const respond = await fetch("http://localhost:21000/api/me", {
+          credentials: "include",
+        });
+        if (respond.status === 401) {
+          window.location.href = "/buyerform";
+          return;
+        }
+
+        if (!respond.ok) {
+          throw new Error("could not load the data to biyrt profile");
+        }
+
+        const data = await respond.json();
+        setProfile(data);
+        setLoading(false);
+      } catch (err) {
+        setError(err.message);
+        setLoading(false);
+      }
+    };
+    getBuyerData();
+  }, []);
+
+  // Added the files
+  // useEffect(() => {
+  //   const getProposal = async () => {
+  //     try {
+  //       const fetchProposal = await fetch(
+  //         "http://localhost:21000/api/getProposal",
+  //         {
+  //           credentials: "include",
+  //         }
+  //       );
+  //       const reslut = await fetchProposal.json();
+
+  //       if (fetchProposal.status === 401) {
+  //         throw new Error("could not load the data to biyrt profile");
+  //       } else {
+  //         if (fetchProposal.ok) {
+  //           const RecivedProposalData = reslut.data.filter(
+  //             (item) => item.type === "proposal"
+  //           );
+  //         }
+  //       }
+  //     } catch (error) {
+  //       console.error("Fetch error:", error);
+  //     } finally {
+  //       setLoading(false);
+  //     }
+  //   };
+  //   getProposal();
+  // }, []);
+  //
 
   // --- DATA STATE ---
   const [newRfp, setNewRfp] = useState({
     title: "",
-    category: "Industrial",
     description: "",
+    category: "",
     budget: "",
-    deadline: "",
-    priority: "Normal",
+    quantity: "",
+    location: "",
+    expedet: "",
+    priority: "",
   });
 
   const [myRequests, setMyRequests] = useState([
@@ -59,7 +151,9 @@ function App() {
       bidsCount: 4,
       lowBid: 45000,
       budget: 55000,
-      deadline: "2025-05-20",
+      quantity: "10",
+      location: "Jimma ,City center",
+      expedet: "2025-05-20",
       status: "Open",
       category: "Safety",
     },
@@ -69,7 +163,9 @@ function App() {
       bidsCount: 2,
       lowBid: 120000,
       budget: 150000,
-      deadline: "2025-06-12",
+      quantity: "10",
+      location: "Jimma ,City center",
+      expedet: "2025-06-12",
       status: "Open",
       category: "Maintenance",
     },
@@ -79,7 +175,9 @@ function App() {
       bidsCount: 8,
       lowBid: 8500,
       budget: 10000,
-      deadline: "2025-04-10",
+      quantity: "10",
+      location: "Jimma ,City center",
+      expedet: "2025-04-10",
       status: "Awarded",
       category: "Logistics",
     },
@@ -150,28 +248,53 @@ function App() {
       category: "Industrial",
       description: "",
       budget: "",
-      deadline: "",
+      expedet: "",
       priority: "Normal",
     });
     setFormStep(1);
     setIsCreateModalOpen(false);
   };
 
-  const handlePublishRfp = () => {
+  //
+
+  const handlePublishRfp = async () => {
     const rfpId = `REQ-${Math.floor(Math.random() * 9000) + 1000}`;
     const newEntry = {
       id: rfpId,
       title: newRfp.title,
+      description: newRfp.description, // Added
+      category: newRfp.category,
+      priority: newRfp.priority, // Added
+      budget: parseInt(newRfp.budget) || 0,
+      quantity: newRfp.quantity, // Added
+      location: newRfp.location, // Added
+      expedet: newRfp.expedet, // Match this to your form state 'expedet'
+      status: "Open",
       bidsCount: 0,
       lowBid: null,
-      budget: parseInt(newRfp.budget) || 0,
-      deadline: newRfp.deadline,
-      status: "Open",
-      category: newRfp.category,
     };
-    setMyRequests([newEntry, ...myRequests]);
-    resetForm();
-    setActiveTab("requests");
+    try {
+      const response = await fetch("http://localhost:21000/api/createAuction", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(newEntry),
+      });
+      if (response.ok) {
+        alert("Success! Auction is now live for suppliers.");
+        setMyRequests([newEntry, ...myRequests]);
+        resetForm();
+        setActiveTab("requests");
+        resetForm();
+      } else {
+        alert("Server error. Could not publish.");
+        const errorMsg = await response.json();
+        alert(`Failed: ${errorMsg.message || "Server error"}`);
+      }
+    } catch (error) {
+      console.error(error);
+    }
   };
 
   const handleSignOut = () => {
@@ -239,7 +362,7 @@ function App() {
               <ShoppingCart size={24} className="text-white" />
             </div>
             <span className="text-2xl font-black text-white italic uppercase tracking-tighter">
-              CHAIN<span className="text-blue-500">FLOW</span>
+              Buyer<span className="text-blue-500 px-1">hub</span>
             </span>
           </div>
         </div>
@@ -247,7 +370,9 @@ function App() {
           {[
             { id: "dashboard", icon: LayoutDashboard, label: "Overview" },
             { id: "requests", icon: Gavel, label: "My RFPs" },
+            { id: "proposals", icon: Building2, label: " Proposals" },
             { id: "suppliers", icon: Building2, label: "Suppliers" },
+
             { id: "messages", icon: MessageSquare, label: "Messages" },
             { id: "settings", icon: Settings, label: "Settings" },
           ].map((item) => (
@@ -324,14 +449,19 @@ function App() {
             >
               <div className="text-right hidden sm:block">
                 <p className="text-[10px] font-black uppercase tracking-tight">
-                  John Doe
+                  {(profile?.fullName || "Lading .......").toUpperCase()}
                 </p>
                 <p className="text-[8px] font-black text-slate-400 uppercase tracking-widest">
-                  Master Buyer
+                  {profile?.role || "Buyer"}
                 </p>
               </div>
               <div className="w-12 h-12 bg-slate-900 rounded-[18px] flex items-center justify-center text-white font-black text-sm shadow-xl hover:bg-blue-600 transition-colors">
-                JD
+                {profile?.fullName
+                  ? profile.fullName
+                      .split(" ")
+                      .map((n) => n[0])
+                      .join("")
+                  : "..."}
               </div>
             </div>
           </div>
@@ -345,17 +475,17 @@ function App() {
                 <div className="flex flex-col md:flex-row md:items-end justify-between gap-6">
                   <div>
                     <h1 className="text-5xl font-black text-slate-900 tracking-tighter uppercase leading-[0.9]">
-                      Procurement <span className="text-blue-600">Hub</span>
+                      Over<span className="text-blue-600">View </span>
                     </h1>
                     <p className="text-[11px] font-black text-slate-400 uppercase tracking-widest mt-4">
-                      Command center for your supply chain
+                      Geneal Report for Buyer chain
                     </p>
                   </div>
                   <button
                     onClick={() => setIsCreateModalOpen(true)}
                     className="px-8 py-5 bg-blue-600 text-white font-black text-[10px] uppercase tracking-[0.3em] rounded-[24px] shadow-2xl hover:bg-blue-700 active:scale-95 transition-all flex items-center gap-3 w-fit"
                   >
-                    <Plus size={18} /> Create RFP
+                    <Plus size={18} /> Create Auction
                   </button>
                 </div>
                 <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
@@ -397,7 +527,7 @@ function App() {
                                 {req.title}
                               </p>
                               <p className="text-[9px] font-black text-slate-400 uppercase tracking-widest">
-                                Update received • 2m ago
+                                Update received • 3m ago
                               </p>
                             </div>
                           </div>
@@ -440,7 +570,6 @@ function App() {
                 </div>
               </div>
             )}
-
             {activeTab === "requests" && (
               <div className="space-y-8 animate-in fade-in duration-500">
                 <div className="flex justify-between items-end">
@@ -460,38 +589,71 @@ function App() {
                       noPadding
                       className="hover:border-blue-200 group"
                     >
+                      {/* added  request here */}
                       <div className="p-8 flex flex-col md:flex-row md:items-center justify-between gap-6">
+                        {/* added here */}
+                        {/* Inside your myRequests.map((req) => ... */}
                         <div className="flex-1">
                           <div className="flex items-center gap-3 mb-3">
                             <Badge status={req.status}>{req.status}</Badge>
+
+                            {/* NEW: Priority Badge */}
+                            <span
+                              className={`text-[9px] font-black px-3 py-1 rounded-full uppercase ${
+                                req.priority === "Urgent"
+                                  ? "bg-red-100 text-red-600"
+                                  : "bg-slate-100 text-slate-500"
+                              }`}
+                            >
+                              {req.priority}
+                            </span>
+
                             <span className="text-[10px] font-black text-slate-300 uppercase tracking-widest">
                               {req.id}
                             </span>
                           </div>
+
                           <h4 className="text-xl font-black uppercase text-slate-900">
                             {req.title}
                           </h4>
+
                           <div className="flex flex-wrap gap-x-6 gap-y-2 mt-4">
+                            {/* Budget */}
                             <div className="flex items-center gap-2">
                               <DollarSign size={14} className="text-blue-600" />
                               <span className="text-[10px] font-black uppercase tracking-widest text-slate-500">
-                                Budget: ₱{req.budget.toLocaleString()}
+                                Budget: ETB {req.budget.toLocaleString()}
                               </span>
                             </div>
+
+                            {/* NEW: Quantity */}
+                            <div className="flex items-center gap-2">
+                              <Package size={14} className="text-blue-600" />
+                              <span className="text-[10px] font-black uppercase tracking-widest text-slate-500">
+                                Qty: {req.quantity}
+                              </span>
+                            </div>
+
+                            {/* NEW: Location */}
+                            <div className="flex items-center gap-2">
+                              <MapPin size={14} className="text-blue-600" />
+                              <span className="text-[10px] font-black uppercase tracking-widest text-slate-500">
+                                {req.location}
+                              </span>
+                            </div>
+
+                            {/* Deadline */}
                             <div className="flex items-center gap-2">
                               <Calendar size={14} className="text-blue-600" />
                               <span className="text-[10px] font-black uppercase tracking-widest text-slate-500">
-                                Closes: {req.deadline}
-                              </span>
-                            </div>
-                            <div className="flex items-center gap-2">
-                              <Gavel size={14} className="text-blue-600" />
-                              <span className="text-[10px] font-black uppercase tracking-widest text-slate-500">
-                                {req.bidsCount} Bids Active
+                                Closes:{" "}
+                                {new Date(req.expedet).toLocaleDateString()}
                               </span>
                             </div>
                           </div>
                         </div>
+
+                        {/* added here */}
                         <div className="flex items-center gap-4">
                           <button className="px-6 py-3 bg-slate-900 text-white font-black text-[9px] uppercase tracking-widest rounded-xl hover:bg-blue-600 transition-colors">
                             View Bids
@@ -506,7 +668,6 @@ function App() {
                 </div>
               </div>
             )}
-
             {activeTab === "suppliers" && (
               <div className="space-y-8 animate-in fade-in duration-500">
                 <div className="flex justify-between items-end">
@@ -566,7 +727,13 @@ function App() {
                 </div>
               </div>
             )}
-
+            {/* added here */}
+            {activeTab === "proposals" && (
+              <div className="animate-in fade-in duration-500">
+                <Proposal />
+              </div>
+            )}
+            {/* // finsihe here */}
             {activeTab === "messages" && (
               <div className="flex h-[calc(100vh-200px)] gap-8 animate-in fade-in slide-in-from-bottom-4 duration-500">
                 <div
@@ -724,7 +891,39 @@ function App() {
                 </div>
               </div>
             )}
+            {activeTab === "settings" && (
+              <div className="space-y-10 animate-in fade-in duration-500">
+                {/* ✅ ADD THIS - Show loading spinner */}
+                {loading && (
+                  <div className="flex justify-center items-center py-20">
+                    <div className="text-center">
+                      <div className="w-12 h-12 border-4 border-blue-600 border-t-transparent rounded-full animate-spin mx-auto"></div>
+                      <p className="mt-4 text-slate-500">
+                        Loading your profile...
+                      </p>
+                    </div>
+                  </div>
+                )}
 
+                {/* ✅ ADD THIS - Show error message */}
+                {error && (
+                  <div className="bg-red-50 border border-red-200 rounded-2xl p-6 text-center">
+                    <p className="text-red-600 font-bold">Error: {error}</p>
+                    <button
+                      onClick={() => window.location.reload()}
+                      className="mt-4 px-6 py-2 bg-red-600 text-white rounded-xl text-sm"
+                    >
+                      Try Again
+                    </button>
+                  </div>
+                )}
+
+                {/* ✅ ADD THIS - Show settings only when profile is loaded */}
+                {!loading && !error && profile && (
+                  <>{/* Your existing settings JSX goes here */}</>
+                )}
+              </div>
+            )}
             {activeTab === "settings" && (
               <div className="space-y-10 animate-in fade-in duration-500">
                 <div className="flex justify-between items-end">
@@ -742,15 +941,21 @@ function App() {
                     <BentoCard>
                       <div className="flex flex-col items-center text-center">
                         <div className="relative group">
-                          <div className="w-32 h-32 rounded-[40px] bg-slate-900 flex items-center justify-center text-white text-4xl font-black shadow-2xl">
-                            JD
+                          <div
+                            key={profile?.companyName}
+                            className="w-32 h-32 rounded-[40px] bg-slate-900 flex items-center justify-center text-white text-4xl font-black shadow-2xl"
+                          >
+                            {profile?.companyName}
                           </div>
                           <button className="absolute -bottom-2 -right-2 p-3 bg-blue-600 text-white rounded-2xl shadow-lg hover:scale-110 transition-transform">
                             <Camera size={18} />
                           </button>
                         </div>
-                        <h3 className="text-xl font-black uppercase text-slate-900 mt-6">
-                          John Doe
+                        <h3
+                          key={profile?.fullName}
+                          className="text-xl font-black uppercase text-slate-900 mt-6"
+                        >
+                          {(profile?.fullName || "Jone Done").toUpperCase()}
                         </h3>
                         <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest">
                           Procurement Director
@@ -765,7 +970,7 @@ function App() {
                                 Email Address
                               </p>
                               <p className="text-[10px] font-black uppercase text-slate-900">
-                                john.doe@enterprise.com
+                                {profile?.email}
                               </p>
                             </div>
                           </div>
@@ -787,26 +992,113 @@ function App() {
                     </BentoCard>
                   </div>
                   <div className="lg:col-span-2 space-y-8">
-                    <BentoCard title="General Information" icon={User}>
+                    <BentoCard title="General Information" icon={Users}>
                       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                         <div className="space-y-2">
                           <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">
                             Full Name
                           </label>
                           <input
-                            defaultValue="John Doe"
+                            key={profile?.fullName}
+                            defaultValue={(
+                              profile?.fullName || "Jone Doe"
+                            ).toUpperCase()}
                             className="w-full bg-slate-50 border border-slate-100 rounded-[20px] p-4 text-xs font-bold outline-none focus:border-blue-600"
                           />
                         </div>
+                        {/* phone */}
                         <div className="space-y-2">
                           <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">
-                            Company
+                            Phone
                           </label>
                           <input
-                            defaultValue="Enterprise Logistics Co."
+                            key={profile?.phone}
+                            defaultValue={profile?.phone || "+251987307655"}
                             className="w-full bg-slate-50 border border-slate-100 rounded-[20px] p-4 text-xs font-bold outline-none focus:border-blue-600"
                           />
                         </div>
+
+                        {/* added new */}
+                        {/* email */}
+                        <div className="space-y-2">
+                          <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">
+                            email
+                          </label>
+                          <input
+                            key={profile?.email}
+                            defaultValue={profile?.email || "solonan@gmail.com"}
+                            className="w-full bg-slate-50 border border-slate-100 rounded-[20px] p-4 text-xs font-bold outline-none focus:border-blue-600"
+                          />
+                        </div>
+
+                        {/* business Name */}
+                        <div className="space-y-2">
+                          <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">
+                            business Name
+                          </label>
+                          <input
+                            key={profile?.companyName}
+                            defaultValue={profile?.companyName}
+                            className="w-full bg-slate-50 border border-slate-100 rounded-[20px] p-4 text-xs font-bold outline-none focus:border-blue-600"
+                          />
+                        </div>
+                        {/* address */}
+                        <div className="space-y-2">
+                          <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">
+                            Address
+                          </label>
+                          <input
+                            key={
+                              profile?.companyAddress ||
+                              "Jimma City City Center"
+                            }
+                            defaultValue={
+                              profile?.companyAddress ||
+                              "City Center ,Jimmax City"
+                            }
+                            className="w-full bg-slate-50 border border-slate-100 rounded-[20px] p-4 text-xs font-bold outline-none focus:border-blue-600"
+                          />
+                        </div>
+
+                        {/* tax Id */}
+
+                        <div className="space-y-2">
+                          <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">
+                            Tin Number
+                          </label>
+                          <input
+                            key={profile?.taxId}
+                            defaultValue={profile?.taxId || "TDER4567TY"}
+                            className="w-full bg-slate-50 border border-slate-100 rounded-[20px] p-4 text-xs font-bold outline-none focus:border-blue-600"
+                          />
+                        </div>
+
+                        {/* business express  */}
+                        <div className="space-y-2">
+                          <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">
+                            Business Expreance
+                          </label>
+                          <input
+                            key={profile?.yearsInBusiness}
+                            defaultValue={
+                              profile?.yearsInBusiness || "Bigginer "
+                            }
+                            className="w-full bg-slate-50 border border-slate-100 rounded-[20px] p-4 text-xs font-bold outline-none focus:border-blue-600"
+                          />
+                        </div>
+
+                        {/* catagores */}
+                        <div className="space-y-2">
+                          <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">
+                            Buyer Catagories
+                          </label>
+                          <input
+                            defaultValue="Construction"
+                            className="w-full bg-slate-50 border border-slate-100 rounded-[20px] p-4 text-xs font-bold outline-none focus:border-blue-600"
+                          />
+                        </div>
+
+                        {/* added new componts in the form */}
                       </div>
                     </BentoCard>
                     <BentoCard title="Security & Authentication" icon={Lock}>
@@ -877,157 +1169,19 @@ function App() {
         </div>
       )}
 
-      {isCreateModalOpen && (
-        <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 md:p-6 overflow-hidden">
-          <div
-            className="absolute inset-0 bg-slate-900/60 backdrop-blur-md"
-            onClick={resetForm}
-          />
-          <div className="relative w-full max-w-2xl bg-white border border-slate-100 rounded-[40px] shadow-2xl overflow-hidden flex flex-col max-h-[95vh] animate-in zoom-in-95 duration-300">
-            <div className="p-8 lg:p-12 border-b border-slate-50 flex items-center justify-between bg-white shrink-0">
-              <div>
-                <h2 className="text-2xl font-black italic uppercase text-slate-900 tracking-tighter">
-                  Broadcast <span className="text-blue-600">New RFP</span>
-                </h2>
-                <div className="flex gap-2 mt-3">
-                  {[1, 2, 3].map((s) => (
-                    <div
-                      key={s}
-                      className={`h-1.5 rounded-full transition-all duration-500 ${
-                        formStep >= s ? "w-10 bg-blue-600" : "w-4 bg-slate-100"
-                      }`}
-                    />
-                  ))}
-                </div>
-              </div>
-              <button
-                onClick={resetForm}
-                className="p-3 bg-slate-50 text-slate-400 hover:text-slate-900 rounded-full"
-              >
-                <X size={20} />
-              </button>
-            </div>
-            <div className="flex-1 overflow-y-auto p-8 lg:p-12 custom-scrollbar">
-              {formStep === 1 && (
-                <div className="space-y-8 animate-in slide-in-from-right-8 duration-300">
-                  <div className="space-y-2">
-                    <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">
-                      Title of RFP
-                    </label>
-                    <div className="relative">
-                      <FileText
-                        className="absolute left-6 top-1/2 -translate-y-1/2 text-slate-300"
-                        size={18}
-                      />
-                      <input
-                        value={newRfp.title}
-                        onChange={(e) =>
-                          setNewRfp({ ...newRfp, title: e.target.value })
-                        }
-                        placeholder="e.g. 5,000 Industrial Safety Helmets"
-                        className="w-full bg-slate-50 border border-slate-100 rounded-[24px] p-6 pl-16 text-sm font-bold outline-none focus:bg-white focus:border-blue-600"
-                      />
-                    </div>
-                  </div>
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    <div className="space-y-2">
-                      <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">
-                        Category
-                      </label>
-                      <select
-                        value={newRfp.category}
-                        onChange={(e) =>
-                          setNewRfp({ ...newRfp, category: e.target.value })
-                        }
-                        className="w-full bg-slate-50 border border-slate-100 rounded-[24px] p-6 text-sm font-bold outline-none appearance-none"
-                      >
-                        <option>Industrial</option>
-                        <option>IT Services</option>
-                        <option>Logistics</option>
-                        <option>Office Supplies</option>
-                      </select>
-                    </div>
-                    <div className="space-y-2">
-                      <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">
-                        Priority
-                      </label>
-                      <div className="flex gap-2">
-                        {["Normal", "Urgent"].map((p) => (
-                          <button
-                            key={p}
-                            onClick={() =>
-                              setNewRfp({ ...newRfp, priority: p })
-                            }
-                            className={`flex-1 py-6 rounded-[24px] border transition-all text-[10px] font-black uppercase ${
-                              newRfp.priority === p
-                                ? "bg-slate-900 text-white border-slate-900"
-                                : "bg-slate-50 text-slate-400 border-slate-100"
-                            }`}
-                          >
-                            {p}
-                          </button>
-                        ))}
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              )}
-              {formStep === 2 && (
-                <div className="space-y-8 animate-in slide-in-from-right-8 duration-300">
-                  <div className="space-y-2">
-                    <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">
-                      Budget (₱)
-                    </label>
-                    <input
-                      type="number"
-                      value={newRfp.budget}
-                      onChange={(e) =>
-                        setNewRfp({ ...newRfp, budget: e.target.value })
-                      }
-                      className="w-full bg-slate-50 border border-slate-100 rounded-[24px] p-6 text-sm font-bold outline-none"
-                    />
-                  </div>
-                </div>
-              )}
-              {formStep === 3 && (
-                <div className="text-center space-y-8 py-6">
-                  <div className="w-20 h-20 bg-blue-600 rounded-[30px] flex items-center justify-center text-white mx-auto shadow-xl">
-                    <CheckCircle2 size={40} />
-                  </div>
-                  <h3 className="text-2xl font-black uppercase text-slate-900">
-                    Final Confirmation
-                  </h3>
-                </div>
-              )}
-            </div>
-            <div className="p-8 lg:p-12 bg-white border-t border-slate-50 flex items-center gap-4 shrink-0">
-              {formStep > 1 && (
-                <button
-                  onClick={() => setFormStep((s) => s - 1)}
-                  className="flex-1 py-6 bg-slate-100 text-slate-600 font-black uppercase rounded-[28px] text-[9px]"
-                >
-                  Back
-                </button>
-              )}
-              {formStep < 3 ? (
-                <button
-                  onClick={() => setFormStep((s) => s + 1)}
-                  className="flex-[2] py-6 bg-slate-900 text-white font-black uppercase rounded-[28px] text-[9px]"
-                >
-                  Next Stage
-                </button>
-              ) : (
-                <button
-                  onClick={handlePublishRfp}
-                  className="flex-[2] py-6 bg-blue-600 text-white font-black uppercase rounded-[28px] text-[9px]"
-                >
-                  Publish RFQ
-                </button>
-              )}
-            </div>
-          </div>
-        </div>
-      )}
+      {/* added here */}
+
+      <CreateRfpModal
+        isCreateModalOpen={isCreateModalOpen}
+        resetForm={resetForm}
+        newRfp={newRfp}
+        setNewRfp={setNewRfp}
+        formStep={formStep}
+        setFormStep={setFormStep}
+        handlePublishRfp={handlePublishRfp}
+      />
+
+      {/* added here */}
 
       <style
         dangerouslySetInnerHTML={{

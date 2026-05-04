@@ -7,7 +7,7 @@ const pools = new Client({
   port: 5432,
   database: "Auction",
 });
-// pools.connect();
+// pools.connect();  man made
 (async () => {
   let client;
   try {

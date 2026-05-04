@@ -2,7 +2,7 @@
 import React, { useState } from "react";
 import { Link } from "react-router-dom";
 import {
-  Search,
+  TrendingDown,
   Briefcase,
   Users,
   ChevronRight,
@@ -11,6 +11,7 @@ import {
   Clock,
   Globe,
   ArrowLeft,
+
 } from "lucide-react";
 
 const Role = () => {
@@ -30,18 +31,33 @@ const Role = () => {
               >
                 <ArrowLeft className="w-5 h-5 text-gray-600" />
               </button>
-              <div className="flex items-center gap-2">
+              {/* <div className="flex items-center gap-2">
                 <div className="w-8 h-8 bg-green-600 rounded-lg flex items-center justify-center">
                   <span className="text-white font-bold text-xl">B</span>
                 </div>
                 <span className="text-xl font-bold text-gray-800">idSmart</span>
+              </div> */}
+
+              {/* added */}
+              <div
+                className="flex items-center space-x-2 cursor-pointer group"
+                onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}
+              >
+                <div className="w-10 h-10 bg-blue-600 rounded-xl flex items-center justify-center shadow-lg shadow-blue-600/20 group-hover:rotate-6 transition-transform">
+                  <TrendingDown className="text-white w-6 h-6" />
+                </div>
+                <span className="text-xl font-extrabold tracking-tighter text-slate-900">
+                  Bid<span className="text-blue-600">Smart</span>
+                </span>
               </div>
+
+              {/* added */}
             </div>
 
             {/* Right side - Sign in link */}
             <Link
               to="/login"
-              className="text-green-600 hover:text-green-700 font-medium text-sm sm:text-base"
+              className="text-blue-600  hover:text-blue-700 font-medium text-sm sm:text-base"
             >
               <span>Sign In →</span>
             </Link>
@@ -53,7 +69,7 @@ const Role = () => {
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-12 lg:py-16">
         {/* Heading Section */}
         <div className="text-center mb-8 sm:mb-12 lg:mb-16">
-          <h1 className="text-3xl sm:text-4xl lg:text-5xl font-bold text-green-600 mb-4">
+          <h1 className="text-3xl sm:text-4xl lg:text-5xl font-bold text-blue-600  mb-4">
             Join as a
             {/* <span className="text-green-600">Supplier</span> or{" "}
             <span className="text-blue-600">Buyer</span> */}
@@ -75,12 +91,12 @@ const Role = () => {
           >
             {/* Popular tag */}
             <div className="absolute -top-3 left-6">
-              <span className="bg-green-600 text-white text-xs font-semibold px-3 py-1 rounded-full">
+              <span className="bg-blue-600 text-white text-xs font-semibold px-3 py-1 rounded-full">
                 MOST POPULAR
               </span>
             </div>
 
-            <div className="p-6 sm:p-8 lg:p-10">
+            <Link to="/supplierform" className="p-6 sm:p-8 lg:p-10">
               {/* Icon and Title */}
               <div className="flex items-center gap-4 mb-6">
                 <div className="w-14 h-14 bg-green-100 rounded-xl flex items-center justify-center">
@@ -121,14 +137,14 @@ const Role = () => {
                   <span className="text-gray-500">/month</span>
                 </div>
 
-                <Link to="/supplerform">
+                <Link to="/supplierform">
                   <button className="w-full bg-green-600 hover:bg-green-700 text-white font-semibold py-4 px-6 rounded-xl transition-all transform hover:scale-[1.02] active:scale-[0.98] text-lg">
                     Join as Supplier
                     <ChevronRight className="inline ml-2 w-5 h-5" />
                   </button>
                 </Link>
               </div>
-            </div>
+            </Link>
           </div>
 
           {/* Buyer Card */}
@@ -142,7 +158,7 @@ const Role = () => {
             onMouseEnter={() => setHoveredRole("buyer")}
             onMouseLeave={() => setHoveredRole(null)}
           >
-            <div className="p-6 sm:p-8 lg:p-10">
+            <Link to="/buyerform" className="p-6 sm:p-8 lg:p-10">
               {/* Icon and Title */}
               <div className="flex items-center gap-4 mb-6">
                 <div className="w-14 h-14 bg-blue-100 rounded-xl flex items-center justify-center">
@@ -189,7 +205,7 @@ const Role = () => {
                   </button>
                 </Link>
               </div>
-            </div>
+            </Link>
           </div>
         </div>
 

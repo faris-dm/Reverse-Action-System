@@ -1,5 +1,5 @@
 // src/components/supplier/views/SettingsView.jsx
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   Building2,
   ShieldCheck,
@@ -11,12 +11,32 @@ import {
   Briefcase,
 } from "lucide-react";
 import { InputField } from "../common/InputField";
-import  FileUploadCard  from "../common/FileUploadCard";
+import FileUploadCard from "../common/FileUploadCard";
 
 export const SettingsView = ({ profile, setProfile }) => {
   const [isSaving, setIsSaving] = useState(false);
   const [activeSection, setActiveSection] = useState("business");
   const [showDeleteModal, setShowDeleteModal] = useState(false);
+
+  async function DoneDelite() {
+    try {
+      const response = await fetch("http://localhost:21000/api/logout", {
+        credentials: "include",
+        method: "POST",
+      });
+
+      if (response.status === 401) {
+        window.location.href = "/supplier";
+        return;
+      }
+      if (!response.ok) {
+        throw new Error("could not Delete  the tokens from the buyer profile");
+      }
+      window.location.href = "/login";
+    } catch (error) {
+      console.error("Network error:", error);
+    }
+  }
 
   const handleSave = (e) => {
     e.preventDefault();
@@ -64,7 +84,7 @@ export const SettingsView = ({ profile, setProfile }) => {
         className="grid grid-cols-1 lg:grid-cols-3 gap-10"
       >
         <div className="lg:col-span-2 space-y-10">
-          {/* Business Info Section */}
+          {/* Business Info Section ttt */}
           {activeSection === "business" && (
             <div className="space-y-10 animate-in slide-in-from-bottom-4 duration-500">
               <section className="bg-white p-8 md:p-12 rounded-[40px] border border-slate-100 shadow-sm space-y-10">
@@ -288,7 +308,7 @@ export const SettingsView = ({ profile, setProfile }) => {
                   </div>
                 </div>
                 <p className="text-sm font-bold text-red-800 leading-relaxed max-w-xl">
-                  Once you delete your account, there is no going back. All your
+                  Once you Logout your account, there is no going back. All your
                   bid history, won contracts, and communication will be
                   permanently removed.
                 </p>
@@ -297,7 +317,7 @@ export const SettingsView = ({ profile, setProfile }) => {
                   onClick={() => setShowDeleteModal(true)}
                   className="px-8 py-4 bg-red-600 text-white rounded-2xl font-black text-sm hover:bg-red-700 transition-all shadow-lg shadow-red-200"
                 >
-                  Delete My Account
+                  Logout My Account
                 </button>
               </section>
             </div>
@@ -311,7 +331,7 @@ export const SettingsView = ({ profile, setProfile }) => {
 
             <div className="text-center space-y-4">
               <div className="w-24 h-24 bg-white/10 rounded-3xl mx-auto flex items-center justify-center text-4xl font-black border border-white/10 shadow-inner">
-                {profile.businessName[0]}
+                {profile.businessName?.[0] || "?"}
               </div>
               <div>
                 <h4 className="text-xl font-black">{profile.businessName}</h4>
@@ -375,15 +395,17 @@ export const SettingsView = ({ profile, setProfile }) => {
               Are you sure?
             </h3>
             <p className="text-slate-500 font-bold mt-3 leading-relaxed">
-              This will permanently delete your account and all associated data.
-              This action cannot be undone.
+              {/* This will permanently */}
+              This will logout your account and all associated data. This action
+              cannot be undone.
             </p>
             <div className="mt-8 space-y-3">
               <button
-                onClick={() => setShowDeleteModal(false)}
+                onClick={() => DoneDelite()}
                 className="w-full py-4 bg-red-600 text-white rounded-2xl font-black text-sm hover:bg-red-700 transition-all shadow-lg shadow-red-100"
               >
-                Yes, Delete Permanently
+                {/* Yes, Delete Permanently */}
+                Yes logout Now
               </button>
               <button
                 onClick={() => setShowDeleteModal(false)}

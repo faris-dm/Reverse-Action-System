@@ -1,6 +1,6 @@
 const express = require("express");
 const router = express.Router();
-let authOut = require("../middleware/notGoout");
+
 const { z, email } = require("zod");
 const userMapStore = require("../models/storeage");
 let bcrypt = require("bcrypt");
@@ -11,9 +11,9 @@ let cookiesparser = require("cookie-parser");
 router.use(cookiesparser());
 
 // GET /buyer – show buyer registration form
-router.get("/buyer", (req, res) => {
-  res.render("buyerRegister", { message: null });
-});
+// router.get("/buyer", (req, res) => {
+//   res.render("buyerRegister", { message: null });
+// });
 
 let signBuyer = z.object({
   name: z.string().min(3, "Username Must Be more than Two words"),
@@ -45,7 +45,7 @@ router.post("/buyer", async (req, res) => {
     console.log("Password Match Correctly");
 
     let hashPassword = await bcrypt.hash(password, 10);
-    let cleanEmail = email.toLowerCase();
+    let cleanEmail = email.toLowerCase().trim()
     if (userMapStore.has(cleanEmail)) {
       return res.status(400).send("email aready Found");
     }

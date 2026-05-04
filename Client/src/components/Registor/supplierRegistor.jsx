@@ -1,20 +1,18 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
+import { Link } from "react-router-dom";
 import {
-  User,
-  Mail,
-  Phone,
-  Lock,
-  Building2,
   ChevronRight,
-  ShieldCheck,
   TrendingDown,
   Eye,
   EyeOff,
   CheckCircle2,
   ArrowLeft,
 } from "lucide-react";
+import { useNavigate } from "react-router-dom";
 
 const App = () => {
+  const navigate = useNavigate();
+  const [checkingAuth, setCheckingAuth] = useState(true);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitted, setSubmitted] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
@@ -59,15 +57,88 @@ const App = () => {
     return Object.keys(newErrors).length === 0;
   };
 
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    if (!validate()) return;
+  // ADD THESE LINES at the top of your component
+  useEffect(() => {
+    const loggedInOnly = async () => {
+      try {
+        const res = await fetch("http://localhost:21000/api/auth/status", {
+          credentials: "include",
+        });
+        if (res.ok) {
+          const data = await res.json(); // Assuming your backend sends { role: 'admin' }
 
+          // Route them based on their power level
+          if (data.role === "admin") {
+            navigate("/admin", { replace: true });
+          } else if (data.role === "buyer") {
+            navigate("/buyer", { replace: true });
+          } else {
+            navigate("/supplier", { replace: true });
+          }
+        }
+      } catch (err) {
+        setCheckingAuth(false);
+        /* Not logged in, stay here */
+      }
+    };
+    loggedInOnly();
+  }, []);
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+
+    if (!validate()) {
+      console.log("Supplier REgitration is not filled Proparly");
+      return;
+    }
+
+    // Clear previous errors and start loading
+    setErrors({});
     setIsSubmitting(true);
-    setTimeout(() => {
+
+    try {
+      // Send form data to the backend registration endpoint
+
+      // const response = await fetch("http://localhost:21000/api/supplierRegistor"
+      const response = await fetch(
+        "http://localhost:21000/api/supplierRegistor",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(formData),
+          credentials: "include", // ensures cookies are sent/received
+        }
+      );
+
+      const data = await response.json();
+      console.log("Form data being sent:", formData);
+
+      // Check if all required fields exist
+      if (!formData.fullName) console.log("❌ Missing fullName");
+
+      if (!response.ok) {
+        // Backend returned an error (Zod validation or business logic)
+        if (data.errors) {
+          // Field‑specific errors ya (e.g., { email: "sInvalid email" })
+          setErrors(data.errors);
+        } else {
+          // General error message (e.g., "User already exists")
+          setErrors({ server: data.message || "Registration failed" });
+        }
+        return;
+      }
+
+      // Success: show success  in the screen
+      window.location.href = "/supplier";
+    } catch (error) {
+      // Network or unexpected error
+      console.error("Network error:", error);
+      setErrors({ server: "Network error. Please check your connection." });
+    } finally {
       setIsSubmitting(false);
-      setSubmitted(true);
-    }, 1500);
+    }
   };
 
   // Static Ocean Wave Background
@@ -138,9 +209,12 @@ const App = () => {
               BidSmart
             </span>
           </div>
-          <button className="text-[15px] font-bold text-[#14a800] hover:bg-[#14a800]/5 px-4 py-2 rounded-full transition-colors">
-            Log In
-          </button>
+          <Link
+            to="/login"
+            className="text-[15px] font-bold text-[#14a800] hover:bg-[#14a800]/5 px-4 py-2 rounded-full transition-colors"
+          >
+            <button>Log In</button>
+          </Link>
         </div>
       </header>
 
@@ -167,7 +241,7 @@ const App = () => {
               </span>
               <h1 className="text-3xl md:text-5xl leading-tight font-black tracking-tight mb-3">
                 Join as a{" "}
-                <span className="bg-gradient-to-r from-[#14a800] to-[#006d00] bg-clip-text text-transparent">
+                <span className="bg-linear-to-r from-[#14a800] to-[#006d00] bg-clip-text text-transparent">
                   supplier
                 </span>
               </h1>
@@ -264,7 +338,7 @@ const App = () => {
                       <button
                         type="button"
                         onClick={() => setShowPassword(!showPassword)}
-                        className="absolute right-4 top-[38px] text-gray-400 hover:text-[#14a800] h-10 w-10 flex items-center justify-center rounded-full active:bg-gray-100 transition-colors"
+                        className="absolute right-4 top-9.5 text-gray-400 hover:text-[#14a800] h-10 w-10 flex items-center justify-center rounded-full active:bg-gray-100 transition-colors"
                       >
                         {showPassword ? (
                           <EyeOff size={20} />
@@ -399,12 +473,14 @@ const App = () => {
                   <span className="text-[#5e6d55] text-[15px]">
                     Already have an account?{" "}
                   </span>
-                  <button
-                    type="button"
-                    className="text-[#14a800] font-extrabold text-[15px] hover:underline transition-all"
-                  >
-                    Log In
-                  </button>
+                  <Link to="/login">
+                    <button
+                      type="button"
+                      className="text-[#14a800] font-extrabold text-[15px] hover:underline transition-all"
+                    >
+                      Log In
+                    </button>
+                  </Link>
                 </div>
               </div>
             </form>
@@ -419,7 +495,7 @@ const App = () => {
             <span className="hover:text-[#14a800] cursor-pointer">Privacy</span>
             <span className="hover:text-[#14a800] cursor-pointer">Cookies</span>
             <span className="hover:text-[#14a800] cursor-pointer">
-              Accessibility
+              Accessibidlity
             </span>
           </div>
         </footer>

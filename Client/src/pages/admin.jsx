@@ -18,7 +18,9 @@ import {
   ChevronRight,
   Filter,
   X,
+  AwardIcon,
 } from "lucide-react";
+import { useNavigate } from "react-router-dom";
 
 // --- INITIAL DATA ---
 const INITIAL_SUPPLIERS = [
@@ -90,6 +92,9 @@ const INITIAL_SUPPLIERS = [
 ];
 
 const AdminApp = () => {
+  const Navigate = useNavigate();
+  const [profile, setProfile] = useState(null);
+  const [checkingAuth, setCheckingAuth] = useState(true);
   const [activeTab, setActiveTab] = useState("dashboard");
   const [isSidebarOpen, setSidebarOpen] = useState(false);
   const [selectedSupplierId, setSelectedSupplierId] = useState(null);
@@ -99,6 +104,60 @@ const AdminApp = () => {
     reason: "",
     supplierId: null,
   });
+
+  useEffect(() => {
+    const protectPage = async () => {
+      try {
+        const res = await fetch("http://localhost:21000/api/auth/status", {
+          credentials: "include",
+        });
+
+        // If NOT logged in (401), kick them to login
+        if (res.status === 401) {
+          Navigate("/supplierform");
+        } else {
+          setCheckingAuth(false);
+          if (res.role === "admin") {
+            navigator("/admin");
+            if (res.role === "supplier") {
+              navigator("/supplier");
+            }
+            navigator("/buyer");
+          }
+        }
+      } catch (err) {
+        Navigate("/supplierform");
+        setCheckingAuth(false);
+      }
+    };
+    protectPage();
+  }, []);
+
+  useEffect(() => {
+    const AdminFetch = async () => {
+      try {
+        const adminDataFetch = await fetch("http://localhost:21000/api/me", {
+          credentials: "include",
+          signal: controller.signal,
+        });
+
+        const data = await res.json();
+
+        // If not logged in OR logged in but NOT an admin
+        if (!adminDataFetch.ok || data.role !== "admin") {
+          navigate("/login", { replace: true });
+        } else {
+          // Let them see the dashboard
+          setCheckingAuth(false);
+        }
+      } catch (error) {
+        console.error("Fetch error:", error);
+        setError(error.message);
+        setCheckingAuth(false);
+      }
+    };
+    AdminFetch();
+  }, []);
 
   const selectedSupplier = useMemo(
     () => suppliers.find((s) => s.id === selectedSupplierId),
@@ -209,7 +268,7 @@ const AdminApp = () => {
         </div>
         {isSidebarOpen && (
           <span className="font-black text-2xl tracking-tighter text-slate-900">
-            PRO.BASE
+            Admin
           </span>
         )}
       </div>
@@ -536,7 +595,7 @@ const AdminApp = () => {
               <ShieldCheck className="text-white w-5 h-5" />
             </div>
             <h1 className="text-[10px] font-black text-slate-900 lg:text-slate-400 uppercase tracking-[0.2em]">
-              PRO.BASE //{" "}
+              Admin //{" "}
               {selectedSupplierId
                 ? "VERIFICATION_MODE"
                 : activeTab.toUpperCase()}

@@ -52,7 +52,7 @@ export const AnyNull = runtime.AnyNull
 
 export const ModelName = {
   User: 'User',
-  Bid: 'Bid'
+  Supplier: 'Supplier'
 } as const
 
 export type ModelName = (typeof ModelName)[keyof typeof ModelName]
@@ -73,7 +73,6 @@ export type TransactionIsolationLevel = (typeof TransactionIsolationLevel)[keyof
 
 export const UserScalarFieldEnum = {
   id: 'id',
-  name: 'name',
   email: 'email',
   password_hash: 'password_hash',
   user_type: 'user_type',
@@ -85,15 +84,24 @@ export const UserScalarFieldEnum = {
 export type UserScalarFieldEnum = (typeof UserScalarFieldEnum)[keyof typeof UserScalarFieldEnum]
 
 
-export const BidScalarFieldEnum = {
+export const SupplierScalarFieldEnum = {
   id: 'id',
-  title: 'title',
-  price: 'price',
-  Description: 'Description',
-  createdAt: 'createdAt'
+  business_name: 'business_name',
+  phone: 'phone',
+  addressm: 'addressm',
+  tax_id: 'tax_id',
+  registration_number: 'registration_number',
+  years_in_business: 'years_in_business',
+  categories: 'categories',
+  bio: 'bio',
+  status: 'status',
+  verified_at: 'verified_at',
+  rejected_reason: 'rejected_reason',
+  created_at: 'created_at',
+  updated_at: 'updated_at'
 } as const
 
-export type BidScalarFieldEnum = (typeof BidScalarFieldEnum)[keyof typeof BidScalarFieldEnum]
+export type SupplierScalarFieldEnum = (typeof SupplierScalarFieldEnum)[keyof typeof SupplierScalarFieldEnum]
 
 
 export const SortOrder = {
@@ -110,4 +118,12 @@ export const QueryMode = {
 } as const
 
 export type QueryMode = (typeof QueryMode)[keyof typeof QueryMode]
+
+
+export const NullsOrder = {
+  first: 'first',
+  last: 'last'
+} as const
+
+export type NullsOrder = (typeof NullsOrder)[keyof typeof NullsOrder]
 

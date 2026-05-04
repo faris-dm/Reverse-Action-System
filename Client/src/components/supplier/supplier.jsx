@@ -1,6 +1,7 @@
 // src/components/supplier/Supplier.jsx
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Sidebar } from "./layouts/Sidebar";
+import { useNavigate } from "react-router-dom";
 
 // Import views
 import { OverviewView } from "./views/OverviewView";
@@ -15,67 +16,113 @@ import { Header } from "./layouts/Header";
 import { BidModal } from "./modals/BidModal";
 
 const Supplier = () => {
+  // ADD THESE LINES at the top of your component
+
+  const navigate = useNavigate();
+  const [checkingAuth, setCheckingAuth] = useState(true);
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [activeTab, setActiveTab] = useState("Overview");
+  const [profile, setProfile] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
 
-  // --- Profile State ---
-  const [profile, setProfile] = useState({
-    businessName: "Ethio Build Ltd.",
-    email: "contact@ethiobuild.com",
-    phone: "+251 911 223 344",
-    address: "Bole Road, Addis Ababa",
-    taxId: "TIN-882910",
-    regNumber: "EB-2024-AA",
-    yearsInBusiness: "8",
-    categories: ["Construction", "Hardware"],
-    bio: "Leading supplier of premium building materials in East Africa.",
-    notifications: {
-      newRequests: true,
-      outbid: true,
-      messages: true,
-      wins: true,
-      weeklySummary: false,
-    },
-  });
+  useEffect(() => {
+    const protectPage = async () => {
+      try {
+        const res = await fetch("http://localhost:21000/api/auth/status", {
+          credentials: "include",
+        });
+
+        // If NOT logged in (401), kick them out to the login page
+        if (res.status === 401) {
+          navigate("/login");
+        }
+        setCheckingAuth(false);
+      } catch (err) {
+        navigate("/login");
+      }
+    };
+    protectPage();
+  }, []);
+  useEffect(() => {
+    const getMyData = async () => {
+      try {
+        const res = await fetch("http://localhost:21000/api/me", {
+          credentials: "include",
+          method: "GET",
+        });
+
+        if (res.status === 401) {
+          // Only redirect if they aren't logged in
+          window.location.href = "/supplierform";
+          return;
+        }
+
+        if (!res.ok) throw new Error("Could not load profile");
+
+        const data = await res.json();
+        setProfile(data); // Just use the real data from your Map
+        setLoading(false);
+      } catch (err) {
+        setError(err.message);
+        setLoading(false);
+      }
+    };
+
+    getMyData();
+  }, []);
 
   // --- Data State ---
-  const [allRequests] = useState([
+  const [allRequests, setRequested] = useState([
     {
       id: "req_1",
-      title: "Grade 42.5 OPC Cement",
-      category: "Construction",
-      qty: "500 Bags",
-      maxBudget: 450000,
-      deadline: "2024-06-25",
+      title: "Grade 42.5  Cement",
       description:
         "High-quality OPC cement needed for a commercial foundation project.",
-      buyerName: "Skyline Developers",
-      currentLow: 435000,
+      category: "Construction",
+      budget: 450000,
+      quantity: "500 Bags",
+      // location: data.location,
+      expedet: "2024-06-25",
+
+      // buyerName: "Skyline Developers",
+      // currentLow: 435000,
     },
     {
       id: "req_2",
       title: "Reinforcement Bars 12mm",
       category: "Metal",
-      qty: "15 Tons",
-      maxBudget: 890000,
-      deadline: "2024-06-22",
+      quantity: "15 Tons",
+      budget: 890000,
+      expedet: "2024-06-22",
       description: "Standard 12mm rebar for residential slab reinforcement.",
-      buyerName: "MetalWorks Co.",
-      currentLow: 870000,
+      // buyerName: "MetalWorks Co.",
+      // currentLow: 870000,
     },
     {
       id: "req_3",
       title: "River Sand (Washed)",
       category: "Aggregates",
-      qty: "20 Trucks",
-      maxBudget: 120000,
-      deadline: "2024-06-30",
+      quantity: "20 Trucks",
+      budget: 120000,
+      expedet: "2024-06-30",
       description: "Fine washed river sand for plastering work.",
-      buyerName: "Urban Pavements",
-      currentLow: 115000,
+      // buyerName: "Urban Pavements",
+      // currentLow: 115000,
     },
   ]);
 
+
+   const [Newproposal, setNewProposal] = useState({
+    title: "",
+    fullName:"",
+    price: "",
+     description: "",
+     diliveryDate:""
+   
+  });
+
+  //  thsis are my bids
   const [myBids, setMyBids] = useState([
     {
       id: "bid_101",
@@ -87,6 +134,71 @@ const Supplier = () => {
       date: "2024-06-18",
     },
   ]);
+
+  useEffect(() => {
+    const showAuction = async () => {
+      try {
+        const response = await fetch("http://localhost:21000/api/getAuction", {
+          credentials: "include",
+        });
+        if (response.status === 401) {
+          console.log("Unable to send the aution");
+          return;
+        }
+        if (!response.ok) {
+          throw new Error("could not load the data to biyrt profile");
+        }
+
+        const data = await response.json();
+        setRequested((newData) => {
+          const mockData = newData.filter(
+            (item) => typeof item.id === "string" && item.id.startsWith("req_")
+          );
+          return [...data, ...mockData];
+        });
+      } catch (error) {
+        console.error(error);
+      }
+    };
+    showAuction();
+  }, []);
+
+
+//    const Sendproposal= async()=> {
+//    const ProposalId=`pr-${Math.floor(Math.random()*5000)+100}`
+
+//  const ListProposal = {
+//    id: ProposalId,
+//    title:Newproposal.title,
+//    fullName:Newproposal.fullName,
+//    price:Newproposal.price,
+//    description:Newproposal.description,
+//    diliveryDate:Newproposal.diliveryDate
+//  };
+
+//     try {
+//        const ResposeProposal = await fetch(
+//          "http//localhost:21000/api/sendProposal",
+//          {
+//            method: "POST",
+//            headers: {
+//              "Content-Type": "applicationn/json",
+//            },
+//            body: JSON.stringify(ListProposal)
+//          }
+//        );
+
+//       if(ResposeProposal.ok) {
+//         alert("Proposal Sent Succeully")
+//         setProposal([ListProposal,...myProposal])
+
+//       }
+//     } catch (error) {
+//       console.log(error)
+//        alert(`Failed: ${error.message || "Server error"}`);
+      
+//     }
+//    }
 
   const [conversations, setConversations] = useState([
     {
@@ -147,6 +259,47 @@ const Supplier = () => {
   const [activeConversationId, setActiveConversationId] = useState(null);
   const [newMessage, setNewMessage] = useState("");
 
+  // --- Show Loading Screen ---
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center min-h-screen bg-[#f8fafc]">
+        <div className="text-center">
+          <div className="text-2xl font-bold text-slate-600">
+            Loading profile...
+          </div>
+          <div className="text-sm text-slate-400 mt-2">Please wait</div>
+        </div>
+      </div>
+    );
+  }
+
+  // --- Show Error Screen ---
+  if (error) {
+    return (
+      <div className="flex items-center justify-center min-h-screen bg-[#f8fafc]">
+        <div className="text-center">
+          <div className="text-2xl font-bold text-red-600">Error</div>
+          <div className="text-sm text-slate-600 mt-2">{error}</div>
+          <button
+            onClick={() => (window.location.href = "/login")}
+            className="mt-4 px-6 py-2 bg-blue-600 text-white rounded-lg"
+          >
+            Go to Login
+          </button>
+        </div>
+      </div>
+    );
+  }
+
+  // --- If no profile after loading (should not happen) ---
+  if (!profile) {
+    return (
+      <div className="flex items-center justify-center min-h-screen">
+        <div className="text-center">No profile data available</div>
+      </div>
+    );
+  }
+
   const handleBidSubmit = (newBid) => {
     setMyBids([newBid, ...myBids]);
   };
@@ -199,7 +352,7 @@ const Supplier = () => {
 
       <div className="flex-1 flex flex-col min-w-0 h-screen overflow-hidden">
         <Header
-          businessName={profile.businessName}
+          businessName={profile?.businessName || "Aman"}
           onMenuClick={() => setIsSidebarOpen(true)}
         />
 

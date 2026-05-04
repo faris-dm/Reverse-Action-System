@@ -1,23 +1,25 @@
 // LoginPage.jsx
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
+import { Link, useNavigate } from "react-router-dom";
+
 import {
-  Mail,
-  Lock,
   Eye,
   EyeOff,
   ArrowLeft,
   ChevronRight,
-  Briefcase,
   Facebook,
+  ChevronLeft,
   Apple,
   Chrome,
+  TrendingDown,
 } from "lucide-react";
 
 const LoginPage = () => {
+  const [checkingAuth, setCheckingAuth] = useState(true);
+  const navigate = useNavigate();
   const [showPassword, setShowPassword] = useState(false);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [rememberMe, setRememberMe] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [errors, setErrors] = useState({});
 
@@ -34,105 +36,183 @@ const LoginPage = () => {
     return newErrors;
   };
 
-  const handleSubmit = (e) => {
+  // ADD THIS GUARD
+  useEffect(() => {
+    const loggedInOnly = async () => {
+      try {
+        const res = await fetch("http://localhost:21000/api/auth/status", {
+          credentials: "include",
+        });
+        if (res.ok) {
+          const data = await res.json(); // Assuming your backend sends { role: 'admin' }
+
+          // Route them based on their power level
+          if (data.role === "admin") {
+            navigate("/admin", { replace: true });
+          } else if (data.role === "buyer") {
+            navigate("/buyer", { replace: true });
+          } else {
+            navigate("/supplier", { replace: true });
+          }
+        }
+      } catch (err) {
+        setCheckingAuth(false);
+
+        /* Not logged in, stay here */
+      }
+    };
+    loggedInOnly();
+  }, []);
+
+  // No frontend validation – all validation happens on the backend (Zod)
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    const newErrors = validateForm();
-    if (Object.keys(newErrors).length > 0) {
-      setErrors(newErrors);
+    const validationErrors = validateForm();
+    if (Object.keys(validationErrors).length > 0) {
+      setErrors(validationErrors);
       return;
     }
 
     setErrors({});
+
     setIsLoading(true);
 
-    // Simulate login API call
-    setTimeout(() => {
+    try {
+      // Send form data to backend registration endpoint
+      const response = await fetch("http://localhost:21000/api/login", {
+        // 👈 adjusted URL to match backend
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ email, password }),
+        credentials: "include", // ensures cookies are sent/received
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        alert("No user found  with this email");
+        // Backend returned an error (Zod validation or business logic)
+        if (data.errors) {
+          // Field‑specific errors (e.g., { email: "Invalid email" })
+          setErrors(data.errors);
+        } else {
+          // General error message (e.g., "User already exists")
+          setErrors({ server: data.message || "Registration failed" });
+        }
+        console.error("❌ login faild:", data);
+        return;
+      }
+
+      // ✅ Success: redirect to supplier dashboard
+      console.log("🎉 login successful, redirecting  roles");
+
+      if (data.role === "supplier") {
+        window.location.href = "/supplier";
+      }
+      if (data.role === "buyer") {
+        window.location.href = "/buyer";
+      }
+      if (data.role === "admin") {
+        window.location.href = "/admin";
+      }
+    } catch (error) {
+      // Network or unexpected error
+      console.error("❌ Network error:", error);
+      setErrors({ server: "there is no User With this email." });
+    } finally {
       setIsLoading(false);
-      console.log("Login attempt:", { email, password, rememberMe });
-    }, 1500);
+    }
   };
 
   return (
     <div className="min-h-screen bg-[#f9f9f9] flex flex-col">
-      {/* Header - Exact Upwork style */}
       <header className="bg-white border-b border-gray-200">
         <div className="max-w-[1280px] mx-auto px-6 sm:px-8">
           <div className="flex items-center justify-between h-[72px]">
-            {/* Left side with back button */}
             <div className="flex items-center gap-4">
               <button
                 onClick={() => window.history.back()}
-                className="w-8 h-8 flex items-center justify-center hover:bg-gray-100 rounded-full transition-colors"
+                className="w-8 h-8 flex items-center justify-center hover:bg-gray-100 rounded-full"
               >
                 <ArrowLeft className="w-5 h-5 text-gray-600" />
               </button>
-
-              {/* Logo - Exact Upwork style */}
-              <div className="flex items-center">
-                <span className="text-2xl font-bold text-[#14a800]">Bid</span>
-                <span className="text-2xl font-bold text-gray-900">Smart</span>
+              {/* <div className="flex items-center space-x-2 cursor-pointer group">
+                <span className="text-2xl font-bold  text-gray-900">Bid</span>
+                <span className="text-2xl font-bold text-blue-600">Smart</span>
+              </div> */}
+              {/* added */}
+              <div
+                className="flex items-center space-x-2 cursor-pointer group"
+                onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}
+              >
+                <div className="w-10 h-10 bg-blue-600 rounded-xl flex items-center justify-center shadow-lg shadow-blue-600/20 group-hover:rotate-6 transition-transform">
+                  <TrendingDown className="text-white w-6 h-6" />
+                </div>
+                <span className="text-xl font-extrabold tracking-tighter text-slate-900">
+                  Bid<span className="text-blue-600">Smart</span>
+                </span>
               </div>
-            </div>
 
-            {/* Right side - Help */}
-            <button className="text-sm text-gray-600 hover:text-[#14a800] transition-colors font-medium">
+              {/* added */}
+            </div>
+            <button className="text-sm text-gray-600  hover:text-blue-600 font-medium">
               Help
             </button>
           </div>
         </div>
       </header>
 
-      {/* Main Content */}
       <main className="flex-1 flex items-center justify-center py-8 sm:py-12 px-4">
         <div className="w-full max-w-[480px] bg-white rounded-2xl shadow-sm p-6 sm:p-8">
-          {/* Welcome Text - Upwork style */}
+          <button
+            onClick={() => window.history.back()}
+            className="group flex items-center text-sm font-bold text-gray-500 hover:text-[#108a00] mb-8"
+          >
+            <ChevronLeft className="w-4 h-4 mr-1" /> Back
+          </button>
+
           <div className="mb-8">
             <h1 className="text-2xl sm:text-3xl font-normal text-gray-900 mb-2">
               Log in to BidSmart
             </h1>
+            {/* Server Error Message */}
+            {errors.server && (
+              <div className="p-3 bg-red-50 text-red-600 rounded-lg text-sm border border-red-100 mb-4">
+                {errors.server}
+              </div>
+            )}
           </div>
 
-          {/* Login Form */}
           <form onSubmit={handleSubmit} className="space-y-5">
-            {/* Email Field - Upwork style */}
             <div>
-              <label
-                htmlFor="email"
-                className="block text-sm font-medium text-gray-700 mb-1.5"
-              >
+              <label className="block text-sm font-medium text-gray-700 mb-1.5">
                 Email Address
               </label>
-              <div className="relative">
-                <input
-                  id="email"
-                  type="email"
-                  value={email}
-                  onChange={(e) => {
-                    setEmail(e.target.value);
-                    if (errors.email) setErrors({ ...errors, email: null });
-                  }}
-                  className={`w-full px-4 py-3 border ${
-                    errors.email ? "border-red-500" : "border-gray-300"
-                  } rounded-lg focus:outline-none focus:border-[#14a800] focus:ring-1 focus:ring-[#14a800] transition-colors text-base`}
-                  placeholder="Enter your email"
-                />
-              </div>
+              <input
+                type="email"
+                value={email}
+                onChange={(e) => {
+                  setEmail(e.target.value);
+                  if (errors.email) setErrors({ ...errors, email: null });
+                }}
+                className={`w-full px-4 py-3 border ${
+                  errors.email ? "border-red-500" : "border-gray-300"
+                } rounded-lg focus:outline-none focus:border-[#14a800]`}
+                placeholder="Enter your email"
+              />
               {errors.email && (
                 <p className="mt-1.5 text-sm text-red-600">{errors.email}</p>
               )}
             </div>
 
-            {/* Password Field - Upwork style */}
             <div>
-              <label
-                htmlFor="password"
-                className="block text-sm font-medium text-gray-700 mb-1.5"
-              >
+              <label className="block text-sm font-medium text-gray-700 mb-1.5">
                 Password
               </label>
               <div className="relative">
                 <input
-                  id="password"
                   type={showPassword ? "text" : "password"}
                   value={password}
                   onChange={(e) => {
@@ -142,13 +222,13 @@ const LoginPage = () => {
                   }}
                   className={`w-full px-4 py-3 border ${
                     errors.password ? "border-red-500" : "border-gray-300"
-                  } rounded-lg focus:outline-none focus:border-[#14a800] focus:ring-1 focus:ring-[#14a800] transition-colors text-base pr-12`}
+                  } rounded-lg focus:outline-none focus:border-[#14a800] pr-12`}
                   placeholder="Enter your password"
                 />
                 <button
                   type="button"
                   onClick={() => setShowPassword(!showPassword)}
-                  className="absolute inset-y-0 right-0 px-4 flex items-center text-gray-400 hover:text-gray-600"
+                  className="absolute inset-y-0 right-0 px-4 flex items-center text-gray-400"
                 >
                   {showPassword ? (
                     <EyeOff className="w-5 h-5" />
@@ -162,97 +242,23 @@ const LoginPage = () => {
               )}
             </div>
 
-            {/* Forgot Password Link - Upwork style */}
-            <div className="text-right">
-              <button
-                type="button"
-                className="text-sm text-[#14a800] hover:underline font-medium"
-              >
-                Forgot password?
-              </button>
-            </div>
-
-            {/* Sign In Button - Exact Upwork green */}
             <button
               type="submit"
               disabled={isLoading}
-              className="w-full bg-[#14a800] hover:bg-[#108700] text-white font-medium py-3.5 px-4 rounded-full transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 text-base"
+              className="w-full  bg-blue-600  bg-blue-800 text-white font-medium py-3.5 px-4 rounded-full transition-colors disabled:opacity-50 flex items-center justify-center gap-2"
             >
               {isLoading ? (
-                <>
-                  <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin" />
-                  <span>Logging in...</span>
-                </>
+                "Logging in..."
               ) : (
                 <>
-                  <span>Log In</span>
-                  <ChevronRight className="w-5 h-5" />
+                  Log In <ChevronRight className="w-5 h-5" />
                 </>
               )}
             </button>
-
-            {/* Don't have an account link - Moved below login button */}
-            <div className="text-center pt-2">
-              <p className="text-sm text-gray-600">
-                Don't have an account?{" "}
-                <button className="text-[#14a800] hover:underline font-medium">
-                  Sign up
-                </button>
-              </p>
-            </div>
           </form>
-
-          {/* Divider - Upwork style */}
-          <div className="relative my-8">
-            <div className="absolute inset-0 flex items-center">
-              <div className="w-full border-t border-gray-200"></div>
-            </div>
-            <div className="relative flex justify-center">
-              <span className="px-4 bg-white text-sm text-gray-500">or</span>
-            </div>
-          </div>
-
-          {/* Social Login Buttons - Upwork style */}
-          <div className="space-y-3">
-            <button className="w-full flex items-center justify-center gap-3 px-4 py-3 border border-gray-300 rounded-full hover:bg-gray-50 transition-colors text-gray-700 font-medium">
-              <Chrome className="w-5 h-5" />
-              <span>Continue with Google</span>
-            </button>
-
-            <button className="w-full flex items-center justify-center gap-3 px-4 py-3 border border-gray-300 rounded-full hover:bg-gray-50 transition-colors text-gray-700 font-medium">
-              <Facebook className="w-5 h-5 text-blue-600" />
-              <span>Continue with Facebook</span>
-            </button>
-
-            <button className="w-full flex items-center justify-center gap-3 px-4 py-3 border border-gray-300 rounded-full hover:bg-gray-50 transition-colors text-gray-700 font-medium">
-              <Apple className="w-5 h-5" />
-              <span>Continue with Apple</span>
-            </button>
-          </div>
-
-          {/* Terms - Upwork style */}
-          <p className="text-xs text-gray-500 text-center mt-8 leading-relaxed">
-            By signing in, you agree to our{" "}
-            <button className="text-[#14a800] hover:underline">
-              Terms of Service
-            </button>{" "}
-            and{" "}
-            <button className="text-[#14a800] hover:underline">
-              Privacy Policy
-            </button>
-            .
-          </p>
+          {/* ... Rest of your UI (Social buttons, etc) ... */}
         </div>
       </main>
-
-      {/* Footer - Clean and minimal */}
-      <footer className="border-t border-gray-200 bg-white">
-        <div className="max-w-[1280px] mx-auto px-6 sm:px-8 py-6">
-          <div className="flex justify-center">
-            <div className="text-sm text-gray-400">Powered by BidSmart</div>
-          </div>
-        </div>
-      </footer>
     </div>
   );
 };

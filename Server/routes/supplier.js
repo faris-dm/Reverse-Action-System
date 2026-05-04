@@ -7,7 +7,7 @@ const bcrypt = require("bcrypt");
 // const userMap = require("../models/storeage");
 let secret = "W$q4=25*8%v-}UV";
 let jwt = require("jsonwebtoken");
-const { Result } = require("postcss");
+
 let RefreshTokenSecret = "W%&7=-^#-v}XL";
 let cookiesparser = require("cookie-parser");
 router.use(cookiesparser());
@@ -24,17 +24,7 @@ let signUpsupplier = z.object({
 
 // POST /supplier – handle form submission
 router.post("/supplier", async (req, res) => {
-  // save logic...
-
-  // let RegistorSuppleZod = signUpsupplier.safeParse(req.body);
-  // if (!RegistorSuppleZod.success) {
-  //   return res.status(400).json({
-  //     err: RegistorSuppleZod.error.errors.map((errors) => ({
-  //       field: errors.path[0],
-  //       message: errors.message,
-  //     })),
-  //   });
-  // }
+ 
 
   let { email, password, name, businessName, confirmPassword } = req.body;
   let role = "supplier";
