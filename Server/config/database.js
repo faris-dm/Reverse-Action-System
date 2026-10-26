@@ -1,19 +1,12 @@
-// const { Pool, Client } = require("pg");
-// const connect = new Pool({
-//   user: "postgres",
-//   host: "localhost",
-//   database: "new",
-//   password: "admin",
-//   port: 5432,
-// });
+import pg from "pg";
+import "dotenv/config";
 
-// connect.connect((error, client, release) => {
-//   if (error) {
-//     console.error("connection Failed", error.message);
-//   } else {
-//     console.log("connection  succefully");
-//     release();
-//   }
-// });
+const Pool = new pg.Pool({
+  host: process.env.DB_HOST,
+  user: process.env.DB_USER,
+  password: process.env.DB_PASSWORD,
+  database: process.env.DB_NAME,
+});
 
-// module.exports = connect;
+export default Pool;
+// CREATE DATABASE  bids thx ,

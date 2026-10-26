@@ -1,0 +1,297 @@
+  so there is   four  actores in this project 
+
+  enum is used to  defin the values  that   ar allways like this like "  super_admin
+  admin
+  seller
+  buyer
+}
+
+enum VerificationStatus {
+  unverified
+  pending
+  verified
+  rejected
+}
+
+enum AccountStatus {
+  active
+  suspended
+}
+" like enum:enumeration lik user can be admin or seller or buyer and the veriaction is unverifed ,pending,verifed  and the rejected account status is active or not active
+
+-- ============ EXTENSIONS / ENUMS ============
+CREATE EXTENSION IF NOT EXISTS "pgcrypto";
+
+CREATE TYPE role                AS ENUM ('super_admin','admin','seller','buyer');
+CREATE TYPE verification_status AS ENUM ('unverified','pending','verified','rejected');
+CREATE TYPE account_status     AS ENUM ('active','suspended');
+CREATE TYPE unit               AS ENUM ('piece','kg','ton','bag','liter','m3','box');
+CREATE TYPE item_status        AS ENUM ('pending','approved','rejected');
+CREATE TYPE currency           AS ENUM ('ETB','USD','EUR');
+CREATE TYPE listing_phase      AS ENUM ('requesting','bidding','ended','stopped');
+CREATE TYPE request_status     AS ENUM ('pending','approved','declined','expired');
+CREATE TYPE bid_status         AS ENUM ('active','outbid','won');
+CREATE TYPE deal_status        AS ENUM ('pending','contacted','completed','cancelled');
+CREATE TYPE chat_type          AS ENUM ('group','private');
+CREATE TYPE review_status      AS ENUM ('pending','approved','rejected');
+
+-- ============ updated_at helper ============
+CREATE OR REPLACE FUNCTION set_updated_at() RETURNS trigger AS $$
+BEGIN NEW.updated_at = now(); RETURN NEW; END;
+$$ LANGUAGE plpgsql;
+
+-- ============ USERS ============
+CREATE TABLE users (
+  id                  uuid PRIMARY KEY DEFAULT gen_random_uuid(),
+  username            text NOT NULL UNIQUE,
+  email               text NOT NULL UNIQUE,
+  password_hash       text NOT NULL,
+  role                role NOT NULL,
+  verification_status verification_status NOT NULL DEFAULT 'unverified',
+  account_status      account_status NOT NULL DEFAULT 'active',
+  email_verified_at   timestamptz,
+  created_at          timestamptz NOT NULL DEFAULT now()
+);
+
+-- ============ FILES ============
+CREATE TABLE files (
+  id          uuid PRIMARY KEY DEFAULT gen_random_uuid(),
+  uploaded_by uuid NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+  url         text NOT NULL,
+  mime_type   text NOT NULL,
+  size        integer NOT NULL CHECK (size >= 0),
+  created_at  timestamptz NOT NULL DEFAULT now()
+);
+
+-- ============ PROFILES ============
+CREATE TABLE seller_profiles (
+  id              uuid PRIMARY KEY DEFAULT gen_random_uuid(),
+  user_id         uuid NOT NULL UNIQUE REFERENCES users(id) ON DELETE CASCADE,
+  company_name    text NOT NULL,
+  tin_number      text NOT NULL UNIQUE,
+  license_file_id uuid REFERENCES files(id) ON DELETE SET NULL,
+  phone           text NOT NULL,
+  address         text NOT NULL,
+  city            text NOT NULL,
+  updated_at      timestamptz NOT NULL DEFAULT now()
+);
+
+CREATE TABLE buyer_profiles (
+  id           uuid PRIMARY KEY DEFAULT gen_random_uuid(),
+  user_id      uuid NOT NULL UNIQUE REFERENCES users(id) ON DELETE CASCADE,
+  full_name    text NOT NULL,
+  phone        text NOT NULL,
+  address      text NOT NULL,
+  city         text NOT NULL,
+  company_name text,
+  tin_number   text,
+  updated_at   timestamptz NOT NULL DEFAULT now()
+);
+
+CREATE TRIGGER trg_seller_profiles_updated BEFORE UPDATE ON seller_profiles
+  FOR EACH ROW EXECUTE FUNCTION set_updated_at();
+CREATE TRIGGER trg_buyer_profiles_updated BEFORE UPDATE ON buyer_profiles
+  FOR EACH ROW EXECUTE FUNCTION set_updated_at();
+
+-- ============ VERIFICATION HISTORY ============
+CREATE TABLE verification_requests (
+  id            uuid PRIMARY KEY DEFAULT gen_random_uuid(),
+  user_id       uuid NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+  reviewed_by   uuid REFERENCES users(id) ON DELETE SET NULL,
+  status        review_status NOT NULL DEFAULT 'pending',
+  reject_reason text,
+  submitted_at  timestamptz NOT NULL DEFAULT now(),
+  reviewed_at   timestamptz,
+  CHECK (status <> 'rejected' OR reject_reason IS NOT NULL)
+);
+CREATE INDEX idx_verif_user ON verification_requests(user_id);
+
+-- ============ CATALOG ============
+CREATE TABLE categories (
+  id   uuid PRIMARY KEY DEFAULT gen_random_uuid(),
+  name text NOT NULL UNIQUE
+);
+
+CREATE TABLE items (
+  id          uuid PRIMARY KEY DEFAULT gen_random_uuid(),
+  category_id uuid NOT NULL REFERENCES categories(id) ON DELETE RESTRICT,
+  name        text NOT NULL,
+  unit        unit NOT NULL,
+  specs       text,
+  status      item_status NOT NULL DEFAULT 'pending',
+  created_by  uuid REFERENCES users(id) ON DELETE SET NULL,
+  created_at  timestamptz NOT NULL DEFAULT now(),
+  UNIQUE (category_id, name)
+);
+
+-- ============ LISTINGS ============
+CREATE TABLE listings (
+  id               uuid PRIMARY KEY DEFAULT gen_random_uuid(),
+  seller_id        uuid NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+  item_id          uuid NOT NULL REFERENCES items(id) ON DELETE RESTRICT,
+  quantity         numeric(12,2) NOT NULL CHECK (quantity > 0),
+  currency         currency NOT NULL,
+  starting_price   numeric(14,2) NOT NULL CHECK (starting_price > 0),
+  min_increment    numeric(14,2) NOT NULL CHECK (min_increment > 0),
+  request_close_at timestamptz NOT NULL,
+  bid_start_at     timestamptz NOT NULL,
+  bid_end_at       timestamptz NOT NULL,
+  phase            listing_phase NOT NULL DEFAULT 'requesting',
+  stop_reason      text,
+  winning_bid_id   uuid UNIQUE,            -- FK added after bids table
+  created_at       timestamptz NOT NULL DEFAULT now(),
+  updated_at       timestamptz NOT NULL DEFAULT now(),
+  CHECK (request_close_at <= bid_start_at),
+  CHECK (bid_start_at < bid_end_at),
+  CHECK (phase <> 'stopped' OR stop_reason IS NOT NULL)
+);
+CREATE INDEX idx_listings_phase_end ON listings(phase, bid_end_at);
+CREATE INDEX idx_listings_seller    ON listings(seller_id);
+
+CREATE TRIGGER trg_listings_updated BEFORE UPDATE ON listings
+  FOR EACH ROW EXECUTE FUNCTION set_updated_at();
+
+-- ============ ACCESS REQUESTS ============
+CREATE TABLE access_requests (
+  id           uuid PRIMARY KEY DEFAULT gen_random_uuid(),
+  listing_id   uuid NOT NULL REFERENCES listings(id) ON DELETE CASCADE,
+  buyer_id     uuid NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+  message      text,
+  status       request_status NOT NULL DEFAULT 'pending',
+  requested_at timestamptz NOT NULL DEFAULT now(),
+  decided_at   timestamptz,
+  UNIQUE (listing_id, buyer_id)
+);
+
+-- ============ BIDS ============
+CREATE TABLE bids (
+  id         uuid PRIMARY KEY DEFAULT gen_random_uuid(),
+  listing_id uuid NOT NULL REFERENCES listings(id) ON DELETE CASCADE,
+  bidder_id  uuid NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+  amount     numeric(14,2) NOT NULL CHECK (amount > 0),
+  status     bid_status NOT NULL DEFAULT 'active',
+  created_at timestamptz NOT NULL DEFAULT now(),
+  UNIQUE (listing_id, amount)              -- same amount twice is rejected, so the earlier bid wins
+);
+CREATE INDEX idx_bids_listing_amount ON bids(listing_id, amount DESC);
+
+ALTER TABLE listings
+  ADD CONSTRAINT fk_listings_winning_bid
+  FOREIGN KEY (winning_bid_id) REFERENCES bids(id) ON DELETE SET NULL;
+
+-- ============ DEALS ============
+CREATE TABLE deals (
+  id             uuid PRIMARY KEY DEFAULT gen_random_uuid(),
+  listing_id     uuid NOT NULL UNIQUE REFERENCES listings(id) ON DELETE CASCADE,
+  seller_id      uuid NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+  buyer_id       uuid NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+  winning_bid_id uuid NOT NULL REFERENCES bids(id) ON DELETE CASCADE,
+  final_price    numeric(14,2) NOT NULL,
+  status         deal_status NOT NULL DEFAULT 'pending',
+  created_at     timestamptz NOT NULL DEFAULT now(),
+  completed_at   timestamptz
+);
+
+-- ============ CHAT ============
+CREATE TABLE conversations (
+  id         uuid PRIMARY KEY DEFAULT gen_random_uuid(),
+  listing_id uuid NOT NULL REFERENCES listings(id) ON DELETE CASCADE,
+  type       chat_type NOT NULL,
+  buyer_id   uuid REFERENCES users(id) ON DELETE CASCADE,
+  created_at timestamptz NOT NULL DEFAULT now(),
+  CHECK ((type = 'group'   AND buyer_id IS NULL) OR
+         (type = 'private' AND buyer_id IS NOT NULL))
+);
+CREATE UNIQUE INDEX uq_conv_group   ON conversations(listing_id) WHERE type = 'group';
+CREATE UNIQUE INDEX uq_conv_private ON conversations(listing_id, buyer_id) WHERE type = 'private';
+
+CREATE TABLE conversation_members (
+  conversation_id uuid NOT NULL REFERENCES conversations(id) ON DELETE CASCADE,
+  user_id         uuid NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+  PRIMARY KEY (conversation_id, user_id)
+);
+
+CREATE TABLE messages (
+  id              uuid PRIMARY KEY DEFAULT gen_random_uuid(),
+  conversation_id uuid NOT NULL REFERENCES conversations(id) ON DELETE CASCADE,
+  sender_id       uuid NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+  body            text NOT NULL,
+  created_at      timestamptz NOT NULL DEFAULT now(),
+  read_at         timestamptz
+);
+CREATE INDEX idx_messages_conv_time ON messages(conversation_id, created_at);
+
+-- ============ FILE LINK TABLES ============
+CREATE TABLE listing_files (
+  id         uuid PRIMARY KEY DEFAULT gen_random_uuid(),
+  listing_id uuid NOT NULL REFERENCES listings(id) ON DELETE CASCADE,
+  file_id    uuid NOT NULL REFERENCES files(id) ON DELETE CASCADE,
+  sort_order integer NOT NULL DEFAULT 0
+);
+
+CREATE TABLE message_files (
+  id         uuid PRIMARY KEY DEFAULT gen_random_uuid(),
+  message_id uuid NOT NULL REFERENCES messages(id) ON DELETE CASCADE,
+  file_id    uuid NOT NULL REFERENCES files(id) ON DELETE CASCADE
+);
+
+-- ============ NOTIFICATIONS / HISTORY / SETTINGS ============
+CREATE TABLE notifications (
+  id         uuid PRIMARY KEY DEFAULT gen_random_uuid(),
+  user_id    uuid NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+  type       text NOT NULL,
+  message    text NOT NULL,
+  is_read    boolean NOT NULL DEFAULT false,
+  created_at timestamptz NOT NULL DEFAULT now()
+);
+CREATE INDEX idx_notifications_user ON notifications(user_id, is_read);
+
+CREATE TABLE user_history (               -- snapshot kept after a user is deleted (no FK on purpose)
+  id         uuid PRIMARY KEY DEFAULT gen_random_uuid(),
+  user_id    uuid NOT NULL,
+  username   text NOT NULL,
+  email      text NOT NULL,
+  role       role NOT NULL,
+  data       jsonb,
+  deleted_by uuid,
+  deleted_at timestamptz NOT NULL DEFAULT now()
+);
+
+CREATE TABLE audit_logs (
+  id         uuid PRIMARY KEY DEFAULT gen_random_uuid(),
+  actor_id   uuid REFERENCES users(id) ON DELETE SET NULL,
+  action     text NOT NULL,
+  entity     text NOT NULL,
+  entity_id  uuid,
+  details    jsonb,
+  created_at timestamptz NOT NULL DEFAULT now()
+);
+CREATE INDEX idx_audit_entity ON audit_logs(entity, entity_id);
+
+CREATE TABLE system_settings (
+  key   text PRIMARY KEY,
+  value text NOT NULL
+);
+
+CREATE TABLE user_settings (
+  id           uuid PRIMARY KEY DEFAULT gen_random_uuid(),
+  user_id      uuid NOT NULL UNIQUE REFERENCES users(id) ON DELETE CASCADE,
+  language     text NOT NULL DEFAULT 'en',
+  notify_email boolean NOT NULL DEFAULT true,
+  notify_chat  boolean NOT NULL DEFAULT true
+);
+
+
+   Name          | Type  |  Owner      
+--------+-----------------------+-------+----------   
+ public | access_requests       | table | postgres    
+ public | audit_logs            | table | postgres    
+ public | bids                  | table | postgres    
+ public | buyer_profiles        | table | postgres    
+ public | categories            | table | postgres    
+ public | conversation_members  | table | postgres    
+ public | conversations         | table | postgres    
+ public | deals                 | table | postgres    
+ public | files                 | table | postgres    
+ public | items                 | table | postgres    
+-- More  --

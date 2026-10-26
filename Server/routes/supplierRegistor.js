@@ -88,7 +88,7 @@ router.post("/api/supplierRegistor", async (req, res) => {
       httpOnly: true,
       sameSite: "strict",
       maxAge: 15 * 60 * 1000,
-    });
+    }); 
     console.log("accessTokens", accessToken);
     res.cookie("refreshToken", refreshToken, {
       httpOnly: true,

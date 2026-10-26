@@ -2,8 +2,9 @@
   "name": "server",
   "version": "1.0.0",
   "main": "index.js",
+  "type": "module",
   "scripts": {
-    "dev": "nodemon  passport.js",
+    "dev": "0787",
     "migrate": "prisma migrate ",
     "prisma:generate": "prisma generate",
     "jwt": "nodemon simpleJwt2.js",
@@ -35,8 +36,12 @@
     "zod": "^4.3.6"
   },
   "devDependencies": {
-    "@types/node": "^25.4.0",
-    "@types/pg": "^8.18.0",
+    "@types/cookie-parser": "^1.4.10",
+    "@types/cors": "^2.8.19",
+    "@types/express": "^5.0.6",
+    "@types/jsonwebtoken": "^9.0.10",
+    "@types/node": "^25.9.9",
+    "@types/pg": "^8.23.1",
     "autoprefixer": "^10.4.24",
     "morgan": "^1.10.1",
     "nodemon": "^3.1.11",
