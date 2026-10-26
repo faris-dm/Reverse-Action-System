@@ -5,6 +5,7 @@ const jwt = require("jsonwebtoken");
 let cookiesparser = require("cookie-parser");
 router.use(cookiesparser());
 const UserStorage = require("../models/storeage");
+import Pool from "../config/database";
 const bcrypt = require("bcrypt");
 const { success } = require("zod");
 router.use(express.json());
@@ -33,22 +34,16 @@ router.post("/api/BuyerRegistor", async (req, res) => {
     return res.status(400).json({ message: "Passwords do not match" });
   }
 
-  if (UserStorage.has(cleanEmail)) {
-    return res.status(409).json({
-      success: false,
-      message: "User aready exist  with similar email",
-    });
-  }
 
   try {
-    const HashedBuyerPasssword = await bcrypt.hash(password, 10);
-    let UserId = crypto.randomUUID();
-    const BuyerPlayload = {
-      id: UserId,
-      email: cleanEmail,
-      role: "buyer",
-    };
+ 
+const checkEmail=await Pool.query(`
+  SELECT * FROM  users  WHERE email=$1`,[email])
 
+ const Result = checkEmail.rows.length;
+  if (Result > 0) {
+ return res.status(409).json({ message: "email aready exist" });
+  }
     const UserRefreshPlayLoad = {
       email: cleanEmail,
     };
@@ -58,24 +53,6 @@ router.post("/api/BuyerRegistor", async (req, res) => {
       expiresIn: "7d",
     });
     console.log("Buyer Registration:");
-
-    const NewBuyer = {
-      id: UserId,
-      fullName: fullName,
-      email: cleanEmail,
-      phone: phone,
-      password: HashedBuyerPasssword,
-      companyName: companyName,
-      companyType: companyType,
-      position: position,
-      companyAddress: companyAddress,
-      accountPurpose: accountPurpose,
-      role: "buyer",
-      createdAt: new Date().toString(),
-      refreshToken: refreshToken,
-    };
-
-    UserStorage.set(cleanEmail, NewBuyer);
 
     res.cookie("token", accessToken, {
       httpOnly: true,
