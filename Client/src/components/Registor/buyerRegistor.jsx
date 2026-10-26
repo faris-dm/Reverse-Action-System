@@ -69,18 +69,18 @@ const BuyerRegistor = () => {
     }
 
     if (!formData.email) {
-      newErrors.email = "Email is required";
+      newEGrrors.email = "Email is required";
     } else if (!formData.email.includes("@")) {
       newErrors.email = "Enter a valid email address";
     }
 
-if (!formData.phone) {prisma
-  newErrors.phone = "Phone number is required";
-} else if (formData.phone.length < 10) {
-  newErrors.phone = "Phone number is too short";
-} else if (formData.phone.length > 14) {
-  newErrors.phone = "Phone number must be 14 characters or less";
-}
+    if (!formData.phone) {
+      newErrors.phone = "Phone number is required";
+    } else if (formData.phone.length < 10) {
+      newErrors.phone = "Phone number is too short";
+    } else if (formData.phone.length > 14) {
+      newErrors.phone = "Phone number must be 14 characters or less";
+    }
 
     if (!formData.password) {
       newErrors.password = "Password is required";
@@ -368,7 +368,6 @@ if (!formData.phone) {prisma
                       className="px-4 py-3 border border-gray-300 rounded-lg focus:border-[#108a00] focus:ring-4 focus:ring-[#108a00]/5 outline-none transition-all placeholder:text-gray-300"
                       required
                     />
-                    
                   </div>
                 </div>
               </div>
