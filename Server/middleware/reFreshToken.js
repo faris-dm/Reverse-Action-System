@@ -7,7 +7,7 @@ router.use(cookieParser());
 const UserStorage = require("../models/storeage");
 
 let secret = "W$q4=25*8%v-}UV";
-let RefreshTokenSecret = "W%&7=-^#-v}XL";
+let RefreshTokenSecret = "W%&7=-^#-vjwt}XL";
 router.use(express.json());
 router.use(express.urlencoded({ extended: true }));
 
@@ -26,7 +26,10 @@ function AuthREFreshToken(req, res, next) {
 
   jwt.verify(oldRefreshtoken, RefreshTokenSecret, (err, decoded) => {
     if (err) {
-      return res.status(401).json("RefreshTokens are  EXPRED");
+     return res.status(401).json({
+      success: false,
+      message: "session not found ",
+    });
     }
 
     let storegeTokens = UserStorage.get(decoded.email);
