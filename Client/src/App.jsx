@@ -8,6 +8,7 @@ import Admin from "./pages/admin";
 import NewBuyer from "./pages/newBuyer";
 import Hero from "./pages/Hero";
 import MainHero from "./pages/newHero";
+import Verfication from "./components/Registor/Verfication";
 
 import SupplierFactor from "./components/supplier/supplier";
 import Role from "./pages/Role";
@@ -20,23 +21,6 @@ import BuyerRegistor from "./components/Registor/buyerRegistor";
 function App() {
   return (
     <div>
-      <div>
-        {/* <SupplierFactor /> */}
-        {/* <Admin /> */}
-        {/* <MainHero /> */}
-        {/*   <LoginPage /> */}
-        {/*   <Role />   */}
-        {/* <Hero /> */}
-        {/*    <SupplierRegitor />  */}
-        {/* <BuyerRegistor /> */}
-        {/* // <mainBuyer /> */}
-        {/* <MainBuyer /> */}
-        {/* // // // // */}
-        {/* llllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllll */}
-        {/* <Buyer /> */}
-        {/* <NewBuyer /> */}
-        {/*  <Supplier /> */}
-      </div>
       <BrowserRouter>
         <Routes>
           {/* landing page */}
@@ -55,6 +39,7 @@ function App() {
           <Route path="/buyer" element={<MainBuyer />} />
           {/* dashboard  for the admin */}
           <Route path="/admin" element={<Admin />} />
+          <Route path="verify-email" element={<Verfication />} />
         </Routes>
       </BrowserRouter>
     </div>

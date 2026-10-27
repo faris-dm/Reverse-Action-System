@@ -4,6 +4,7 @@ import cors from "cors";
 import Pool from "./config/database.js"
 
 import cookieParser from "cookie-parser";
+import Register from "./Register"
 
 const app = express();
 app.use(
@@ -12,8 +13,11 @@ app.use(
     credentials: true,
   })
 );
+
+
 app.use(express.json());
 app.use(cookieParser());
+app.use("/",Register)
 
 Pool.query("SELECT NOW()")
   .then((e) => console.log("db connected", e.rows[0]))

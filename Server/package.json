@@ -4,7 +4,7 @@
   "main": "index.js",
   "type": "module",
   "scripts": {
-    "dev": "0787",
+    "dev": "tsx watch server.ts",
     "migrate": "prisma migrate ",
     "prisma:generate": "prisma generate",
     "jwt": "nodemon simpleJwt2.js",
@@ -28,6 +28,7 @@
     "jsonwebtoken": "^9.0.3",
     "multer": "^2.1.1",
     "mysql2": "^3.16.1",
+    "nodemailer": "^10.2.1",
     "passport": "^0.7.0",
     "passport-local": "^1.0.0",
     "pg": "^8.20.0",

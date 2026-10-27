@@ -1,6 +1,6 @@
 const express = require("express");
 const router = express.Router();
-let authOut = require("../middleware/notGoout");
+
 const { z, email, date } = require("zod");
 const userMapStore = require("../models/storeage");
 const bcrypt = require("bcrypt");

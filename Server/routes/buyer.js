@@ -32,6 +32,7 @@ router.post("/buyer", async (req, res) => {
         message: errors.message,
       })),
     });
+    // solo
   }
   // TODO: Save buyer data to database
   let { name, email, password, confirmPassword, shippingAddress } = req.body;
@@ -45,7 +46,7 @@ router.post("/buyer", async (req, res) => {
     console.log("Password Match Correctly");
 
     let hashPassword = await bcrypt.hash(password, 10);
-    let cleanEmail = email.toLowerCase().trim()
+    let cleanEmail = email.toLowerCase().trim();
     if (userMapStore.has(cleanEmail)) {
       return res.status(400).send("email aready Found");
     }
